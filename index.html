@@ -3,21 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>研究报告</title>
+<title>研究报告 · Research Reports</title>
+<meta name="description" content="深度技术调研报告合集">
 <style>
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:720px;margin:48px auto;padding:0 20px;color:#222;background:#fafafa}
-h1{font-size:28px}ul{list-style:none;padding:0}
-li{background:#fff;border:1px solid #e5e5e5;border-radius:10px;margin:14px 0;padding:18px 20px}
-a{font-size:18px;color:#0b5fff;text-decoration:none;font-weight:600}a:hover{text-decoration:underline}
-p{margin:6px 0 0;color:#666;font-size:14px}footer{margin-top:40px;color:#999;font-size:12px}
+:root{--page-bg:#F5F2EB;--hero-bg:#F5F2EB;--card-bg:#FFFFFF;--text-primary:#242B27;--text-secondary:#70756F;--accent:#9B6547;--border:#DEDCD5;--tag-bg:#EAE7E0;--tag-text:#565A54;--shadow:0 4px 18px rgba(25,28,24,0.035);
+--sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+--serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC",STSong,Georgia,serif}
+*{box-sizing:border-box}
+html{background:var(--page-bg)}
+body{margin:0;font-family:var(--sans);color:var(--text-primary);background:var(--page-bg);line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 40px}
+header{background:var(--hero-bg);padding:88px 0 0}
+.label{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--text-secondary);font-weight:500}
+h1{font-family:var(--serif);font-size:48px;line-height:1.2;font-weight:600;letter-spacing:.06em;margin:18px 0 14px}
+.sub{color:var(--text-secondary);font-size:16px;max-width:560px;margin:0}
+.bar{margin-top:40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0;font-size:12px;letter-spacing:.2em;color:var(--text-secondary);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bar .sep{margin:0 .9em;color:var(--border)}
+main{padding:48px 0 72px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:32px;display:flex;flex-direction:column;transition:border-color .18s ease,background-color .18s ease}
+.card:hover{border-color:#C9C5BB;background:#FDFCFA}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px;font-size:12px;letter-spacing:.14em;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.tag{display:inline-block;background:var(--tag-bg);color:var(--tag-text);font-size:12px;padding:3px 10px;border-radius:4px;letter-spacing:.04em;margin-bottom:14px;align-self:flex-start}
+.card h2{font-family:var(--serif);font-size:22px;line-height:1.45;font-weight:600;margin:0 0 6px;letter-spacing:.02em}
+.card h2 a{color:inherit;text-decoration:none}
+.en{font-size:13px;color:var(--text-secondary);margin:0 0 16px;letter-spacing:.02em}
+.sum{color:var(--text-secondary);font-size:15px;margin:0 0 28px;flex:1}
+.foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:18px;font-size:13px;color:var(--text-secondary)}
+.read{color:var(--accent);font-weight:600;text-decoration:none;font-size:14px;transition:color .18s ease;text-underline-offset:4px}
+.read:hover{text-decoration:underline;color:#7E4F36}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+footer .wrap>div{border-top:1px solid var(--border);padding:24px 0 40px;text-align:center;font-size:13px;color:var(--text-secondary)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:760px){
+ .wrap{padding:0 20px}header{padding-top:56px}h1{font-size:36px}.sub{font-size:15px}
+ .bar{margin-top:28px;font-size:11px;letter-spacing:.16em}
+ main{padding:32px 0 48px}.grid{grid-template-columns:1fr;gap:16px}
+ .card{padding:24px}.meta{margin-bottom:20px}.card h2{font-size:19px}
+}
 </style>
 </head>
 <body>
-<h1>研究报告</h1>
-<ul>
-<li><a href="dynamic-tools/dynamic-tools-report.html">动态工具（Dynamic Tools）研究报告</a><p>dynamic-tools/</p></li>
-<li><a href="tts-models/tts-models-report.html">TTS 语音合成模型研究报告</a><p>tts-models/</p></li>
-</ul>
-<footer>bluemeat0724/research-reports</footer>
+<header><div class="wrap">
+ <div class="label">Research Reports</div>
+ <h1>研究报告</h1>
+ <p class="sub">深度技术调研合集：结论均基于实际抓取的网页、仓库与公开数据，并附来源。</p>
+ <div class="bar"><span>02 REPORTS<span class="sep">/</span>UPDATED OCT 2026</span><span>ARCHIVE</span></div>
+</div></header>
+<main><div class="wrap grid">
+ <article class="card">
+  <div class="meta"><span>RESEARCH / 001</span><time datetime="2026-10-13">调研日期 2026-10-13</time></div>
+  <span class="tag">LLM Agent · 工具设计</span>
+  <h2><a href="dynamic-tools/dynamic-tools-report.html">LLM Agent 工具“渐进式暴露”深度调研报告</a></h2>
+  <p class="en">Progressive Tool Disclosure</p>
+  <p class="sum">研究如何不在一开始就把所有工具注册给模型，而是按需（例如加载某个 Skill 之后）再暴露工具。</p>
+  <div class="foot"><a class="read" href="dynamic-tools/dynamic-tools-report.html">阅读报告 →</a><span>HTML</span></div>
+ </article>
+ <article class="card">
+  <div class="meta"><span>RESEARCH / 002</span><time datetime="2026-10-14">撰写日期 2026-10-14</time></div>
+  <span class="tag">语音合成 · 模型评测</span>
+  <h2><a href="tts-models/tts-models-report.html">近一年主流 TTS（文本转语音）模型调研报告</a></h2>
+  <p class="en">开源 + 商业 · 覆盖 2025-10 ~ 2026-10</p>
+  <p class="sum">梳理近一年开源与商业 TTS 模型的盲听榜单、客观指标、价格与许可证，给出选型结论。</p>
+  <div class="foot"><a class="read" href="tts-models/tts-models-report.html">阅读报告 →</a><span>HTML</span></div>
+ </article>
+</div></main>
+<footer><div class="wrap"><div>© 2026 · bluemeat0724/research-reports</div></div></footer>
 </body>
 </html>
