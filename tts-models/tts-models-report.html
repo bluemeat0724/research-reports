@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>近一年主流 TTS（文本转语音）模型调研报告（开源 + 商业）</title>
+<style>:root{
+  --bg:#fbfaf7;--bg2:#f3f1ec;--panel:#ffffff;--fg:#1d1f23;--fg2:#4a4f58;--muted:#7a808a;--line:#e3e0d8;--line2:#d2cec4;
+  --acc:#2f5bd3;--acc-bg:#e8eefc;--acc2:#0f8a6a;--acc2-bg:#e2f4ee;--warn:#b25b00;--warn-bg:#fff3e2;--com:#7a3fc2;--com-bg:#f1e9fb;
+  --mark:#ffe58a;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04);
+  --sans:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei",-apple-system,"Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,"Noto Sans Mono CJK SC",monospace;
+  --side:300px;--top:52px;
+  color-scheme:light;
+}
+html[data-theme=dark]{
+  --bg:#14161a;--bg2:#1b1e23;--panel:#1c1f25;--fg:#e6e7ea;--fg2:#b9bdc6;--muted:#8a909b;--line:#2c3038;--line2:#3a3f49;
+  --acc:#7ea2ff;--acc-bg:#1f2a44;--acc2:#4cc9a0;--acc2-bg:#16332b;--warn:#ffb35c;--warn-bg:#3a2a14;--com:#c39bff;--com-bg:#2e2342;
+  --mark:#7a6420;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){html:not([data-theme=light]){
+  --bg:#14161a;--bg2:#1b1e23;--panel:#1c1f25;--fg:#e6e7ea;--fg2:#b9bdc6;--muted:#8a909b;--line:#2c3038;--line2:#3a3f49;
+  --acc:#7ea2ff;--acc-bg:#1f2a44;--acc2:#4cc9a0;--acc2-bg:#16332b;--warn:#ffb35c;--warn-bg:#3a2a14;--com:#c39bff;--com-bg:#2e2342;
+  --mark:#7a6420;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);color-scheme:dark;}}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--top) + 14px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15.5px/1.8 var(--sans);font-kerning:normal;text-autospace:normal;text-spacing-trim:normal;line-break:strict;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none;text-underline-offset:3px}
+a:hover{text-decoration:underline}
+code{font:0.88em/1.4 var(--mono);background:var(--bg2);border:1px solid var(--line);border-radius:4px;padding:.05em .35em}
+strong{font-weight:650;color:var(--fg)}
+mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;z-index:99;background:var(--panel);padding:6px 10px}
+.spacer{flex:1}
+.muted{color:var(--muted)}
+/* top bar */
+.topbar{position:sticky;top:0;z-index:30;height:var(--top);display:flex;align-items:center;gap:8px;padding:0 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.tb-title{font-weight:650;letter-spacing:.02em}
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:2px}.progress i{display:block;height:100%;width:0;background:var(--acc)}
+.btn,.icon-btn{font:inherit;font-size:13px;line-height:1;border:1px solid var(--line2);background:var(--panel);color:var(--fg2);border-radius:7px;padding:7px 10px;cursor:pointer}
+.btn:hover,.icon-btn:hover{border-color:var(--acc);color:var(--acc)}
+.icon-btn{width:34px;height:32px;padding:0;font-size:16px}
+#nav-btn{display:none}
+/* layout */
+.layout{display:grid;grid-template-columns:var(--side) minmax(0,1fr);align-items:start}
+.sidebar{position:sticky;top:var(--top);height:calc(100vh - var(--top));overflow:auto;border-right:1px solid var(--line);background:var(--bg2);padding:14px 10px 40px 14px;scrollbar-width:thin}
+main{min-width:0;max-width:1180px;padding:28px 40px 80px;margin:0 auto;width:100%}
+/* search */
+.search{position:sticky;top:-14px;background:var(--bg2);padding:0 0 10px;z-index:2}
+.search input{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;background:var(--panel);color:var(--fg)}
+.search input:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.results{margin-top:8px;font-size:13px;line-height:1.55}
+.results .r-h{color:var(--muted);font-size:12px;margin:8px 2px 4px}
+.results a{display:block;padding:6px 8px;border-radius:6px;color:var(--fg2)}
+.results a:hover,.results a.sel{background:var(--panel);text-decoration:none;box-shadow:var(--shadow)}
+.results a b{display:block;color:var(--fg);font-weight:600;font-size:12.5px}
+/* toc */
+.toc ul{list-style:none;margin:0;padding:0}
+.toc li ul{padding-left:12px;border-left:1px solid var(--line);margin-left:8px}
+.toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--fg2);font-size:13.5px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toc li.lv2>a{font-weight:600;color:var(--fg);margin-top:4px}
+.toc li.lv4>a{font-size:12.5px;color:var(--muted)}
+.toc li.lv3 ul{display:none}.toc li.lv3.open ul{display:block}
+.toc a:hover{background:var(--panel);text-decoration:none}
+.toc a.active{background:var(--acc-bg);color:var(--acc);font-weight:600}
+.toc a.on-path{color:var(--acc)}
+/* hero */
+.hero h1{font-size:30px;line-height:1.35;margin:0 0 14px;letter-spacing:.01em}
+.intro blockquote{margin:0;padding:12px 16px;border-left:3px solid var(--acc);background:var(--panel);border-radius:0 8px 8px 0;color:var(--fg2);font-size:14px;box-shadow:var(--shadow)}
+.intro blockquote p{margin:.2em 0}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;min-width:110px}
+.stat b{display:block;font-size:22px;line-height:1.2;color:var(--acc)}.stat span{font-size:12.5px;color:var(--muted)}
+/* sections */
+.sec{margin:0}
+.sec-h{display:flex;align-items:baseline;gap:6px;position:relative}
+h2.sec-h{font-size:23px;line-height:1.4;margin:42px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+h3.sec-h{font-size:18.5px;margin:28px 0 10px}
+.sec-h .h-txt{flex:1}
+.tog{flex:none;width:22px;height:22px;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:5px;padding:0;align-self:center;font-size:12px}
+.tog::before{content:"▾";display:inline-block;transition:transform .15s}
+.tog:hover{background:var(--bg2);color:var(--acc)}
+.collapsed>.sec-h .tog::before,.card.collapsed .tog::before{transform:rotate(-90deg)}
+.collapsed>.sec-b,.card.collapsed .card-b{display:none}
+.anchor{opacity:0;font-weight:400;color:var(--muted);font-size:.8em;padding:0 4px}
+.sec-h:hover .anchor,.card-h:hover .anchor,.sc-h:hover .anchor{opacity:1}
+p{margin:.6em 0}
+.sec-b>ol,.sec-b>ul,.card-b ul,.sc-panel ul{padding-left:1.4em}
+li{margin:.3em 0}
+li::marker{color:var(--muted)}
+.sec-b>blockquote{margin:12px 0;padding:10px 14px;background:var(--warn-bg);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;font-size:14.5px}
+.sec-b>blockquote p{margin:.2em 0}
+.stars{color:#e0a100;letter-spacing:-1px;white-space:nowrap}
+.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%,30%{background:var(--mark)}100%{background:transparent}}
+/* tables */
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:12px 0;box-shadow:var(--shadow)}
+.table-wrap.tall{max-height:78vh}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:13.5px;line-height:1.6}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{position:sticky;top:0;background:var(--bg2);font-weight:600;white-space:nowrap;z-index:1;color:var(--fg)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:color-mix(in srgb,var(--acc-bg) 45%,transparent)}
+table.plain td:first-child{white-space:nowrap}
+.sortable th{cursor:pointer;user-select:none}
+.sortable th:hover{color:var(--acc)}
+.sort-ind{display:inline-block;width:12px;margin-left:3px;color:var(--muted);font-size:10px}
+th[aria-sort=ascending] .sort-ind::after{content:"▲";color:var(--acc)}
+th[aria-sort=descending] .sort-ind::after{content:"▼";color:var(--acc)}
+th[aria-sort=none] .sort-ind::after{content:"⇅";opacity:.45}
+/* widgets */
+.widget{margin:14px 0 18px}
+.w-head,.w-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--muted);margin:8px 0}
+.w-title{font-weight:600;color:var(--fg2)}
+.inl{display:inline-flex;align-items:center;gap:6px}
+select,.card-filter input,#cmp-q{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line2);border-radius:7px;background:var(--panel);color:var(--fg)}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px 18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow)}
+.f-grp{min-width:0}.f-grp>.f-l{font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600}
+.f-grp.wide{grid-column:1/-1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:12.5px;line-height:1.3;padding:4px 9px;border-radius:999px;border:1px solid var(--line2);background:var(--bg);color:var(--fg2);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+html[data-theme=dark] .chip[aria-pressed=true]{color:#0d1220}
+.chip .n{opacity:.65;margin-left:3px;font-size:11px}
+.chip:disabled{opacity:.4;cursor:default}
+#cmp-q{width:100%}
+.count{font-weight:600;color:var(--fg2)}
+.colpick{position:relative}.colpick summary{cursor:pointer;list-style:none;font-size:13px;border:1px solid var(--line2);border-radius:7px;padding:5px 10px;background:var(--panel);color:var(--fg2)}
+.colpick>div{position:absolute;right:0;top:110%;z-index:5;background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:8px 12px;box-shadow:var(--shadow);display:grid;gap:2px;white-space:nowrap;color:var(--fg)}
+#cmp-table{min-width:1560px}
+#cmp-table td.c0,#cmp-table th.c0{position:sticky;left:0;background:var(--panel);z-index:1;min-width:170px;box-shadow:1px 0 0 var(--line)}
+#cmp-table th.c0{z-index:3;background:var(--bg2)}
+#cmp-table td.c6{white-space:nowrap}#cmp-table .c2{min-width:120px}#cmp-table .c4{min-width:140px}#cmp-table .c3{min-width:130px}
+#cmp-table td.c8,#cmp-table td.c9,#cmp-table td.c10{min-width:170px}
+.mname{font-weight:600}
+.mtags{margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tag{display:inline-block;font-size:11.5px;line-height:1.4;padding:1px 7px;border-radius:999px;white-space:nowrap;font-weight:500}
+.t-com{background:var(--com-bg);color:var(--com)}
+.t-open{background:var(--acc2-bg);color:var(--acc2)}
+.t-lic{background:var(--acc-bg);color:var(--acc)}
+.t-warn{background:var(--warn-bg);color:var(--warn)}
+.t-muted{background:var(--bg2);color:var(--muted)}
+.card-link{font-size:12px;white-space:nowrap}
+.derive-note{font-size:12.5px;color:var(--muted);line-height:1.6}
+.empty{padding:16px;text-align:center;color:var(--muted)}
+.hide-col{display:none}
+/* eval table */
+#eval-table td:first-child{min-width:200px;max-width:280px}#eval-table tr.oow td:first-child{color:var(--muted)}#eval-table td:nth-child(3){min-width:92px}#eval-table td:last-child{min-width:120px}
+#eval-table td.span-note{color:var(--warn);font-style:italic}
+#eval-table tr.closed td:first-child{border-left:3px solid var(--com)}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;vertical-align:middle;flex-wrap:wrap}
+.seg button{font:inherit;font-size:12.5px;border:0;background:var(--panel);color:var(--fg2);padding:5px 10px;cursor:pointer;border-right:1px solid var(--line2)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true],.seg button[aria-selected=true]{background:var(--acc);color:#fff}
+html[data-theme=dark] .seg button[aria-pressed=true],html[data-theme=dark] .seg button[aria-selected=true]{color:#0d1220}
+/* charts */
+.chart{margin:14px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow)}
+.chart figcaption{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:12.5px;color:var(--muted)}
+.chart-box svg{display:block;width:100%;height:auto;font-family:var(--sans)}
+.chart-note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.lg-ow,.lg-c{color:var(--acc2)}.lg-cl{color:var(--com)}#top20-chart .lg-c{color:var(--acc)}
+svg .ax{stroke:var(--line2)}svg .grid{stroke:var(--line);stroke-dasharray:2 3}
+svg text{fill:var(--fg2);font-size:11px}svg .lbl{fill:var(--fg);font-size:11.5px}
+svg .b-open{fill:var(--acc2)}svg .b-closed{fill:var(--com)}svg .ref{stroke:var(--warn);stroke-dasharray:4 3;stroke-width:1.5}
+svg .ref-t{fill:var(--warn)}svg .alt{fill:none;stroke:var(--fg);stroke-width:1.5}
+svg .pt{fill:var(--acc);fill-opacity:.85;stroke:var(--panel);stroke-width:1.5;cursor:pointer}svg .pt.ow{fill:var(--acc2)}
+svg .ci{stroke:var(--acc);stroke-opacity:.45;stroke-width:2}svg .ci.ow{stroke:var(--acc2)}
+svg .pt:hover,svg .pt.hl{stroke:var(--fg);stroke-width:2}
+svg .bar-g:hover rect{opacity:.8}
+.elo-txt{display:inline-block;min-width:68px}
+.elo-bar{display:inline-block;position:relative;width:110px;height:8px;background:var(--bg2);border-radius:4px;vertical-align:middle;margin-left:6px}
+.elo-bar i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);border-radius:4px;opacity:.75}
+.elo-bar b{position:absolute;top:-2px;bottom:-2px;border-left:1px solid var(--fg2);border-right:1px solid var(--fg2);opacity:.5}
+#top20-table tr.ow td:nth-child(2){color:var(--acc2);font-weight:550}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;line-height:1.5;padding:6px 9px;border-radius:6px;max-width:280px;box-shadow:var(--shadow)}
+/* cards */
+.card-filter{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 4px;position:sticky;top:calc(var(--top) + 6px);z-index:4;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);padding:8px 0;border-radius:8px}
+.card-filter input{min-width:220px;flex:1;max-width:360px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px 6px;box-shadow:var(--shadow);min-width:0}
+.card[data-group=s3-a]{border-top:3px solid var(--com)}.card[data-group=s3-b]{border-top:3px solid var(--acc2)}
+.card-h{display:flex;align-items:baseline;gap:6px}
+.card-h h4{margin:0;font-size:16.5px;line-height:1.45;flex:1}
+.cnum{font:12px var(--mono);color:var(--muted);flex:none}
+.card-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 2px;font-size:12.5px}
+.card-b{font-size:14.2px;line-height:1.75}
+.card-b ul{margin:6px 0}
+.card-b li>strong:first-child{color:var(--fg2)}
+.card.hidden{display:none}
+/* scenarios */
+.sc-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:8px 0 12px}
+.sc-tab{font:inherit;text-align:left;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer;box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.sc-tab:hover{border-color:var(--acc);transform:translateY(-1px)}
+.sc-tab[aria-selected=true]{border-color:var(--acc);background:var(--acc-bg);outline:1px solid var(--acc)}
+.sc-n{font:12px var(--mono);color:var(--acc)}.sc-t{font-weight:650;font-size:15.5px;line-height:1.4}.sc-s{font-size:12.5px;color:var(--muted);line-height:1.45}
+.sc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 20px 12px;box-shadow:var(--shadow);margin-bottom:12px}
+.sc-h{font-size:18px;display:flex;gap:6px;align-items:baseline}.sc-h .h-txt{flex:1}
+.sc-panel li{margin:.55em 0}
+/* misc */
+.xref{border-bottom:1px dotted var(--acc)}.xref:hover{text-decoration:none}
+.foot{margin-top:60px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.totop{position:fixed;right:18px;bottom:18px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--panel);color:var(--fg2);font-size:18px;cursor:pointer;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s}
+.totop.show{opacity:1;pointer-events:auto}
+.scrim{position:fixed;inset:var(--top) 0 0 0;background:rgba(0,0,0,.35);z-index:19}
+#s8~.sec-b li,section[data-id=s8] li{font-size:13.5px;word-break:break-all}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+/* responsive */
+@media (max-width:1100px){main{padding:24px 24px 70px}.cards{grid-template-columns:1fr}}
+@media (max-width:960px){
+  .layout{grid-template-columns:1fr}
+  #nav-btn{display:inline-block}
+  .sidebar{position:fixed;left:0;top:var(--top);bottom:0;width:min(86vw,330px);z-index:20;transform:translateX(-102%);transition:transform .2s;box-shadow:var(--shadow)}
+  body.nav-open .sidebar{transform:none}
+  #expand-all,#collapse-all,#print-btn{display:none}
+  .sc-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:600px){
+  body{font-size:15px}main{padding:18px 14px 60px}.hero h1{font-size:23px}h2.sec-h{font-size:20px}
+  .sc-tabs{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.card{padding:10px 12px 4px}
+  .filters{grid-template-columns:1fr}.tb-title{font-size:14px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{min-width:0;padding:6px 10px}.stat b{font-size:18px}.stat span{font-size:11.5px;line-height:1.35;display:block}
+}
+/* print */
+@media print{
+  :root,html[data-theme=dark]{--bg:#fff;--bg2:#f4f4f4;--panel:#fff;--fg:#000;--fg2:#222;--muted:#555;--line:#ccc;--line2:#bbb;--shadow:none;color-scheme:light}
+  body{font-size:10.5pt;line-height:1.6;background:#fff}
+  .topbar,.sidebar,.scrim,.totop,.tip,.tog,.anchor,.filters,.w-bar,.w-head,.card-filter,.sc-tabs,.card-link,.card-meta a,.skip,.derive-note,.empty{display:none!important}
+  .layout{display:block}main{max-width:none;padding:0}
+  .collapsed>.sec-b,.card.collapsed .card-b,.sc-panel[hidden],tr[hidden]{display:revert!important}
+  .sc-panel{display:block!important}
+  .table-wrap,.table-wrap.tall{overflow:visible;max-height:none;box-shadow:none;border:0}
+  #cmp-table{min-width:0;font-size:7.5pt}#cmp-table td,#cmp-table th{padding:3px 4px}#cmp-table td.c0{position:static}
+  th{position:static}
+  .hide-col{display:table-cell!important}
+  .cards{display:block}.card{break-inside:avoid;margin-bottom:8px;box-shadow:none}
+  h2.sec-h{break-after:avoid;margin-top:20px}h3,h4{break-after:avoid}
+  tr,li,.chart{break-inside:avoid}
+  a{color:#000}
+  .chart{box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+<script>(function(){try{var t=localStorage.getItem('tts-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="topbar">
+  <button type="button" class="icon-btn" id="nav-btn" aria-label="目录" aria-controls="sidebar" aria-expanded="false">☰</button>
+  <span class="tb-title">TTS 模型调研 · 2026-10</span>
+  <span class="spacer"></span>
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+  <button type="button" class="btn" id="expand-all">全部展开</button>
+  <button type="button" class="btn" id="collapse-all">全部折叠</button>
+  <button type="button" class="btn" id="print-btn">打印</button>
+  <button type="button" class="icon-btn" id="theme-btn" aria-label="切换浅色/深色">◐</button>
+</header>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" aria-label="目录与搜索">
+    <div class="search">
+      <input type="search" id="q" placeholder="搜索全文（模型、许可、价格…）  /" aria-label="搜索全文" autocomplete="off">
+      <div class="results" id="results" hidden></div>
+    </div>
+    <nav class="toc" id="toc"><ul><li class="lv2"><a href="#s0" data-id="s0">0. 一页结论（TL;DR）</a></li><li class="lv2"><a href="#s1" data-id="s1">1. 方法与口径说明</a></li><li class="lv2 has-sub"><a href="#s2" data-id="s2">2. 榜单速览</a><ul><li class="lv3"><a href="#s2-1" data-id="s2-1">2.1 AA Provider Voice 榜 Top 20（2026-10-14 快照）</a></li><li class="lv3"><a href="#s2-2" data-id="s2-2">2.2 AA 开放权重榜（2026-10-14，全部 17 个模型）</a></li><li class="lv3"><a href="#s2-3" data-id="s2-3">2.3 AA Controlled Voice（克隆音色）榜 Top 18</a></li><li class="lv3"><a href="#s2-4" data-id="s2-4">2.4 TTS Arena V2（社区盲听，抓取于 2026-10-14）</a></li><li class="lv3"><a href="#s2-5" data-id="s2-5">2.5 HF Open TTS Leaderboard（客观指标，结果版本 2026-09-30，第三方转述）</a></li></ul></li><li class="lv2 has-sub"><a href="#s3" data-id="s3">3. 逐模型详解</a><ul><li class="lv3 has-sub"><a href="#s3-a" data-id="s3-a">3.A 商业 / 闭源 API</a><ul><li class="lv4"><a href="#s3-a-1" data-id="s3-a-1">3.A.1 ElevenLabs Eleven v4 / Eleven v4 Turbo</a></li><li class="lv4"><a href="#s3-a-2" data-id="s3-a-2">3.A.2 阿里 Qwen-Audio-3.1-TTS（Plus / Flash / Next）与 Qwen-Audio-3.0-TTS-Plus</a></li><li class="lv4"><a href="#s3-a-3" data-id="s3-a-3">3.A.3 Cartesia Sonic 3.6</a></li><li class="lv4"><a href="#s3-a-4" data-id="s3-a-4">3.A.4 Google Gemini 3.8 Flash TTS / Flash-Lite TTS</a></li><li class="lv4"><a href="#s3-a-5" data-id="s3-a-5">3.A.5 Inworld Realtime TTS-2 / TTS-2 Flash</a></li><li class="lv4"><a href="#s3-a-6" data-id="s3-a-6">3.A.6 MiniMax Speech 2.8（HD / Turbo）</a></li><li class="lv4"><a href="#s3-a-7" data-id="s3-a-7">3.A.7 字节跳动 豆包语音合成模型 2.0（Doubao-Seed-TTS 2.0）/ 声音复刻模型 2.0</a></li><li class="lv4"><a href="#s3-a-8" data-id="s3-a-8">3.A.8 阶跃星辰 StepAudio 2.5 TTS</a></li><li class="lv4"><a href="#s3-a-9" data-id="s3-a-9">3.A.9 其他值得关注的商业模型（简述）</a></li></ul></li><li class="lv3 has-sub"><a href="#s3-b" data-id="s3-b">3.B 开源 / 开放权重</a><ul><li class="lv4"><a href="#s3-b-1" data-id="s3-b-1">3.B.1 Fish Audio Drama 3（Preview）</a></li><li class="lv4"><a href="#s3-b-2" data-id="s3-b-2">3.B.2 Fish Audio S2 Pro</a></li><li class="lv4"><a href="#s3-b-3" data-id="s3-b-3">3.B.3 Breeze TTS 2（BreezeBlue）</a></li><li class="lv4"><a href="#s3-b-4" data-id="s3-b-4">3.B.4 Qwen3-TTS（阿里通义，开源版）</a></li><li class="lv4"><a href="#s3-b-5" data-id="s3-b-5">3.B.5 Fun-CosyVoice 3.0（阿里通义 FunAudioLLM）</a></li><li class="lv4"><a href="#s3-b-6" data-id="s3-b-6">3.B.6 VoxCPM2（OpenBMB / 面壁智能）</a></li><li class="lv4"><a href="#s3-b-7" data-id="s3-b-7">3.B.7 IndexTTS-2 / IndexTTS-2.5（B 站 Index 团队）</a></li><li class="lv4"><a href="#s3-b-8" data-id="s3-b-8">3.B.8 OmniVoice（k2-fsa / 新一代 Kaldi 团队）</a></li><li class="lv4"><a href="#s3-b-9" data-id="s3-b-9">3.B.9 Higgs TTS 3（Boson AI）</a></li><li class="lv4"><a href="#s3-b-10" data-id="s3-b-10">3.B.10 Voxtral TTS（Mistral AI）</a></li><li class="lv4"><a href="#s3-b-11" data-id="s3-b-11">3.B.11 Step-Audio-EditX（阶跃星辰）</a></li><li class="lv4"><a href="#s3-b-12" data-id="s3-b-12">3.B.12 Chatterbox 家族（Resemble AI）</a></li><li class="lv4"><a href="#s3-b-13" data-id="s3-b-13">3.B.13 VibeVoice（微软）</a></li><li class="lv4"><a href="#s3-b-14" data-id="s3-b-14">3.B.14 Kyutai Pocket TTS</a></li><li class="lv4"><a href="#s3-b-15" data-id="s3-b-15">3.B.15 Supertonic 3（Supertone）</a></li><li class="lv4"><a href="#s3-b-16" data-id="s3-b-16">3.B.16 NVIDIA Magpie TTS Multilingual 357M</a></li><li class="lv4"><a href="#s3-b-17" data-id="s3-b-17">3.B.17 Kokoro-82M（hexgrad，基线，窗口外）</a></li><li class="lv4"><a href="#s3-b-18" data-id="s3-b-18">3.B.18 Raon-OpenTTS（KRAFTON）</a></li></ul></li></ul></li><li class="lv2"><a href="#s4" data-id="s4">4. Seed-TTS-eval 客观指标汇总（WER/CER 越低越好，SIM 越高越好）</a></li><li class="lv2"><a href="#s5" data-id="s5">5. 综合对比表</a></li><li class="lv2 has-sub"><a href="#s6" data-id="s6">6. 场景推荐</a><ul><li class="lv3"><a href="#s6-1" data-id="s6-1">6.1 中文实时语音 Agent（客服、陪伴、语音助手）</a></li><li class="lv3"><a href="#s6-2" data-id="s6-2">6.2 有声书 / 长篇内容 / 广播剧</a></li><li class="lv3"><a href="#s6-3" data-id="s6-3">6.3 声音克隆</a></li><li class="lv3"><a href="#s6-4" data-id="s6-4">6.4 端侧 / 离线 / CPU</a></li><li class="lv3"><a href="#s6-5" data-id="s6-5">6.5 低成本自托管（以商用合规为先）</a></li><li class="lv3"><a href="#s6-6" data-id="s6-6">6.6 多语种 / 出海</a></li></ul></li><li class="lv2"><a href="#s7" data-id="s7">7. 风险与注意事项</a></li><li class="lv2"><a href="#s8" data-id="s8">8. 来源清单（均为本次实际抓取；arXiv 链接取自官方 README、卡片或博客，Raon 的摘要页已直接抓取）</a></li></ul></nav>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <main id="main">
+    <header class="hero" id="top">
+      <h1>近一年主流 TTS（文本转语音）模型调研报告（开源 + 商业）</h1>
+      <div class="intro"><blockquote>
+<p>撰写日期：2026-10-14（北京时间）｜覆盖窗口：约 2025-10 ~ 2026-10。窗口外但仍作为基线或对照收录的模型（正文中均已标注“窗口外”）：Kokoro-82M（2025-01）、Chatterbox 原版（2025-05）、VibeVoice-1.5B（2025-08）、IndexTTS-2（2025-09-08）、VoxCPM-0.5B（2025-09）、Seed-TTS（2024，仅作评测参照）。
+写作原则：<strong>所有数字、日期、价格都来自本次实际抓取的页面</strong>（链接见每节及文末“来源清单”）。凡是厂商自报、第三方转述或本次没能核实的内容，都会单独标出来。榜单 Elo 会随投票实时变化，本文用的是 2026-10-14 抓取时的快照。</p>
+</blockquote>
+</div>
+      <div class="stats" id="stats"></div>
+    </header>
+    <section class="sec lv2" data-id="s0"><h2 class="sec-h" id="s0"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">0. 一页结论（TL;DR）</span><a class="anchor" href="#s0" aria-label="本节链接">#</a></h2><div class="sec-b"><ol>
+<li><strong>人类盲听（Artificial Analysis Provider Voice 榜）商业第一梯队</strong>：Eleven v4 Turbo（1330）≈ Eleven v4（1328）&gt; Qwen-Audio-3.1-TTS-Plus（1300）&gt; Cartesia Sonic 3.6（1286）&gt; Gemini 3.8 Flash TTS（1274）。这几款全是 2026 年 8~9 月发布的。</li>
+<li><strong>性价比突出的是阿里 Qwen-Audio-3.1-TTS-Plus</strong>：AA 标价 $19.3/百万字符，在 Provider Voice 榜排第 3，在 Controlled Voice（克隆音色）榜排第 2；Eleven v4 标价 $80/百万字符。如果只看单价，Simba 3.2（$6.6，Provider 第 9）和 Inworld Realtime TTS-2 Flash（$10.4，Provider 第 13）更便宜。</li>
+<li><strong>开放权重榜首换成了 Fish Audio Drama 3 Preview</strong>（AA 开放权重榜 1243，2026-10），第二是 <strong>Breeze TTS 2</strong>（1221）。两者都<strong>不能无条件商用</strong>：Drama 3 只对年营收低于 50 万美元的主体免费商用，Breeze TTS 2 仅限研究和非商用。</li>
+<li><strong>可放心商用的开源中文主力</strong>：<strong>Qwen3-TTS</strong>（Apache-2.0，10 种语言，3 秒克隆，支持指令控制；官方称流式首包最低 97ms）、<strong>VoxCPM2</strong>（Apache-2.0，30 种语言 + 9 种中文方言，48kHz 输出）、<strong>Fun-CosyVoice3-0.5B-2512</strong>（Apache-2.0，9 种语言 + 18 种以上方言，双向流式约 150ms）。</li>
+<li><strong>客观指标（Seed-TTS-eval）</strong>：<a class="xref" href="#s4">§4</a> 表中各开源模型的 test-zh CER 在 0.54~1.22% 之间；test-en WER 在近一年发布的模型里多为 0.99~1.84%，IndexTTS2 为 2.23、VibeVoice-Realtime 为 2.05、窗口外的 VibeVoice-1.5B 为 3.04。闭源参考 Seed-TTS 为 zh 1.12 / en 2.25。也就是说，开源模型的中文 CER 已普遍不高于 Seed-TTS，英文 WER 大多更低。不过这些数字是各家自报或互相转引的，口径不统一，同一模型在不同 README 里的数字也可能不同（见 <a class="xref" href="#s4">§4</a>）。</li>
+<li><strong>端侧 / CPU</strong>：Kyutai <strong>Pocket TTS</strong>（100M 参数，2 核 CPU，首包约 200ms）、<strong>Kokoro-82M</strong>（Apache-2.0，HF Open TTS 英文 WER 第 1）、<strong>Supertonic 3</strong>（31 种语言，不含中文，OpenRAIL-M）、<strong>Chatterbox-Nano</strong>（MIT）都偏英文和欧洲语言。Kokoro 虽然带 8 个普通话音色，但不支持克隆。<strong>中文端侧目前还缺少经过公开验证的成熟轻量模型</strong>。</li>
+<li><strong>注意许可证</strong>：OmniVoice（权重 CC-BY-NC，HF Open TTS 9 语言榜第 1）、Fish S2 Pro（研究许可；Seed-TTS-eval zh 0.54 / en 0.99，转引）、Higgs TTS 3（非商用 + 创作者授权；HF Open TTS 9 语言克隆第 2）在客观指标上表现突出；Breeze TTS 2（非商用）和 Voxtral TTS（CC-BY-NC-4.0）主要在人类盲听 Elo 上有优势（AA 开放权重榜分别为 1221 和 1088），客观榜上并不突出（Breeze 在 HF Open TTS 英文 WER 为 1.72，排第 9；Voxtral 本次没有找到 WER/CER）。<strong>这些模型都不能直接放进商业产品</strong>。</li>
+</ol>
+</div></section><section class="sec lv2" data-id="s1"><h2 class="sec-h" id="s1"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">1. 方法与口径说明</span><a class="anchor" href="#s1" aria-label="本节链接">#</a></h2><div class="sec-b"><div class="table-wrap"><table class="plain">
+<thead>
+<tr>
+<th>数据源</th>
+<th>类型</th>
+<th>本次如何使用</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice" target="_blank" rel="noopener noreferrer">Artificial Analysis（AA）Provider Voice 榜</a></td>
+<td>人类盲听 Elo（各家自带音色）</td>
+<td>2026-10-14 抓取全表</td>
+<td>以 Zonos-v0.1=1000 为锚点；Elo 实时变动，X 上不同日期的帖子引用的数值不同（如 Eleven v4 1319/1321/1328）</td>
+</tr>
+<tr>
+<td><a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice/open-weights" target="_blank" rel="noopener noreferrer">AA 开放权重榜</a></td>
+<td>同上，只看开放权重模型</td>
+<td>已抓取</td>
+<td>开放权重 ≠ 可商用</td>
+</tr>
+<tr>
+<td><a href="https://artificialanalysis.ai/text-to-speech/leaderboard/controlled-voice" target="_blank" rel="noopener noreferrer">AA Controlled Voice 榜</a></td>
+<td>所有模型用同样 8 个克隆音色（4 美音 + 4 英音）</td>
+<td>已抓取</td>
+<td>衡量的是克隆音色下的自然度；锚点为 OpenAudio S1=1000；只有英语口音</td>
+</tr>
+<tr>
+<td><a href="https://tts-agi-tts-arena-v2.hf.space/api/leaderboard" target="_blank" rel="noopener noreferrer">TTS Arena V2</a></td>
+<td>社区盲听 Elo</td>
+<td>通过其公开 <code>/api/leaderboard</code> JSON 抓取</td>
+<td><strong>还没收录</strong> Eleven v4、Sonic 3.6、Qwen-Audio-3.x 等最新旗舰，参考价值有限</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/blog/open-tts-leaderboard" target="_blank" rel="noopener noreferrer">HF Open TTS Leaderboard</a>（2026-09-30 发布）</td>
+<td>客观指标：WER/CER（Qwen3-ASR 转写）、RTFx、TTFA、SIM</td>
+<td>博客已抓取；具体数字来自第三方媒体 <a href="https://www.creativeainews.com/articles/open-tts-leaderboard-license-cpu-test-2026/" target="_blank" rel="noopener noreferrer">creativeainews</a> 的转述（结果版本 30-09-2026）</td>
+<td>只衡量可懂度、速度和相似度，<strong>不衡量自然度</strong></td>
+</tr>
+<tr>
+<td><a href="https://github.com/BytedanceSpeech/seed-tts-eval/" target="_blank" rel="noopener noreferrer">Seed-TTS-eval</a></td>
+<td>客观：test-en WER（Whisper-large-v3）、test-zh CER（Paraformer-zh）、SIM（WavLM-large）</td>
+<td>引用各模型 README 自报或转引的数字</td>
+<td>各家复现条件不同，<strong>只能横向粗比</strong>；SIM 有的写成百分数（75.3），有的写成小数（0.749）</td>
+</tr>
+<tr>
+<td>厂商博客 / 文档 / 定价页</td>
+<td>发布日期、功能、延迟、价格</td>
+<td>逐一抓取</td>
+<td>延迟数字几乎都是<strong>厂商自报</strong>，测试硬件和测量口径各不相同</td>
+</tr>
+<tr>
+<td>X（Twitter）</td>
+<td>发布动态</td>
+<td>用 x 命名空间检索</td>
+<td>只用来交叉印证 AA 官方账号的榜单播报，不作为数字主来源</td>
+</tr>
+</tbody>
+</table></div>
+</div></section><section class="sec lv2" data-id="s2"><h2 class="sec-h" id="s2"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">2. 榜单速览</span><a class="anchor" href="#s2" aria-label="本节链接">#</a></h2><div class="sec-b"><section class="sec lv3" data-id="s2-1"><h3 class="sec-h" id="s2-1"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">2.1 AA Provider Voice 榜 Top 20（2026-10-14 快照）</span><a class="anchor" href="#s2-1" aria-label="本节链接">#</a></h3><div class="sec-b"><div class="widget" id="top20-widget"><div class="w-head"><span class="w-title">交互：可点击表头排序 · 下方为 Elo × 价格散点图</span></div><div class="table-wrap"><table class="sortable data" id="top20-table"><thead><tr><th data-k="0" data-type="num" tabindex="0" aria-sort="none">#<span class="sort-ind"></span></th><th data-k="1" data-type="text" tabindex="0" aria-sort="none">模型<span class="sort-ind"></span></th><th data-k="2" data-type="num" tabindex="0" aria-sort="none">Elo（±95%CI）<span class="sort-ind"></span></th><th data-k="3" data-type="text" tabindex="0" aria-sort="none">发布<span class="sort-ind"></span></th><th data-k="4" data-type="num" tabindex="0" aria-sort="none">AA 标注 API 价（/百万字符）<span class="sort-ind"></span></th></tr></thead><tbody><tr><td data-v="1">1</td><td data-v="Eleven v4 Turbo">Eleven v4 Turbo</td><td data-v="1330"><span class="elo-txt">1330±18</span><span class="elo-bar" aria-hidden="true"><i style="width:94.7%"></i><b style="left:85.3%;width:18.9%"></b></span></td><td data-v="2026-09">2026-09</td><td data-v="40.0">$40.0</td></tr><tr><td data-v="2">2</td><td data-v="Eleven v4">Eleven v4</td><td data-v="1328"><span class="elo-txt">1328±17</span><span class="elo-bar" aria-hidden="true"><i style="width:93.7%"></i><b style="left:84.7%;width:17.9%"></b></span></td><td data-v="2026-09">2026-09</td><td data-v="80.0">$80.0</td></tr><tr><td data-v="3">3</td><td data-v="Qwen-Audio-3.1-TTS-Plus">Qwen-Audio-3.1-TTS-Plus</td><td data-v="1300"><span class="elo-txt">1300±17</span><span class="elo-bar" aria-hidden="true"><i style="width:78.9%"></i><b style="left:70.0%;width:17.9%"></b></span></td><td data-v="2026-09">2026-09</td><td data-v="19.3">$19.3</td></tr><tr><td data-v="4">4</td><td data-v="Sonic 3.6（Cartesia）">Sonic 3.6（Cartesia）</td><td data-v="1286"><span class="elo-txt">1286±15</span><span class="elo-bar" aria-hidden="true"><i style="width:71.6%"></i><b style="left:63.7%;width:15.8%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="49.0">$49.0</td></tr><tr><td data-v="5">5</td><td data-v="Gemini 3.8 Flash TTS">Gemini 3.8 Flash TTS</td><td data-v="1274"><span class="elo-txt">1274±15</span><span class="elo-bar" aria-hidden="true"><i style="width:65.3%"></i><b style="left:57.4%;width:15.8%"></b></span></td><td data-v="2026-09">2026-09</td><td data-v="16.5">$16.5</td></tr><tr><td data-v="6">6</td><td data-v="Qwen-Audio-3.0-TTS-Plus">Qwen-Audio-3.0-TTS-Plus</td><td data-v="1268"><span class="elo-txt">1268±15</span><span class="elo-bar" aria-hidden="true"><i style="width:62.1%"></i><b style="left:54.2%;width:15.8%"></b></span></td><td data-v="2026-09">2026-09</td><td data-v="19.3">$19.3</td></tr><tr><td data-v="7">7</td><td data-v="Realtime TTS-2（Inworld）">Realtime TTS-2（Inworld）</td><td data-v="1260"><span class="elo-txt">1260±15</span><span class="elo-bar" aria-hidden="true"><i style="width:57.9%"></i><b style="left:50.0%;width:15.8%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="20.8">$20.8</td></tr><tr><td data-v="8">8</td><td data-v="Gemini 3.8 Flash-Lite TTS">Gemini 3.8 Flash-Lite TTS</td><td data-v="1248"><span class="elo-txt">1248±14</span><span class="elo-bar" aria-hidden="true"><i style="width:51.6%"></i><b style="left:44.2%;width:14.7%"></b></span></td><td data-v="2026-09">2026-09</td><td data-v="11.0">$11.0</td></tr><tr><td data-v="9">9</td><td data-v="Simba 3.2（Speechify）">Simba 3.2（Speechify）</td><td data-v="1245"><span class="elo-txt">1245±13</span><span class="elo-bar" aria-hidden="true"><i style="width:50.0%"></i><b style="left:43.2%;width:13.7%"></b></span></td><td data-v="2026-07">2026-07</td><td data-v="6.6">$6.6</td></tr><tr class="ow"><td data-v="10">10</td><td data-v="Fish Audio Drama 3 Preview（开放权重）">Fish Audio Drama 3 Preview（开放权重）</td><td data-v="1243"><span class="elo-txt">1243±16</span><span class="elo-bar" aria-hidden="true"><i style="width:48.9%"></i><b style="left:40.5%;width:16.8%"></b></span></td><td data-v="2026-10">2026-10</td><td data-v="15.0">$15.0</td></tr><tr class="ow"><td data-v="11">11</td><td data-v="Breeze TTS 2（开放权重）">Breeze TTS 2（开放权重）</td><td data-v="1221"><span class="elo-txt">1221±14</span><span class="elo-bar" aria-hidden="true"><i style="width:37.4%"></i><b style="left:30.0%;width:14.7%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="34.0">$34.0</td></tr><tr><td data-v="12">12</td><td data-v="Luna TTS">Luna TTS</td><td data-v="1218"><span class="elo-txt">1218±12</span><span class="elo-bar" aria-hidden="true"><i style="width:35.8%"></i><b style="left:29.5%;width:12.6%"></b></span></td><td data-v="2026-06">2026-06</td><td data-v="15.0">$15.0</td></tr><tr><td data-v="13">13</td><td data-v="Realtime TTS-2 Flash（Inworld）">Realtime TTS-2 Flash（Inworld）</td><td data-v="1218"><span class="elo-txt">1218±14</span><span class="elo-bar" aria-hidden="true"><i style="width:35.8%"></i><b style="left:28.4%;width:14.7%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="10.4">$10.4</td></tr><tr><td data-v="14">14</td><td data-v="Gemini 3.1 Flash TTS">Gemini 3.1 Flash TTS</td><td data-v="1213"><span class="elo-txt">1213±11</span><span class="elo-bar" aria-hidden="true"><i style="width:33.2%"></i><b style="left:27.4%;width:11.6%"></b></span></td><td data-v="2026-04">2026-04</td><td data-v="18.3">$18.3</td></tr><tr><td data-v="15">15</td><td data-v="StepAudio 2.5 TTS（Aug 2026）">StepAudio 2.5 TTS（Aug 2026）</td><td data-v="1211"><span class="elo-txt">1211±15</span><span class="elo-bar" aria-hidden="true"><i style="width:32.1%"></i><b style="left:24.2%;width:15.8%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="85.0">$85.0</td></tr><tr><td data-v="16">16</td><td data-v="v3 Conversational（ElevenLabs）">v3 Conversational（ElevenLabs）</td><td data-v="1209"><span class="elo-txt">1209±14</span><span class="elo-bar" aria-hidden="true"><i style="width:31.1%"></i><b style="left:23.7%;width:14.7%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="50.0">$50.0</td></tr><tr><td data-v="17">17</td><td data-v="Sonic 3.5">Sonic 3.5</td><td data-v="1193"><span class="elo-txt">1193±12</span><span class="elo-bar" aria-hidden="true"><i style="width:22.6%"></i><b style="left:16.3%;width:12.6%"></b></span></td><td data-v="2026-05">2026-05</td><td data-v="49.0">$49.0</td></tr><tr><td data-v="18">18</td><td data-v="Fish Audio S2.1 Pro（Oct 2026）">Fish Audio S2.1 Pro（Oct 2026）</td><td data-v="1192"><span class="elo-txt">1192±15</span><span class="elo-bar" aria-hidden="true"><i style="width:22.1%"></i><b style="left:14.2%;width:15.8%"></b></span></td><td data-v="2026-10">2026-10</td><td data-v="15.0">$15.0</td></tr><tr><td data-v="19">19</td><td data-v="Soniox TTS Real-Time v2">Soniox TTS Real-Time v2</td><td data-v="1180"><span class="elo-txt">1180±11</span><span class="elo-bar" aria-hidden="true"><i style="width:15.8%"></i><b style="left:10.0%;width:11.6%"></b></span></td><td data-v="2026-08">2026-08</td><td data-v="14.2">$14.2</td></tr><tr><td data-v="20">20</td><td data-v="Eleven v3">Eleven v3</td><td data-v="1176"><span class="elo-txt">1176±11</span><span class="elo-bar" aria-hidden="true"><i style="width:13.7%"></i><b style="left:7.9%;width:11.6%"></b></span></td><td data-v="2026-02">2026-02</td><td data-v="100.0">$100.0</td></tr></tbody></table></div><figure class="chart" id="top20-chart"><figcaption>Elo（±95%CI）与 AA 标注 API 价（对数坐标，美元/百万字符）。数据即上表 20 行；<span class="lg-ow">●</span> 开放权重 <span class="lg-c">●</span> 其他。</figcaption><div class="chart-box"></div></figure></div><p>同一张表里的其他相关条目：MiniMax Speech 2.8 HD 1175（$100）、Speech 2.8 Turbo 1152（$60）、Fish Audio S2 Pro 1118、Step Audio EditX 1097、Voxtral TTS 1088、Magpie-Multilingual 357M 1065、Kokoro 82M 1063（表格四舍五入显示为 $0.7，AA FAQ 给出精确值 $0.65/百万字符，全榜最便宜）、Higgs Audio V3 TTS 1039、Chatterbox 1026、VibeVoice 1.5B 957。AA 上名为 “Qwen3 TTS” 的条目（2026-01，933，$13.8）在 Provider 总榜排第 87，“Qwen3 TTS Flash”（2025-09，943，$11.0）排第 84。两者<strong>都不在</strong> AA 开放权重榜的 17 个模型里（见 <a class="xref" href="#s2-2">§2.2</a>），说明 AA 没有把它们归为开放权重条目。它们分别对应哪个具体 API 版本，本文<strong>未核实</strong>。
+来源：<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice" target="_blank" rel="noopener noreferrer">AA Provider Voice</a></p>
+</div></section><section class="sec lv3" data-id="s2-2"><h3 class="sec-h" id="s2-2"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">2.2 AA 开放权重榜（2026-10-14，全部 17 个模型）</span><a class="anchor" href="#s2-2" aria-label="本节链接">#</a></h3><div class="sec-b"><p>1 Fish Audio Drama 3 Preview 1243 → 2 Breeze TTS 2 1221 → 3 Fish Audio S2 Pro 1118 → 4 Step Audio EditX（Mar 2026）1097 → 5 Voxtral TTS 1088 → 6 Magpie-Multilingual 357M 1065 → 7 Kokoro 82M v1.0 1063 → 8 Maya1 1047 → 9 OpenAudio S1 Mini 1045 → 10 Higgs Audio V3 TTS 1039 → 11 Chatterbox 1026 → 12 Zonos-v0.1 1000（锚点）→ 13 VibeVoice 1.5B 957 → 14 OpenVoice v2 956 → 15 XTTS v2 916 → 16 StyleTTS 2 895 → 17 MetaVoice v1 848。</p>
+<p>AA 的说明是“97 个模型中 17 个为开放权重”。上面已经列出全部 17 个，<strong>其中没有 Qwen3-TTS、Fun-CosyVoice3、VoxCPM2、IndexTTS 这几个开源模型</strong>，所以它们没有 AA 的人类盲听分。总榜上的 “Qwen3 TTS”（933）和 “Qwen3 TTS Flash”（943）也不在这 17 个之中，见 <a class="xref" href="#s2-1">§2.1</a>。来源：<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice/open-weights" target="_blank" rel="noopener noreferrer">AA 开放权重榜</a>（2026-10-14 重新抓取核对）</p>
+</div></section><section class="sec lv3" data-id="s2-3"><h3 class="sec-h" id="s2-3"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">2.3 AA Controlled Voice（克隆音色）榜 Top 18</span><a class="anchor" href="#s2-3" aria-label="本节链接">#</a></h3><div class="sec-b"><p>1 HeyGen Voice 1195（2026-10，$30）→ 2 Qwen-Audio-3.1-TTS-Plus 1180 → 3 Eleven v4 Turbo 1163 → 4 Eleven v4 1158 → 5 Sonic 3.6 1143 → 6 Realtime TTS-2 1140 → 7 Qwen-Audio-3.0-TTS-Plus 1125 → 8 Sonic 3.5 1116 → 9 Simba 3.2 1088（$6.6）→ 10 StepAudio 2.5 TTS 1074（AA 标注发布于 Apr 2026）→ 11 Eleven v3 1072 → 12 Realtime TTS-2 Flash 1072（$10.4）→ <strong>13 Gemini 3.8 Flash-Lite TTS 1058±14（$11.0）→ 14 Fish Audio Drama 3 Preview 1058±15</strong> → 15 v3 Conversational 1057 → 16 SpaceXAI TTS 1055 → 17 Gradium TTS（Sep 2026）1054 → <strong>18 Gemini 3.8 Flash TTS 1048±14（$16.5）</strong>。
+其他：Speech 2.8 HD 1019（#20）、Breeze TTS 2 1017（#23）、Voxtral TTS 1002（#26）、Fish S2 Pro 1001（#27）、Higgs Audio V3 960（#34）、Chatterbox 929（#38），共 43 个模型。
+来源：<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/controlled-voice" target="_blank" rel="noopener noreferrer">AA Controlled Voice</a>（2026-10-14 重新抓取核对）；AA 官方 X 账号播报 HeyGen Voice 登顶：<a href="https://x.com/ArtificialAnlys/status/2108608255387935199" target="_blank" rel="noopener noreferrer">x.com/ArtificialAnlys/status/2108608255387935199</a></p>
+<blockquote>
+<p>解读：Gemini 3.8 Flash TTS 在 Provider Voice（自带音色）榜排第 5，在克隆音色榜只排第 18；Qwen-Audio-3.1-TTS-Plus 在两张榜上都在前 3，说明<strong>它的克隆效果和自带音色都很强</strong>。</p>
+</blockquote>
+</div></section><section class="sec lv3" data-id="s2-4"><h3 class="sec-h" id="s2-4"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">2.4 TTS Arena V2（社区盲听，抓取于 2026-10-14）</span><a class="anchor" href="#s2-4" aria-label="本节链接">#</a></h3><div class="sec-b"><p>公开 API 返回的 <code>rank</code> 字段与 Elo 数值大小的顺序<strong>并不一致</strong>，API 也没有说明排序依据（未核实），所以下面两种顺序都列出：</p>
+<div class="table-wrap"><table class="plain sortable-auto">
+<thead>
+<tr>
+<th>API rank</th>
+<th>模型</th>
+<th>Elo ± 不确定度</th>
+<th>tier</th>
+<th>票数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>CastleFlow v1.0</td>
+<td>1561 ± 21</td>
+<td>S</td>
+<td>1643</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Inworld TTS MAX</td>
+<td>1558 ± 21</td>
+<td>S</td>
+<td>1477</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Aurora（匿名模型）</td>
+<td>1566 ± 31</td>
+<td>A</td>
+<td>571</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Papla P1</td>
+<td>1550 ± 25</td>
+<td>A</td>
+<td>958</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Inworld TTS</td>
+<td>1542 ± 19</td>
+<td>B</td>
+<td>1963</td>
+</tr>
+<tr>
+<td>6</td>
+<td>star-june-2026</td>
+<td>1540 ± 33</td>
+<td>B</td>
+<td>494</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Hume Octave</td>
+<td>1526 ± 21</td>
+<td>B</td>
+<td>1141</td>
+</tr>
+<tr>
+<td>8</td>
+<td>MiniMax Speech 2.8 HD</td>
+<td>1540 ± 33</td>
+<td>（无）</td>
+<td>502</td>
+</tr>
+<tr>
+<td>0（未正式排名）</td>
+<td>Vocu V3.0</td>
+<td>1564 ± 22</td>
+<td>（无）</td>
+<td>1444</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>按 Elo 数值排序</strong>：Aurora 1566 &gt; Vocu V3.0 1564 &gt; CastleFlow 1561 &gt; Inworld TTS MAX 1558 &gt; Papla P1 1550 &gt; Inworld TTS 1542 &gt; MiniMax Speech 2.8 HD 1540 = star-june-2026 1540 &gt; Hume Octave 1526。</li>
+<li>开源模型中，Chatterbox 为 1481（rank 28），Kokoro v1.0 为 1478（rank 29）。</li>
+<li><strong>这个榜单还没有收录 Eleven v4、Sonic 3.6、Qwen-Audio-3.x、Gemini 3.8 等新模型</strong>，所以本文主要参考 AA 的榜单。来源：<a href="https://tts-agi-tts-arena-v2.hf.space/api/leaderboard" target="_blank" rel="noopener noreferrer">TTS Arena V2 API</a></li>
+</ul>
+</div></section><section class="sec lv3" data-id="s2-5"><h3 class="sec-h" id="s2-5"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">2.5 HF Open TTS Leaderboard（客观指标，结果版本 2026-09-30，第三方转述）</span><a class="anchor" href="#s2-5" aria-label="本节链接">#</a></h3><div class="sec-b"><ul>
+<li><strong>英文默认音色 WER</strong>：Kokoro-82M 1.46 → Supertonic 3 1.54 → Fish S2 Pro 1.58 → OmniVoice 1.61 → pocket-tts 1.62 → Fun-CosyVoice3 0.5B 1.68 → Chatterbox 1.70 → Qwen3-TTS 1.7B CustomVoice 1.71 → Breeze-TTS-2 1.72 → VibeVoice-Realtime 0.5B 1.82。</li>
+<li><strong>9 种语言默认音色平均 WER</strong>：OmniVoice 3.25 → Fish S2 Pro 3.68 → Qwen3-TTS 1.7B CustomVoice 4.11。</li>
+<li><strong>9 种语言克隆（WER / SIM）</strong>：OmniVoice 3.52/74.77 → Higgs TTS 3 3.74/69.08 → Qwen3-TTS 1.7B Base 3.92/72.92；在该视图里 VoxCPM2 的 SIM 最高（75.19）。</li>
+<li><strong>流式</strong>：Qwen3-TTS 1.7B 用 Photon 引擎在 H200 上 TTFA 为 18.3ms，用 faster-qwen3-tts 为 309.9ms，说明<strong>推理引擎对延迟的影响非常大</strong>；CPU 上 pocket-tts TTFA 272.7ms，Kokoro 913.4ms。</li>
+<li>来源：HF 官方博客 <a href="https://huggingface.co/blog/open-tts-leaderboard" target="_blank" rel="noopener noreferrer">Open TTS Leaderboard</a>（方法、Top 模型名）；具体数值转引自 <a href="https://www.creativeainews.com/articles/open-tts-leaderboard-license-cpu-test-2026/" target="_blank" rel="noopener noreferrer">creativeainews</a>（第三方，作者称数据通过 Space 的 API 拉取）。</li>
+</ul>
+</div></section></div></section><section class="sec lv2" data-id="s3"><h2 class="sec-h" id="s3"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">3. 逐模型详解</span><a class="anchor" href="#s3" aria-label="本节链接">#</a></h2><div class="sec-b"><div class="card-filter" id="card-filter"><span class="seg" id="card-seg"><button type="button" data-v="all" aria-pressed="true">全部</button><button type="button" data-v="s3-a" aria-pressed="false">商业 / 闭源</button><button type="button" data-v="s3-b" aria-pressed="false">开源 / 开放权重</button></span><input type="search" id="card-q" placeholder="筛选模型卡片（名称、许可、语言…）" aria-label="筛选模型卡片"><span class="count" id="card-count"></span><button type="button" class="btn" id="cards-collapse">全部折叠卡片</button></div><section class="sec lv3" data-id="s3-a"><h3 class="sec-h" id="s3-a"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">3.A 商业 / 闭源 API</span><a class="anchor" href="#s3-a" aria-label="本节链接">#</a></h3><div class="sec-b"><div class="cards"><article class="card" id="s3-a-1" data-group="s3-a" data-search="3.A.1 ElevenLabs Eleven v4 / Eleven v4 Turbo"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.1</span><h4>ElevenLabs Eleven v4 / Eleven v4 Turbo</h4><a class="anchor" href="#s3-a-1">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="0" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：ElevenLabs，2026-09-28（<a href="https://elevenlabs.io/blog/eleven-v4" target="_blank" rel="noopener noreferrer">官方博客</a>、<a href="https://techcrunch.com/2026/09/28/elevenlabs-new-v4-speech-model-supports-more-expression-control-and-90-languages/" target="_blank" rel="noopener noreferrer">TechCrunch</a>）。</li>
+<li><strong>类型</strong>：商业闭源 API。</li>
+<li><strong>语言</strong>：90+ 种。TechCrunch 报道称，官方表示质量提升最大的是日语、巴西葡语、普通话和粤语。中文的实际质量没有第三方中文盲测，<strong>未核实</strong>。</li>
+<li><strong>克隆</strong>：Instant Voice Clone 只需约 10 秒音频；v3 不支持的 Professional Voice Clone 在 v4 中恢复。克隆需要音色所有者验证同意（<a href="https://elevenlabs.io/v4" target="_blank" rel="noopener noreferrer">v4 页面</a>）。</li>
+<li><strong>情感控制</strong>：内联 Audio Tags（如 <code>[whispers]</code>、<code>[laughs]</code>、<code>[door slams]</code>），可以叠加多个标签；v4 中禁用了 SSML。</li>
+<li><strong>长篇 / 多说话人</strong>（<a href="https://elevenlabs.io/v4" target="_blank" rel="noopener noreferrer">v4 页面</a>）：官方称内置多说话人和音效（“multiple speakers and sound effects built-in”）。“Context stitching” 用于在任意长度的脚本中保持节奏和演绎一致，官方说法是“整本有声书听起来像一次录完”。重复生成同一句时，说话人音色保持稳定。</li>
+<li><strong>延迟 / 流式</strong>：v4 Turbo 中位推理延迟约 100ms，首次出声约 150ms，支持双向流式（官方自报）。单次生成上限 10,000 字符。</li>
+<li><strong>价格</strong>：AA 标注 v4 Turbo $40/百万字符、v4 $80/百万字符；免费档每月 10,000 credits，付费档 $6/月起（<a href="https://elevenlabs.io/v4" target="_blank" rel="noopener noreferrer">v4 页面</a>）。</li>
+<li><strong>榜单</strong>：AA Provider Voice 第 1 / 第 2（1330 / 1328）；Controlled Voice 第 3 / 第 4（1163 / 1158）。</li>
+</ul>
+</div></article><article class="card" id="s3-a-2" data-group="s3-a" data-search="3.A.2 阿里 Qwen-Audio-3.1-TTS（Plus / Flash / Next）与 Qwen-Audio-3.0-TTS-Plus"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.2</span><h4>阿里 Qwen-Audio-3.1-TTS（Plus / Flash / Next）与 Qwen-Audio-3.0-TTS-Plus</h4><a class="anchor" href="#s3-a-2">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="1" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：阿里千问 / 阿里云百炼。Qwen-Audio-3.1 系列发布于 2026-09-23（<a href="https://www.ithome.com/1/006/280.htm" target="_blank" rel="noopener noreferrer">IT之家</a>）。</li>
+<li><strong>类型</strong>：商业 API（百炼）。注意它和开源的 Qwen3-TTS 不是同一个东西。</li>
+<li><strong>语言</strong>：多语种和中文方言；IT之家称支持“同一音色跨语言合成时的自然迁移”。3.1-Flash 文档写明“支持多种语言和方言”。具体语种和方言列表本次<strong>未核实</strong>。</li>
+<li><strong>克隆 / 情感</strong>：3.0-Plus 文档写明支持 free-style 指令和细粒度标签，可控制情绪、语气、角色、语速、音量；3.1-Flash 文档写明克隆时对带噪声、混响的参考音频更鲁棒。</li>
+<li><strong>延迟 / 流式</strong>：3.1-Flash 面向实时交互，支持流式（WebSocket）。官方文档<strong>没有给出毫秒数</strong>，未核实。</li>
+<li><strong>价格（官方文档原价）</strong>：
+<ul>
+<li>qwen-audio-3.0-tts-plus：北京 <strong>1.4 元/万字符</strong>（约 140 元/百万字符），新加坡 1.49884 元/万字符（<a href="https://help.aliyun.com/zh/model-studio/qwen-audio-3-0-tts-plus" target="_blank" rel="noopener noreferrer">文档</a>）。</li>
+<li>qwen-audio-3.1-tts-flash：输入 1.5 元/百万 Token，输出 12 元/百万 Token（<a href="https://help.aliyun.com/zh/model-studio/qwen-audio-3-1-tts-flash" target="_blank" rel="noopener noreferrer">文档</a>）。</li>
+<li>qwen-audio-3.1-tts-plus：阿里云帮助中心对应 URL 返回 404，<strong>官方人民币价格未核实</strong>；AA 标注 $19.3/百万字符。</li>
+<li>qwen-audio-3.1-tts-next（<a href="https://help.aliyun.com/zh/model-studio/qwen-audio-3-1-tts-next" target="_blank" rel="noopener noreferrer">文档</a>）：统一生成人声、音效、环境音的 Audiogen 模型。文档列出的语种为<strong>中文、英文</strong>，输出为<strong>非流式</strong>；最大输入 3000 字符，单次生成上限为播客 240 秒、其他场景 120 秒；最多 3 条参考音频，每条最长 30 秒。北京价格为输入 6 元/百万 Token、输出 12 元/百万 Token。48kHz 输出这一点出自 IT之家的报道。</li>
+</ul>
+</li>
+<li><strong>关于降价</strong>：IT之家称 3.1 发布时 Qwen-Audio 全线降价，其中“TTS 降价约 70%”。但 AA 对 3.0-Plus 和 3.1-Plus 标的都是 $19.3/百万字符（AA 未标注价格的采集时间）。降价前的价格、降价具体针对哪些型号，以及 3.0-Plus 文档里的 1.4 元/万字符是不是降价后的价格，本次都<strong>未核实</strong>，两者不宜直接对比。</li>
+<li><strong>榜单</strong>：AA Provider Voice 第 3（1300）；Controlled Voice 第 2（1180）。</li>
+</ul>
+</div></article><article class="card" id="s3-a-3" data-group="s3-a" data-search="3.A.3 Cartesia Sonic 3.6"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.3</span><h4>Cartesia Sonic 3.6</h4><a class="anchor" href="#s3-a-3">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="2" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：Cartesia，2026-08-27 GA（<a href="https://www.cartesia.ai/blog/sonic-3.6" target="_blank" rel="noopener noreferrer">官方博客</a>）。</li>
+<li><strong>语言</strong>：44 种语言、61 个 locale（其中 11 个印度语种 locale），500+ 预置音色，支持 Hinglish 混说。中文质量<strong>没有公开数据</strong>。</li>
+<li><strong>克隆</strong>：Instant Voice Clone，官方称对口音的保持能力有提升。</li>
+<li><strong>情感</strong>：官方称美式英语的优势来自“更好的语调、更高的音质和 context-driven emotionality（随上下文调整情感表达）”，并会根据对话上下文调整演绎（厂商自述）。</li>
+<li><strong>延迟</strong>：官方称 “Replies under 90ms”，生成速度 132 字符/秒（v3 Conversational 为 68）。可以通过 Baseten、SageMaker、Together AI 部署在客户自己的云里。</li>
+<li><strong>价格</strong>：AA 标注 $49/百万字符。</li>
+<li><strong>榜单</strong>：AA Provider Voice 第 4（1286），Controlled 第 5（1143）。官方自报美式英语盲测中 92% 优于 Eleven v3（厂商自测）。</li>
+</ul>
+</div></article><article class="card" id="s3-a-4" data-group="s3-a" data-search="3.A.4 Google Gemini 3.8 Flash TTS / Flash-Lite TTS"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.4</span><h4>Google Gemini 3.8 Flash TTS / Flash-Lite TTS</h4><a class="anchor" href="#s3-a-4">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="3" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：Google，2026-09-23（<a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-text-to-speech/" target="_blank" rel="noopener noreferrer">官方博客</a>）。</li>
+<li><strong>语言</strong>：100+ 种语言和方言；2,000+ 预置音色。</li>
+<li><strong>克隆</strong>：Voice replication 需要约 30 秒样本，并且必须提供音色本人的口头同意录音；输出带 SynthID 水印。AI Studio 的复刻功能在伊利诺伊、德州、EEA、英国、瑞士、印度不可用。</li>
+<li><strong>情感 / 导演控制</strong>：自然语言 Voice Design、逐行舞台指示、原生双说话人场景、backchannel 和非语言声音。官方称在 Hume AI Voice Design Benchmark 上排第 1（71.4，厂商引用）。</li>
+<li><strong>长篇</strong>：博客称可以“在数小时连续音频中保持高音质、自然节奏和角色音色，speaker drift 极小”，适合播客和有声书（厂商自述）。</li>
+<li><strong>延迟</strong>：博客<strong>没有给出具体数字</strong>。</li>
+<li><strong>价格</strong>（<a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">官方定价页</a>）：3.8 Flash TTS 付费档在 2026-12-31 前为文本输入 $0.50/百万 tokens、音频输出 $9.00/百万 tokens（约合 $0.00225 / 10 秒音频）；<strong>2027-01-01 起翻倍</strong>（$1.00 / $18.00）。有免费档。AA 折算价为 Flash $16.5/百万字符，Flash-Lite $11/百万字符。</li>
+<li><strong>榜单</strong>（<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice" target="_blank" rel="noopener noreferrer">AA Provider</a>、<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/controlled-voice" target="_blank" rel="noopener noreferrer">AA Controlled</a>，2026-10-14）：Provider Voice 上 Flash 第 5（1274）、Flash-Lite 第 8（1248）；Controlled Voice 上 Flash-Lite 第 13（1058±14）、Flash 第 18（1048±14），见 <a class="xref" href="#s2-3">§2.3</a>。</li>
+</ul>
+</div></article><article class="card" id="s3-a-5" data-group="s3-a" data-search="3.A.5 Inworld Realtime TTS-2 / TTS-2 Flash"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.5</span><h4>Inworld Realtime TTS-2 / TTS-2 Flash</h4><a class="anchor" href="#s3-a-5">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="4" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：Inworld AI。2026-05 发布研究预览，2026-08-31 GA（<a href="https://inworld.ai/blog/realtime-tts-2" target="_blank" rel="noopener noreferrer">官方博客</a>）。</li>
+<li><strong>特点</strong>：把多轮对话中的<strong>前文音频</strong>作为输入（“Conversational Awareness”）；支持自然语言 voice direction；同一音色覆盖 100+ 种语言，并可在一句话中切换语言；提供 Expressive / Balanced / Stable 三种稳定度模式。</li>
+<li><strong>克隆</strong>：需要 5~15 秒参考音频。</li>
+<li><strong>延迟</strong>：官方称 TTS 层中位首包 sub-200ms；Realtime API 兼容 OpenAI Realtime 协议。</li>
+<li><strong>价格</strong>：按字符计费。AA 标注 TTS-2 $20.8/百万字符，TTS-2 Flash $10.4/百万字符。</li>
+<li><strong>榜单</strong>：AA Provider 第 7（1260），Controlled 第 6（1140）。TTS Arena V2 上 Inworld TTS MAX 为 1558±21（API rank 2，tier S，见 <a class="xref" href="#s2-4">§2.4</a>）。</li>
+</ul>
+</div></article><article class="card" id="s3-a-6" data-group="s3-a" data-search="3.A.6 MiniMax Speech 2.8（HD / Turbo）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.6</span><h4>MiniMax Speech 2.8（HD / Turbo）</h4><a class="anchor" href="#s3-a-6">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="7" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：MiniMax，2026-01-23（<a href="https://www.minimax.io/news/minimax-speech-28" target="_blank" rel="noopener noreferrer">官方新闻</a>）。</li>
+<li><strong>特点</strong>：原生语气 / 声音标签（<code>(laughs)</code>、<code>(breath)</code>、<code>(chuckle)</code> 等），10 秒克隆，优化了中日跨语言的“口音串味”问题。中文是 MiniMax 的强项，但 2.8 的中文客观指标本次<strong>没有找到官方数字</strong>。旧版 MiniMax-Speech 在 Seed-TTS-eval 上的数字为 zh CER 0.83 / en WER 1.65（见 <a class="xref" href="#s4">§4</a>）。</li>
+<li><strong>延迟</strong>：本次没有核实到 2.8 的官方延迟数字。</li>
+<li><strong>价格</strong>：AA 标注 HD $100、Turbo $60（每百万字符）。</li>
+<li><strong>榜单</strong>：AA Provider：2.8 HD 1175、2.8 Turbo 1152；TTS Arena V2：2.8 HD 1540。</li>
+</ul>
+</div></article><article class="card" id="s3-a-7" data-group="s3-a" data-search="3.A.7 字节跳动 豆包语音合成模型 2.0（Doubao-Seed-TTS 2.0）/ 声音复刻模型 2.0"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.7</span><h4>字节跳动 豆包语音合成模型 2.0（Doubao-Seed-TTS 2.0）/ 声音复刻模型 2.0</h4><a class="anchor" href="#s3-a-7">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="8" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：字节跳动 / 火山引擎，2025-10-16（<a href="https://www.ithome.com/0/889/888.htm" target="_blank" rel="noopener noreferrer">IT之家</a>）。</li>
+<li><strong>特点</strong>：基于豆包大语言模型的新架构，具备语义理解和上下文推理能力，可以用自然语言调节语速、情绪、声线、音调和风格。官方称中小学全学科复杂公式朗读准确率达 90%。</li>
+<li><strong>克隆</strong>：单独提供“声音复刻模型 2.0（Doubao-Seed-ICL 2.0）”。</li>
+<li><strong>价格（资源包，<a href="https://www.volcengine.com/docs/6561/1359370" target="_blank" rel="noopener noreferrer">火山引擎计费说明</a>）</strong>：语音合成 2.0 与声音复刻 2.0 定价相同：10 万字 28 元（2.8 元/万字符）、2000 万字 5400 元（2.7）、2 亿字 48000 元（2.4）、20 亿字 42 万元（2.1 元/万字符）。</li>
+<li><strong>榜单</strong>：豆包 TTS 2.0 <strong>没有出现在</strong>本次抓取的 AA / TTS Arena 榜单里。Seed-TTS（2024 年论文版）只作为 Seed-TTS-eval 的参考系出现（zh CER 1.12 / en WER 2.25）。延迟数字本次<strong>未核实</strong>。</li>
+</ul>
+</div></article><article class="card" id="s3-a-8" data-group="s3-a" data-search="3.A.8 阶跃星辰 StepAudio 2.5 TTS"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.8</span><h4>阶跃星辰 StepAudio 2.5 TTS</h4><a class="anchor" href="#s3-a-8">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="9" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：阶跃星辰，2026-04-16（<a href="https://www.ithome.com/0/939/919.htm" target="_blank" rel="noopener noreferrer">IT之家</a>）。</li>
+<li><strong>AA 条目与版本</strong>：AA Provider 榜上的条目名为 “StepAudio 2.5 TTS (Aug 2026)”，发布时间标为 2026-08，Elo 1211。AA Controlled 榜上的条目名为 “StepAudio 2.5 TTS”，发布时间标为 2026-04，Elo 1074。也就是说，<strong>Provider 榜的分数对应的是 AA 标注的 8 月版本</strong>；它和 4-16 发布的版本是什么关系（是不是后续更新），本次<strong>未核实</strong>。</li>
+<li><strong>特点</strong>：Global Context（全局语境）+ Inline Context（句中语境）双层控制，零样本克隆，可以控制情绪、节奏、停顿和潜台词，强调“演”文本而不只是“念”文本。</li>
+<li><strong>价格</strong>：AA 标注 $85/百万字符（偏贵）；官方人民币价格<strong>未核实</strong>。</li>
+</ul>
+</div></article><article class="card" id="s3-a-9" data-group="s3-a" data-search="3.A.9 其他值得关注的商业模型（简述）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.A.9</span><h4>其他值得关注的商业模型（简述）</h4><a class="anchor" href="#s3-a-9">#</a></header><div class="card-meta"><span class="tag t-com">商业</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="5" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>HeyGen Voice</strong>（HeyGen，2026-10-09）：一手来源为 HeyGen 通过 PRNewswire 发布的新闻稿（<a href="https://businesspresswire.com/2026/10/09/heygen-launches-heygen-voice-debuting-at-1-on-artificial-analysis-leaderboard/" target="_blank" rel="noopener noreferrer">转载于 BusinessPressWire</a>）和 <a href="https://developers.heygen.com/docs/voices/heygen-voice-instant-clone" target="_blank" rel="noopener noreferrer">HeyGen 开发者文档</a>。
+<ul>
+<li>新闻稿要点：HeyGen 自研的语音模型，“在 HeyGen 平台和 API 内免费使用”；Professional Voice Clone 是 $99/月的附加服务，需要本人明确同意，用 30 分钟到 3 小时的语音训练。</li>
+<li>文档要点：Instant Voice Clone 只需一段录音（只取前 3 分钟）；<code>POST /v3/models/audio/tts</code> 返回 44.1kHz WAV，<code>/tts/stream</code> 通过 SSE 流式返回；模型名为 <code>heygen-voice-1</code>；文档列出的语言包含 <code>zh</code>。</li>
+<li>榜单与价格：AA Controlled Voice 第 1（1195），AA 标价 $30/百万字符。这与新闻稿说的“平台和 API 内免费”<strong>口径不同</strong>，计费细节未核实。AA 推文称其 Pronunciation Robustness 得分 83.1%，排第 10/29（<a href="https://x.com/ArtificialAnlys/status/2108608264317599814" target="_blank" rel="noopener noreferrer">X</a>）。</li>
+</ul>
+</li>
+<li><strong>Speechify Simba 3.2</strong>（AA 标注 2026-07）：AA Provider 1245（第 9），Controlled 1088（第 9），标价 $6.6/百万字符，<strong>是 AA Provider 前 10 名里最便宜的</strong>。本次没有抓取 Speechify 的一手资料，语言、克隆、延迟等都<strong>未核实</strong>。</li>
+<li><strong>Fish Audio S2.1 Pro</strong>（API）：AA 1192，$15。</li>
+<li>OpenAI GPT-Realtime-2（AA 1079，$191.6）、Microsoft MAI-Voice-1（AA 1033）、Xiaomi MiMo-V2.5-TTS（AA 1056，发布日期 AA 标为 “-”）：本文未展开。</li>
+</ul>
+</div></article></div></div></section><section class="sec lv3" data-id="s3-b"><h3 class="sec-h" id="s3-b"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">3.B 开源 / 开放权重</span><a class="anchor" href="#s3-b" aria-label="本节链接">#</a></h3><div class="sec-b"><div class="cards"><article class="card" id="s3-b-1" data-group="s3-b" data-search="3.B.1 Fish Audio Drama 3（Preview）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.1</span><h4>Fish Audio Drama 3（Preview）</h4><a class="anchor" href="#s3-b-1">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">自定义 / 有条件许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="10" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：Fish Audio。官方博客日期为 2026-10-13，权重发布在 HF <code>fishaudio/drama-3</code>（<a href="https://fish.audio/blog/fish-audio-drama-3/" target="_blank" rel="noopener noreferrer">博客</a>、<a href="https://github.com/fishaudio/fish-speech" target="_blank" rel="noopener noreferrer">GitHub</a>）。</li>
+<li><strong>架构</strong>：35B MoE（每个 token 约 3B 激活），由 Qwen3.5-35B-A3B 初始化；codebook-MTP 解码器；输出 44.1kHz；RL 阶段只用人类偏好奖励模型。官方称单路 H200 解码 271 帧/秒（S2 为 177）。</li>
+<li><strong>语言</strong>：83 种。导演指令可以用任何语言写，博客里有用中文指令驱动英文台词的示例。<strong>官方没有公布 Drama 3 的分语种等级</strong>：S2 Pro 卡片把中文列为 Tier 1，但不能直接套用到 Drama 3，中文质量未核实。</li>
+<li><strong>克隆 / 情感</strong>：支持克隆、多角色场景、自然语言方括号指令、局部（成对标签）控制；编辑和 inpainting 功能目前仅限邀请测试。</li>
+<li><strong>许可证</strong>：<strong>Fish Audio Community License v1.0</strong>。研究和非商用免费；本人及关联方年营收低于 50 万美元时可免费商用；超过这个门槛，或者要对外提供 TTS、克隆、推理服务，需要另行取得授权。</li>
+<li><strong>价格（API）</strong>：标价 $50/百万字符，10-13 至 11-12 推广期 $10。AA 表中标为 $15，与官方不一致，<strong>以官方为准</strong>。</li>
+<li><strong>榜单</strong>：AA 开放权重榜第 1（1243），Provider 总榜第 10；Controlled 第 14（1058）。AA Pronunciation Robustness 93.2%，全榜第 1（官方博客 + <a href="https://x.com/ArtificialAnlys/status/2110081938140582085" target="_blank" rel="noopener noreferrer">AA 推文</a>）。</li>
+<li><strong>流式</strong>：README 写明长文本支持流式，推荐用 SGLang-Omni 部署；首包延迟<strong>未核实</strong>。</li>
+</ul>
+</div></article><article class="card" id="s3-b-2" data-group="s3-b" data-search="3.B.2 Fish Audio S2 Pro"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.2</span><h4>Fish Audio S2 Pro</h4><a class="anchor" href="#s3-b-2">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">非商用 / 研究许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="11" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>发布方 / 时间</strong>：Fish Audio。HF 仓库创建于 2026-03-09，技术报告为 <a href="https://arxiv.org/abs/2603.08823" target="_blank" rel="noopener noreferrer">arXiv 2603.08823</a>（<a href="https://huggingface.co/fishaudio/s2-pro" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li><strong>规格</strong>：Dual-AR 架构，Slow AR 4B + Fast AR 0.4B（HF 显示模型总大小约 5B）；训练数据 1000 万小时以上，80+ 种语言（中、英、日为 Tier 1）；自由形式的 <code>[tag]</code> 指令，官方称支持 15,000+ 种标签。</li>
+<li><strong>延迟</strong>：单张 H200 上 RTF 0.195，首包约 100ms（官方）。</li>
+<li><strong>许可证</strong>：Fish Audio Research License，<strong>商用需另行授权</strong>。</li>
+<li><strong>指标</strong>：Seed-TTS-eval 上 en WER 0.99、zh CER 0.54、hard 5.99。这组数字转引自 VoxCPM README，该表把模型写作 “FishAudio S2, 4B”，本文认为指的是同一个模型（S2 Pro 的 Slow AR 部分为 4B）。CV3-eval zh 2.65 / en 2.43（同一来源）。AA 开放权重榜 1118。</li>
+</ul>
+</div></article><article class="card" id="s3-b-3" data-group="s3-b" data-search="3.B.3 Breeze TTS 2（BreezeBlue）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.3</span><h4>Breeze TTS 2（BreezeBlue）</h4><a class="anchor" href="#s3-b-3">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">非商用 / 研究许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="12" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：权重发布于 2026-08-25（<a href="https://huggingface.co/BreezeBlue/Breeze-TTS-2" target="_blank" rel="noopener noreferrer">HF 卡片</a>）。</li>
+<li><strong>语言</strong>：中英双语。</li>
+<li><strong>能力</strong>：克隆（需要参考文本）、Voice Design、Voice Direction，以及中英文内联声音事件（<code>[笑]</code>、<code>[叹气]</code>）。</li>
+<li><strong>延迟</strong>：H100 warm-up 后的快速路径下 TTFA &lt; 40ms，RTF 0.32；显存约 7.7GiB（官方）。</li>
+<li><strong>许可证</strong>：代码 Apache-2.0；<strong>权重、衍生模型和自托管输出仅限研究 / 非商用</strong>。AA 上另有官方 API，标价 $34/百万字符。</li>
+<li><strong>榜单</strong>：AA 开放权重第 2（1221）；Controlled 1017。HF Open TTS 英文 WER 1.72。</li>
+</ul>
+</div></article><article class="card" id="s3-b-4" data-group="s3-b" data-search="3.B.4 Qwen3-TTS（阿里通义，开源版）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.4</span><h4>Qwen3-TTS（阿里通义，开源版）</h4><a class="anchor" href="#s3-b-4">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">Apache-2.0</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="13" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：2026-01-22 发布 0.6B / 1.7B 系列（<a href="https://github.com/QwenLM/Qwen3-TTS" target="_blank" rel="noopener noreferrer">GitHub README</a>，HF 仓库创建于 2026-01-21）。</li>
+<li><strong>许可证</strong>：Apache-2.0（HF 标签）。</li>
+<li><strong>语言</strong>：10 种（中、英、日、韩、德、法、俄、葡、西、意），另有北京话、四川话等方言音色。</li>
+<li><strong>能力</strong>：Base 模型 3 秒克隆；CustomVoice 有 9 个精品音色并支持指令控制风格；VoiceDesign 可以用自然语言描述来设计音色；支持“先设计、再克隆”的工作流。</li>
+<li><strong>延迟</strong>：Dual-Track 流式架构，官方称输入单个字符后即可输出首包，端到端延迟最低 97ms（官方）。HF Open TTS 实测：Photon 引擎在 H200 上 TTFA 18.3ms（第三方转述）。另有 vLLM-Omni day-0 支持（README 注明当时只支持离线推理）。</li>
+<li><strong>指标</strong>：Seed-TTS-eval 自报 12Hz-1.7B-Base 的 zh CER 0.77 / en WER 1.24，12Hz-0.6B-Base 为 0.92 / 1.32。VoxCPM README 转引为 zh 1.22 / en 1.23 / hard 6.76、SIM 77.0 / 71.7（<strong>两处数字不一致</strong>，可能是复现条件不同）。HF Open TTS 9 语言榜上，它是排名最高的 Apache-2.0 模型（第 3）。</li>
+</ul>
+</div></article><article class="card" id="s3-b-5" data-group="s3-b" data-search="3.B.5 Fun-CosyVoice 3.0（阿里通义 FunAudioLLM）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.5</span><h4>Fun-CosyVoice 3.0（阿里通义 FunAudioLLM）</h4><a class="anchor" href="#s3-b-5">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">Apache-2.0</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="14" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：2025-12 发布 Fun-CosyVoice3-0.5B-2512（Base + RL 版本）（<a href="https://github.com/FunAudioLLM/CosyVoice" target="_blank" rel="noopener noreferrer">GitHub</a>）。</li>
+<li><strong>许可证</strong>：Apache-2.0（HF 标签）。</li>
+<li><strong>语言</strong>：9 种 + 18 种以上中文方言 / 口音（粤、闽南、川、东北、上海等），支持多语混说。</li>
+<li><strong>能力</strong>：零样本克隆；指令可以控制语言、方言、情绪、语速、音量。</li>
+<li><strong>延迟</strong>：双向流式（文本输入流式 + 音频输出流式），官方称延迟低至 150ms。</li>
+<li><strong>指标</strong>（README 自报，Seed-TTS-eval）：0.5B-2512 为 zh 1.21 / en 2.24 / hard 6.71；<strong>RL 版为 zh 0.81 / en 1.68 / hard 5.44</strong>，SIM 77.4 / 69.5 / 75.0。HF Open TTS 英文 WER 1.68（第 6）。</li>
+</ul>
+</div></article><article class="card" id="s3-b-6" data-group="s3-b" data-search="3.B.6 VoxCPM2（OpenBMB / 面壁智能）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.6</span><h4>VoxCPM2（OpenBMB / 面壁智能）</h4><a class="anchor" href="#s3-b-6">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">Apache-2.0</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="15" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：2026-04 发布（<a href="https://github.com/OpenBMB/VoxCPM" target="_blank" rel="noopener noreferrer">GitHub</a>）。之前有 VoxCPM1.5（2025-12）和 VoxCPM-0.5B（2025-09）。</li>
+<li><strong>许可证</strong>：Apache-2.0，可商用。</li>
+<li><strong>规格</strong>：2B 参数（MiniCPM-4 底座），训练数据 200 万小时以上，<strong>30 种语言 + 9 种中文方言</strong>（川、粤、吴、东北、河南、陕西、山东、天津、闽南），不需要语言标签；48kHz 输出。</li>
+<li><strong>能力</strong>：Voice Design、可控克隆（克隆的同时用文字控制风格）、“极致克隆”（参考音频 + 文本续写），支持 LoRA / SFT 微调。</li>
+<li><strong>延迟</strong>：RTX 4090 上 RTF 约 0.30，用 Nano-vLLM / vLLM-Omni 约 0.13；显存约 8GB；支持流式 API；也有 llama.cpp GGUF 版本（M4 Pro 上 RTF 约 1.76，非实时）。</li>
+<li><strong>指标</strong>（README 自报）：Seed-TTS-eval 上 en WER 1.84 / SIM 75.3、zh CER 0.97 / SIM 79.5、hard 8.13 / 75.3；30 语种内部测试平均 WER 1.68%（用 Gemini 3.1 Flash Lite 做 ASR）。HF Open TTS 9 语言克隆视图中 SIM 最高（75.19，第三方转述）。</li>
+</ul>
+</div></article><article class="card" id="s3-b-7" data-group="s3-b" data-search="3.B.7 IndexTTS-2 / IndexTTS-2.5（B 站 Index 团队）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.7</span><h4>IndexTTS-2 / IndexTTS-2.5（B 站 Index 团队）</h4><a class="anchor" href="#s3-b-7">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">自定义 / 有条件许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="16" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：IndexTTS-2 发布于 2025-09-08（<strong>窗口外</strong>，作为对照）；<strong>IndexTTS-2.5 发布于 2026-08-10</strong>（<a href="https://github.com/index-tts/index-tts" target="_blank" rel="noopener noreferrer">GitHub</a>）。IndexTTS2 的参数量为 1.5B（据 CosyVoice / VoxCPM README 的对比表）；IndexTTS2.5 为 0.8B（据 IndexTTS README 的 CV3 表）。</li>
+<li><strong>语言</strong>：2.5 支持中、英、日、西、阿。</li>
+<li><strong>能力</strong>：音色与情感解耦。情感可以通过情感参考音频、8 维情感向量、从文本自动推断，或文字情感描述来控制，<code>emo_alpha</code> 调节强度。</li>
+<li><strong>时长 / 语速</strong>：IndexTTS-2 的论文标题强调“精确合成时长控制”，但 README 注明这项功能“在该版本中尚未启用”。<strong>IndexTTS-2.5 提供的是语速控制 <code>duration_factor</code>（0.5x~2.0x 时长）</strong>，并改进了中文拼音、英文 CMU 音素、日文假名的可控性；README 还写明可以用 vLLM 做生产部署。</li>
+<li><strong>许可证</strong>：bilibili Model Use License Agreement。据第三方 creativeainews 的解读，IndexTTS 2.5 在达到一定规模（1 亿月活或 10 亿元营收）之前可以商用；<strong>原文条款请以 LICENSE 为准</strong>。商务联系 <a href="mailto:indexspeech@bilibili.com">indexspeech@bilibili.com</a>。</li>
+<li><strong>指标</strong>：IndexTTS2 在 Seed-TTS-eval 上为 zh 1.03 / en 2.23 / hard 7.12（CosyVoice / VoxCPM README 转引）。IndexTTS2.5-RL 在 CV3-eval 上为 zh 3.93 / en 3.89，5 语种平均 WER 6.00、SS 73.63；<strong>跨语种（中文 prompt → 其他语言）平均 6.17</strong>，在表中最优（README 自报）。</li>
+<li><strong>延迟</strong>：README 称 2.5 比 2 推理更快，<strong>没有给出毫秒数</strong>。</li>
+</ul>
+</div></article><article class="card" id="s3-b-8" data-group="s3-b" data-search="3.B.8 OmniVoice（k2-fsa / 新一代 Kaldi 团队）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.8</span><h4>OmniVoice（k2-fsa / 新一代 Kaldi 团队）</h4><a class="anchor" href="#s3-b-8">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">非商用 / 研究许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="17" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：HF 仓库创建于 2026-03-30，论文 <a href="https://arxiv.org/abs/2604.00688" target="_blank" rel="noopener noreferrer">arXiv 2604.00688</a>（<a href="https://github.com/k2-fsa/OmniVoice" target="_blank" rel="noopener noreferrer">GitHub</a>）。</li>
+<li><strong>规格</strong>：扩散语言模型式架构，约 0.6~0.8B，<strong>600+ 种语言</strong>，RTF 最低 0.025。</li>
+<li><strong>能力</strong>：克隆（最稳定的模式）、Voice Design（只用中英文数据训练）、<code>[laughter]</code> 等非语言符号、拼音 / 音素纠音。</li>
+<li><strong>许可证</strong>：代码 Apache-2.0；<strong>权重 CC-BY-NC</strong>（受 Emilia 等训练数据约束）。</li>
+<li><strong>指标</strong>：HF Open TTS 9 语言默认音色榜和克隆榜均为第 1（3.25 / 3.52，第三方转述）；CV3-eval zh 3.41 / en 3.62（IndexTTS README 转引）。</li>
+</ul>
+</div></article><article class="card" id="s3-b-9" data-group="s3-b" data-search="3.B.9 Higgs TTS 3（Boson AI）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.9</span><h4>Higgs TTS 3（Boson AI）</h4><a class="anchor" href="#s3-b-9">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">非商用 / 研究许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="18" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：HF 仓库创建于 2026-06-04；AA 上标为 “Higgs Audio V3 TTS（Jun 2026）”（<a href="https://huggingface.co/bosonai/higgs-tts-3-4b" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li><strong>规格</strong>：约 4B 自回归模型，24kHz；官方称在 102 种语言上 WER/CER 达到个位数。</li>
+<li><strong>能力</strong>：零样本克隆；内联 <code>&lt;|emotion:…|&gt;</code>、<code>&lt;|style:…|&gt;</code>、<code>&lt;|prosody:…|&gt;</code>、<code>&lt;|sfx:…|&gt;</code> 控制，情绪类别很多；支持 SSE 流式，首包“亚秒级”。</li>
+<li><strong>许可证</strong>：研究 / 非商用。另有 <strong>Creator Use Grant</strong>：创作者可以免费制作并变现播客、视频等内容（需要注明 Boson AI Higgs Audio），但不能用于托管服务或嵌入产品。</li>
+<li><strong>指标（Boson 自报，在统一条件下重跑）</strong>：卡片说明表中数字为“各基准语言集合上的宏平均 WER/CER（×100）”，并且是用原始指标和归一化端到端复现的结果。SeedTTS 一行：Higgs TTS 3 1.11、OmniVoice 1.21、Qwen3-TTS-1.7B 1.30、Fish Audio S2 Pro 1.31、IndexTTS-2 1.63、FireRedTTS-2 1.72；CV3 一行 Higgs TTS 3 为 4.41。AA 开放权重榜 1039。</li>
+<li><strong>为什么和 <a class="xref" href="#s4">§4</a> 的数字对不上</strong>：<a class="xref" href="#s4">§4</a> 是各模型作者自己报告的分拆分数字（zh 和 en 分开）。如果简单把 zh 和 en 做算术平均，Qwen3-TTS 自报是 (0.77+1.24)/2≈1.01，Fish S2 转引是 (0.54+0.99)/2≈0.77，都低于 Higgs 卡片里的 1.30 / 1.31。可能的原因有：Boson 自己重跑了推理（采样随机性、参考音频处理方式不同）、ASR 和文本归一化不同、“语言集合”是否包含 test-hard 不明确等。卡片<strong>没有逐项说明</strong>这些细节，差异的具体来源未核实。所以 Higgs 表里的数字只适合在 Higgs 表内部互相比较，不宜和其他 README 的数字混在一起比。</li>
+</ul>
+</div></article><article class="card" id="s3-b-10" data-group="s3-b" data-search="3.B.10 Voxtral TTS（Mistral AI）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.10</span><h4>Voxtral TTS（Mistral AI）</h4><a class="anchor" href="#s3-b-10">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">非商用 / 研究许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="19" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：2026-03（模型名 4B-TTS-2603，论文 <a href="https://arxiv.org/abs/2603.25551" target="_blank" rel="noopener noreferrer">arXiv 2603.25551</a>；<a href="https://huggingface.co/mistralai/Voxtral-4B-TTS-2603" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li><strong>语言</strong>：9 种（英、法、西、德、意、葡、荷、阿、印地），<strong>不含中文</strong>。</li>
+<li><strong>能力</strong>：20 个预置音色，可以适配新音色（权重内的参考音色为 CC BY-NC）。官方称在 9 种主要语言中具备“natural prosody and emotional range”（自然韵律和情感表达范围）（厂商自述）。</li>
+<li><strong>延迟</strong>：单张 H200、vLLM-Omni、并发 1 时，延迟 70ms、RTF 0.103（官方）。</li>
+<li><strong>许可证</strong>：<strong>CC-BY-NC-4.0</strong>。AA 标注其 API 价为 $16/百万字符。AA 开放权重榜 1088。本次<strong>没有找到</strong> Voxtral TTS 的 WER/CER 客观指标。</li>
+</ul>
+</div></article><article class="card" id="s3-b-11" data-group="s3-b" data-search="3.B.11 Step-Audio-EditX（阶跃星辰）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.11</span><h4>Step-Audio-EditX（阶跃星辰）</h4><a class="anchor" href="#s3-b-11">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">许可未核实</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="20" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：HF 仓库创建于 2025-10-29；2025-11-19 发布新版（多音字控制），2025-11-28 增加日、韩语（<a href="https://huggingface.co/stepfun-ai/Step-Audio-EditX" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li><strong>定位</strong>：3B 参数的 LLM 音频<strong>编辑</strong>模型（经过 RL），可以对情绪、说话风格、副语言做迭代编辑，也能克隆；支持四川话、粤语标签。</li>
+<li><strong>许可证</strong>：代码 Apache-2.0；<strong>权重许可证本次未单独核实</strong>。AA 开放权重榜 1097（Mar 2026 版）。</li>
+</ul>
+</div></article><article class="card" id="s3-b-12" data-group="s3-b" data-search="3.B.12 Chatterbox 家族（Resemble AI）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.12</span><h4>Chatterbox 家族（Resemble AI）</h4><a class="anchor" href="#s3-b-12">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">MIT</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="21" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>型号与时间</strong>：
+<ul>
+<li>Chatterbox 原版：HF 仓库创建于 2025-04-24，AA 标为 2025-05（<strong>窗口外</strong>，作为对照）。</li>
+<li>Chatterbox-Turbo：350M，英文，HF 仓库创建于 2025-12-02。</li>
+<li>Chatterbox-Nano：110M，英文，8 核 CPU 上约 3 倍实时；发布日期<strong>未核实</strong>。</li>
+<li><strong>Chatterbox Multilingual V3</strong>：500M，23+ 种语言，支持语言列表中包含中文；发布日期<strong>未核实</strong>（<a href="https://github.com/resemble-ai/chatterbox" target="_blank" rel="noopener noreferrer">GitHub</a>）。</li>
+</ul>
+</li>
+<li><strong>能力</strong>：零样本克隆；<code>[laugh]</code>、<code>[cough]</code> 等副语言标签；exaggeration / cfg 控制夸张度；所有输出内置 PerTh 隐形水印。</li>
+<li><strong>许可证</strong>：MIT。</li>
+<li><strong>指标</strong>：AA 上的 Chatterbox（原版）为 1026；HF Open TTS 英文 WER 1.70。Multilingual V3 的独立评测本次<strong>没有找到</strong>。</li>
+</ul>
+</div></article><article class="card" id="s3-b-13" data-group="s3-b" data-search="3.B.13 VibeVoice（微软）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.13</span><h4>VibeVoice（微软）</h4><a class="anchor" href="#s3-b-13">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">MIT</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="22" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li><strong>型号</strong>：
+<ul>
+<li>VibeVoice-TTS 1.5B：2025-08-25 开源（<strong>窗口外</strong>，作为对照），可生成最长 90 分钟、最多 4 位说话人的长篇对话，README 称支持英文、中文等语言。</li>
+<li><strong>VibeVoice-Realtime-0.5B</strong>：2025-12-03 开源，支持流式文本输入，首个可听音频约 300ms。2025-12-16 增加了实验性音色，覆盖 9 种语言（德、法、意、日、韩、荷、波、葡、西）和 11 种英文风格（<a href="https://github.com/microsoft/VibeVoice" target="_blank" rel="noopener noreferrer">GitHub</a>）。</li>
+</ul>
+</li>
+<li><strong>许可证</strong>：MIT。但官方明确表示“不建议在未经进一步测试的情况下用于商业或真实场景”；2025-09 曾因滥用问题调整过仓库。</li>
+<li><strong>指标</strong>：VibeVoice-1.5B 在 Seed-TTS-eval 上为 zh 1.16 / SIM 74.4、en 3.04 / SIM 68.9。这组数字在 VoxCPM README 和 CosyVoice README 中<strong>一致</strong>，两处都有。Realtime-0.5B 为 en 2.05 / SIM 63.3，只见于 CosyVoice README。AA 上 VibeVoice 1.5B 为 957。</li>
+</ul>
+</div></article><article class="card" id="s3-b-14" data-group="s3-b" data-search="3.B.14 Kyutai Pocket TTS"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.14</span><h4>Kyutai Pocket TTS</h4><a class="anchor" href="#s3-b-14">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">来源说法不一致</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="23" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：技术报告 / 博客发布于 2026-01-13（<a href="https://kyutai.org/blog/2026-01-13-pocket-tts" target="_blank" rel="noopener noreferrer">kyutai.org/blog/2026-01-13-pocket-tts</a>）；<strong>2026-08 开源训练代码</strong>（<a href="https://github.com/kyutai-labs/pocket-tts" target="_blank" rel="noopener noreferrer">GitHub</a>，X 上也有讨论，如 <a href="https://x.com/daivbr/status/2092466396143722501" target="_blank" rel="noopener noreferrer">@daivbr</a>）。</li>
+<li><strong>规格</strong>：100M 参数（生成模型 90M + 编解码器解码器 10M），只用 2 个 CPU 核心，首包约 200ms，在 M4 MacBook Air 上约 6 倍实时；支持流式和克隆（官方博客称约需 5 秒参考音频；克隆权重需要在 HF 上同意条款），可在浏览器端运行。</li>
+<li><strong>语言</strong>：1 月发布时只用公开英文数据（8.8 万小时）训练；当前 README 列出英、法、德、葡、意、西、荷 7 种（<strong>不含中文</strong>）。</li>
+<li><strong>指标</strong>：博客自报 LibriSpeech test-clean WER 1.84（Kokoro 1.93、F5-TTS 2.21、Chatterbox Turbo 3.24）。HF Open TTS 英文 WER 1.62，CPU TTFA 272.7ms（第三方转述）。</li>
+<li><strong>许可证</strong>：<strong>来源之间不一致</strong>。1 月博客写明“以 MIT 许可开源 Pocket TTS”，而 HF 模型仓库 <code>kyutai/pocket-tts</code> 的许可证标签为 CC-BY-4.0（第三方 creativeainews 也按 CC-BY-4.0 解读，需要署名）。推测代码与权重可能分别授权，但<strong>未核实</strong>；使用前请查看仓库里的 LICENSE 和 voices 许可页面。</li>
+</ul>
+</div></article><article class="card" id="s3-b-15" data-group="s3-b" data-search="3.B.15 Supertonic 3（Supertone）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.15</span><h4>Supertonic 3（Supertone）</h4><a class="anchor" href="#s3-b-15">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">自定义 / 有条件许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="24" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：HF 仓库创建于 2026-05-06（<a href="https://huggingface.co/Supertone/supertonic-3" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li><strong>定位</strong>：端侧 TTS，约 0.1B，31 种语言（从 v2 的 5 种扩展而来）。按 HF 卡片的 Supported Languages 表，支持英、韩、日、阿、德、西、法、印地、意、荷、波、葡、俄、越等，<strong>不含中文</strong>。</li>
+<li><strong>许可证</strong>：模型 OpenRAIL-M（有使用限制），示例代码 MIT。</li>
+<li><strong>指标</strong>：HF Open TTS 英文 WER 1.54（第 2）。但<strong>没有流式模式</strong>，单句 TTFA 为 1918.6ms（第三方转述），不适合实时对话。</li>
+</ul>
+</div></article><article class="card" id="s3-b-16" data-group="s3-b" data-search="3.B.16 NVIDIA Magpie TTS Multilingual 357M"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.16</span><h4>NVIDIA Magpie TTS Multilingual 357M</h4><a class="anchor" href="#s3-b-16">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">自定义 / 有条件许可</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="25" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li><strong>时间</strong>：HF 仓库创建于 2025-12-11；2026-07-21 发布 v2607，新增阿、韩、葡（<a href="https://huggingface.co/nvidia/magpie_tts_multilingual_357m" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li><strong>语言</strong>：12 种，含中文；5 个固定音色，<strong>不用于零样本克隆</strong>。</li>
+<li><strong>许可证</strong>：NVIDIA Open Model License，卡片注明“ready for commercial use”。AA 1065。</li>
+</ul>
+</div></article><article class="card" id="s3-b-17" data-group="s3-b" data-search="3.B.17 Kokoro-82M（hexgrad，基线，窗口外）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.17</span><h4>Kokoro-82M（hexgrad，基线，<strong>窗口外</strong>）</h4><a class="anchor" href="#s3-b-17">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">Apache-2.0</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="27" class="jump-cmp">对比表 ↗</a></div><div class="card-b"><ul>
+<li>v1.0 于 2025-01-27 发布，<strong>不在近一年窗口内</strong>，作为轻量基线收录（<a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener noreferrer">HF</a>）。</li>
+<li>规格：Apache-2.0，82M 参数，可在 CPU 上运行。v1.0 共 8 种语言、54 个音色，其中普通话有 8 个音色（4 女 4 男，见 <a href="https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md" target="_blank" rel="noopener noreferrer">VOICES.md</a>）。普通话训练时长未公布，中文质量未核实。</li>
+<li>不支持克隆。</li>
+<li>榜单与价格：AA 1063，表格显示 $0.7，FAQ 精确值为 $0.65/百万字符，全榜最便宜；HF Open TTS 英文 WER 第 1（1.46）。</li>
+</ul>
+</div></article><article class="card" id="s3-b-18" data-group="s3-b" data-search="3.B.18 Raon-OpenTTS（KRAFTON）"><header class="card-h"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="cnum">3.B.18</span><h4>Raon-OpenTTS（KRAFTON）</h4><a class="anchor" href="#s3-b-18">#</a></header><div class="card-meta"><span class="tag t-open">开源 / 开放权重</span><span class="tag t-lic">Apache-2.0</span><span class="spacer"></span><a href="#cmp-widget" data-cmp="26" class="jump-cmp">对比表 ↗</a> · <a href="#eval-widget" class="jump-eval">Seed-TTS-eval ↗</a></div><div class="card-b"><ul>
+<li>论文 <a href="https://arxiv.org/abs/2605.20830" target="_blank" rel="noopener noreferrer">arXiv 2605.20830</a>，<strong>v1 提交于 2026-05-20</strong>（arXiv 摘要页）。代码和权重的许可证为 Apache-2.0（<a href="https://github.com/krafton-ai/RAON-OpenTTS" target="_blank" rel="noopener noreferrer">GitHub</a>）。</li>
+<li><strong>开放权重 + 开放数据</strong>：数据池 61.5 万小时，筛选后训练集 51 万小时；参数 0.3B~1B。</li>
+<li>指标：README 自报 Seed-TTS-eval（EN）WER 1.78 / SIM 0.749。</li>
+<li>只支持英文。AA 上另有 “Raon SpeechLM”（2026-04，Provider 1005），它和 Raon-OpenTTS 的关系<strong>未核实</strong>。</li>
+</ul>
+</div></article></div></div></section></div></section><section class="sec lv2" data-id="s4"><h2 class="sec-h" id="s4"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">4. Seed-TTS-eval 客观指标汇总（WER/CER 越低越好，SIM 越高越好）</span><a class="anchor" href="#s4" aria-label="本节链接">#</a></h2><div class="sec-b"><blockquote>
+<p>⚠️ 下表数字都来自各模型作者的 README，或者别的项目 README 里的转引，<strong>不是同一方在统一条件下复现的结果</strong>。每一行的“来源”列标明出处；同一模型如果有多个来源，就分行列出、不混在一行。例如 CosyVoice 3 在 Qwen3-TTS README 中为 zh 0.71 / en 1.45，在 VoxCPM README 中 1.5B 版为 1.12 / 2.22。这张表只适合判断大致档位。</p>
+</blockquote>
+<div class="widget" id="eval-widget"><div class="w-head"><span class="w-title">交互：点击表头排序（空值始终排末尾）</span><span class="spacer"></span><label class="inl"><input type="checkbox" id="eval-oow"> 隐藏名称中标注“窗口外”的行</label><span class="count" id="eval-count"></span></div><div class="table-wrap"><table class="sortable data" id="eval-table"><thead><tr><th data-k="0" data-type="text" tabindex="0" aria-sort="none">模型<span class="sort-ind"></span></th><th data-k="1" data-type="text" tabindex="0" aria-sort="none">参数<span class="sort-ind"></span></th><th data-k="2" data-type="text" tabindex="0" aria-sort="none">开源 / 许可<span class="sort-ind"></span></th><th data-k="3" data-type="num" tabindex="0" aria-sort="none">test-zh CER↓<span class="sort-ind"></span></th><th data-k="4" data-type="num" tabindex="0" aria-sort="none">zh SIM↑<span class="sort-ind"></span></th><th data-k="5" data-type="num" tabindex="0" aria-sort="none">test-en WER↓<span class="sort-ind"></span></th><th data-k="6" data-type="num" tabindex="0" aria-sort="none">en SIM↑<span class="sort-ind"></span></th><th data-k="7" data-type="num" tabindex="0" aria-sort="none">test-hard CER↓<span class="sort-ind"></span></th><th data-k="8" data-type="num" tabindex="0" aria-sort="none">hard SIM↑<span class="sort-ind"></span></th><th data-k="9" data-type="text" tabindex="0" aria-sort="none">来源<span class="sort-ind"></span></th></tr></thead><tbody><tr data-i="0" class="closed oow"><td data-v="Seed-TTS（闭源参照，2024，窗口外）">Seed-TTS（闭源参照，2024，窗口外）</td><td data-v="-">-</td><td data-v="✗">✗</td><td data-v="1.12">1.12</td><td data-v="79.6">79.6</td><td data-v="2.25">2.25</td><td data-v="76.2">76.2</td><td data-v="7.59">7.59</td><td data-v="77.6">77.6</td><td data-v="VoxCPM README">VoxCPM README</td></tr><tr data-i="1" class="closed oow"><td data-v="MiniMax-Speech（旧版，窗口外）">MiniMax-Speech（旧版，窗口外） <a class="card-link" href="#s3-a-6" title="跳到模型卡片">卡片↗</a></td><td data-v="-">-</td><td data-v="✗">✗</td><td data-v="0.83">0.83</td><td data-v="78.3">78.3</td><td data-v="1.65">1.65</td><td data-v="69.2">69.2</td><td data-v="">-</td><td data-v="">-</td><td data-v="VoxCPM README">VoxCPM README</td></tr><tr data-i="2"><td data-v="Fish Audio S2（VoxCPM 表中写作 “FishAudio S2, 4B”，即 §3.B.2 的 S2 Pro：Slow AR 4B + Fast AR 0.4B）">Fish Audio S2（VoxCPM 表中写作 “FishAudio S2, 4B”，即 <a class="xref" href="#s3-b-2">§3.B.2</a> 的 S2 Pro：Slow AR 4B + Fast AR 0.4B） <a class="card-link" href="#s3-b-2" title="跳到模型卡片">卡片↗</a></td><td data-v="4B+0.4B">4B+0.4B</td><td data-v="权重（研究许可）">权重（研究许可）</td><td data-v="0.54"><strong>0.54</strong></td><td data-v="">-</td><td data-v="0.99"><strong>0.99</strong></td><td data-v="">-</td><td data-v="5.99">5.99</td><td data-v="">-</td><td data-v="VoxCPM README（转引）">VoxCPM README（转引）</td></tr><tr data-i="3"><td data-v="Qwen3-TTS-12Hz-1.7B-Base（自报）">Qwen3-TTS-12Hz-1.7B-Base（自报） <a class="card-link" href="#s3-b-4" title="跳到模型卡片">卡片↗</a></td><td data-v="1.7B">1.7B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="0.77">0.77</td><td data-v="">未报告</td><td data-v="1.24">1.24</td><td data-v="">未报告</td><td data-v="">未报告</td><td data-v="">未报告</td><td data-v="Qwen3-TTS README">Qwen3-TTS README</td></tr><tr data-i="4"><td data-v="Qwen3-TTS 1.7B（转引）">Qwen3-TTS 1.7B（转引） <a class="card-link" href="#s3-b-4" title="跳到模型卡片">卡片↗</a></td><td data-v="1.7B">1.7B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="1.22">1.22</td><td data-v="77.0">77.0</td><td data-v="1.23">1.23</td><td data-v="71.7">71.7</td><td data-v="6.76">6.76</td><td data-v="74.8">74.8</td><td data-v="VoxCPM README">VoxCPM README</td></tr><tr data-i="5"><td data-v="Qwen3-TTS-12Hz-0.6B-Base（自报）">Qwen3-TTS-12Hz-0.6B-Base（自报） <a class="card-link" href="#s3-b-4" title="跳到模型卡片">卡片↗</a></td><td data-v="0.6B">0.6B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="0.92">0.92</td><td data-v="">未报告</td><td data-v="1.32">1.32</td><td data-v="">未报告</td><td data-v="">未报告</td><td data-v="">未报告</td><td data-v="Qwen3-TTS README">Qwen3-TTS README</td></tr><tr data-i="6"><td data-v="Fun-CosyVoice3-0.5B-2512_RL">Fun-CosyVoice3-0.5B-2512_RL <a class="card-link" href="#s3-b-5" title="跳到模型卡片">卡片↗</a></td><td data-v="0.5B">0.5B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="0.81">0.81</td><td data-v="77.4">77.4</td><td data-v="1.68">1.68</td><td data-v="69.5">69.5</td><td data-v="5.44"><strong>5.44</strong></td><td data-v="75.0">75.0</td><td data-v="CosyVoice README">CosyVoice README</td></tr><tr data-i="7"><td data-v="Fun-CosyVoice3-0.5B-2512">Fun-CosyVoice3-0.5B-2512 <a class="card-link" href="#s3-b-5" title="跳到模型卡片">卡片↗</a></td><td data-v="0.5B">0.5B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="1.21">1.21</td><td data-v="78.0">78.0</td><td data-v="2.24">2.24</td><td data-v="71.8">71.8</td><td data-v="6.71">6.71</td><td data-v="75.8">75.8</td><td data-v="CosyVoice README">CosyVoice README</td></tr><tr data-i="8"><td data-v="VoxCPM2">VoxCPM2 <a class="card-link" href="#s3-b-6" title="跳到模型卡片">卡片↗</a></td><td data-v="2B">2B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="0.97">0.97</td><td data-v="79.5"><strong>79.5</strong></td><td data-v="1.84">1.84</td><td data-v="75.3"><strong>75.3</strong></td><td data-v="8.13">8.13</td><td data-v="75.3">75.3</td><td data-v="VoxCPM README">VoxCPM README</td></tr><tr data-i="9" class="oow"><td data-v="IndexTTS2（2025-09，窗口外）">IndexTTS2（2025-09，窗口外） <a class="card-link" href="#s3-b-7" title="跳到模型卡片">卡片↗</a></td><td data-v="1.5B">1.5B</td><td data-v="✓ bilibili 许可">✓ bilibili 许可</td><td data-v="1.03">1.03</td><td data-v="76.5">76.5</td><td data-v="2.23">2.23</td><td data-v="70.6">70.6</td><td data-v="7.12">7.12</td><td data-v="75.5">75.5</td><td data-v="VoxCPM / CosyVoice README（两处一致）">VoxCPM / CosyVoice README（两处一致）</td></tr><tr data-i="10" class="oow"><td data-v="VibeVoice-1.5B（2025-08，窗口外）">VibeVoice-1.5B（2025-08，窗口外） <a class="card-link" href="#s3-b-13" title="跳到模型卡片">卡片↗</a></td><td data-v="1.5B">1.5B</td><td data-v="✓ MIT">✓ MIT</td><td data-v="1.16">1.16</td><td data-v="74.4">74.4</td><td data-v="3.04">3.04</td><td data-v="68.9">68.9</td><td data-v="">-</td><td data-v="">-</td><td data-v="VoxCPM / CosyVoice README（两处一致）">VoxCPM / CosyVoice README（两处一致）</td></tr><tr data-i="11"><td data-v="VibeVoice-Realtime-0.5B">VibeVoice-Realtime-0.5B <a class="card-link" href="#s3-b-13" title="跳到模型卡片">卡片↗</a></td><td data-v="0.5B">0.5B</td><td data-v="✓ MIT">✓ MIT</td><td data-v="">-</td><td data-v="">-</td><td data-v="2.05">2.05</td><td data-v="63.3">63.3</td><td data-v="">-</td><td data-v="">-</td><td data-v="CosyVoice README">CosyVoice README</td></tr><tr data-i="12"><td data-v="Raon-OpenTTS-1B">Raon-OpenTTS-1B <a class="card-link" href="#s3-b-18" title="跳到模型卡片">卡片↗</a></td><td data-v="1B">1B</td><td data-v="✓ Apache">✓ Apache</td><td data-v="">-</td><td data-v="">-</td><td data-v="1.78">1.78</td><td data-v="74.9">74.9（原文 0.749）</td><td data-v="">-</td><td data-v="">-</td><td data-v="Raon README">Raon README</td></tr></tbody></table></div><figure class="chart" id="eval-chart"><figcaption><span>图：</span><span class="seg" id="eval-metric" role="tablist"></span><span class="muted">数据即上表（同一模型不同来源分行显示）；<span class="lg-c">■</span> 开源/开放权重 <span class="lg-cl">■</span> 闭源；虚线为 Seed-TTS（闭源参照）</span></figcaption><div class="chart-box"></div><p class="chart-note"></p></figure></div><p>说明：</p>
+<ul>
+<li><strong>Higgs TTS 3 没有放进上表</strong>。它的卡片只给出 SeedTTS 的“语言集合宏平均 WER/CER”（1.11），没有分开报 zh 和 en，而且是 Boson 自己在统一条件下重跑的结果，和上表口径不同，详见 <a class="xref" href="#s3-b-9">§3.B.9</a>。</li>
+<li>VoxCPM README 的表里还有 LongCat-Audio-DiT 等模型。本报告没有核实它们的发布方和发布时间，正文也没有对应章节，所以没有列入。</li>
+<li>SIM 一律换算成百分数（×100）。</li>
+</ul>
+<p>CV3-eval 多语种（IndexTTS README 自报，WER↓ / SS↑，5 语种平均，阿语为内部测试集）：Fish S2 Pro 5.94 / 64.49；IndexTTS2.5-RL 6.00 / 73.63；OmniVoice 6.76 / 70.39；VoxCPM2 7.22 / 72.02。</p>
+</div></section><section class="sec lv2" data-id="s5"><h2 class="sec-h" id="s5"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">5. 综合对比表</span><a class="anchor" href="#s5" aria-label="本节链接">#</a></h2><div class="sec-b"><div class="widget" id="cmp-widget"><div class="filters" id="cmp-filters"></div><div class="w-bar"><span class="count" id="cmp-count"></span><span class="spacer"></span><details class="colpick"><summary>显示列</summary><div id="cmp-cols"></div></details><button type="button" class="btn" id="cmp-reset">重置筛选</button></div><div class="table-wrap tall"><table class="sortable data" id="cmp-table"><thead><tr><th data-k="0" data-type="text" tabindex="0" aria-sort="none" class="c0">模型<span class="sort-ind"></span></th><th data-k="1" data-type="text" tabindex="0" aria-sort="none" class="c1">发布方<span class="sort-ind"></span></th><th data-k="2" data-type="date" tabindex="0" aria-sort="none" class="c2">发布时间<span class="sort-ind"></span></th><th data-k="3" data-type="text" tabindex="0" aria-sort="none" class="c3">开源 / 商业<span class="sort-ind"></span></th><th data-k="4" data-type="text" tabindex="0" aria-sort="none" class="c4">中文<span class="sort-ind"></span></th><th data-k="5" data-type="text" tabindex="0" aria-sort="none" class="c5">英文<span class="sort-ind"></span></th><th data-k="6" data-type="langs" tabindex="0" aria-sort="none" class="c6">多语种<span class="sort-ind"></span></th><th data-k="7" data-type="text" tabindex="0" aria-sort="none" class="c7">克隆<span class="sort-ind"></span></th><th data-k="8" data-type="text" tabindex="0" aria-sort="none" class="c8">情感 / 指令控制<span class="sort-ind"></span></th><th data-k="9" data-type="text" tabindex="0" aria-sort="none" class="c9">延迟 / 流式（多为自报）<span class="sort-ind"></span></th><th data-k="10" data-type="price" tabindex="0" aria-sort="none" class="c10">价格 / 许可<span class="sort-ind"></span></th><th data-k="11" data-type="text" tabindex="0" aria-sort="none" class="c11">代表性榜单<span class="sort-ind"></span></th></tr></thead><tbody><tr data-i="0"><td class="c0" data-v="Eleven v4 / v4 Turbo"><div class="mname">Eleven v4 / v4 Turbo</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-1" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="ElevenLabs">ElevenLabs</td><td class="c2" data-v="20260928">2026-09-28</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持（官方称普通话、粤语提升大；无中文盲测）">支持（官方称普通话、粤语提升大；无中文盲测）</td><td class="c5" data-v="★★★★★"><span class="stars" aria-label="5 星">★★★★★</span></td><td class="c6" data-v="90">90+</td><td class="c7" data-v="10 秒 IVC + PVC">10 秒 IVC + PVC</td><td class="c8" data-v="可叠加的内联音频标签；多说话人；context stitching">可叠加的内联音频标签；多说话人；context stitching</td><td class="c9" data-v="Turbo 推理约 100ms，首声约 150ms，双向流式">Turbo 推理约 100ms，首声约 150ms，双向流式</td><td class="c10" data-v="40.0" title="筛选/排序用：最低标价 $40/百万字符">$40（Turbo）/ $80 每百万字符（AA）</td><td class="c11" data-v="AA Provider #1/#2">AA Provider #1/#2</td></tr><tr data-i="1"><td class="c0" data-v="Qwen-Audio-3.1-TTS-Plus / Flash"><div class="mname">Qwen-Audio-3.1-TTS-Plus / Flash</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-2" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="阿里">阿里</td><td class="c2" data-v="20260923">2026-09-23</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持，多方言（具体列表未核实）">支持，多方言（具体列表未核实）</td><td class="c5" data-v="支持">支持</td><td class="c6" data-v="">多语种 + 跨语言音色迁移</td><td class="c7" data-v="✓（Flash 对噪声参考更鲁棒）">✓（Flash 对噪声参考更鲁棒）</td><td class="c8" data-v="free-style 指令 + 标签">free-style 指令 + 标签</td><td class="c9" data-v="Flash 支持 WebSocket 流式（无毫秒数）">Flash 支持 WebSocket 流式（无毫秒数）</td><td class="c10" data-v="19.3" title="筛选/排序用：最低标价 $19.3/百万字符">Plus $19.3（AA，官方价未核实）；Flash 输出 12 元/百万 Token；3.0-Plus 1.4 元/万字符</td><td class="c11" data-v="AA Provider #3、Controlled #2">AA Provider #3、Controlled #2</td></tr><tr data-i="2"><td class="c0" data-v="Sonic 3.6"><div class="mname">Sonic 3.6</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-3" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Cartesia">Cartesia</td><td class="c2" data-v="20260827">2026-08-27</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="无公开数据">无公开数据</td><td class="c5" data-v="强">强</td><td class="c6" data-v="44">44 种语言 / 61 locale</td><td class="c7" data-v="IVC">IVC</td><td class="c8" data-v="随上下文调整情感（官方自述）">随上下文调整情感（官方自述）</td><td class="c9" data-v="首包 &lt;90ms">首包 &lt;90ms</td><td class="c10" data-v="49.0" title="筛选/排序用：最低标价 $49/百万字符">$49（AA）</td><td class="c11" data-v="AA Provider #4">AA Provider #4</td></tr><tr data-i="3"><td class="c0" data-v="Gemini 3.8 Flash TTS / Flash-Lite"><div class="mname">Gemini 3.8 Flash TTS / Flash-Lite</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-4" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Google">Google</td><td class="c2" data-v="20260923">2026-09-23</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持（100+ 种语言之一）">支持（100+ 种语言之一）</td><td class="c5" data-v="强">强</td><td class="c6" data-v="100">100+</td><td class="c7" data-v="30 秒复刻（需同意录音）">30 秒复刻（需同意录音）</td><td class="c8" data-v="自然语言导演、双人对话；官方称可保持数小时长音频稳定">自然语言导演、双人对话；官方称可保持数小时长音频稳定</td><td class="c9" data-v="无数字">无数字</td><td class="c10" data-v="11.0" title="筛选/排序用：AA 折算最低 $11/百万字符">输入 $0.5 / 输出 $9 每百万 token（2027 起翻倍）；AA 折算 $16.5 / $11</td><td class="c11" data-v="AA Provider #5 / #8；Controlled #18 / #13">AA Provider #5 / #8；Controlled #18 / #13</td></tr><tr data-i="4"><td class="c0" data-v="Realtime TTS-2 / TTS-2 Flash"><div class="mname">Realtime TTS-2 / TTS-2 Flash</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-5" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Inworld">Inworld</td><td class="c2" data-v="20260831">2026-08-31 GA</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持（100+ 种语言之一）">支持（100+ 种语言之一）</td><td class="c5" data-v="强">强</td><td class="c6" data-v="100">100+</td><td class="c7" data-v="5~15 秒">5~15 秒</td><td class="c8" data-v="自然语言方向 + 感知前文音频">自然语言方向 + 感知前文音频</td><td class="c9" data-v="中位首包 &lt;200ms">中位首包 &lt;200ms</td><td class="c10" data-v="10.4" title="筛选/排序用：最低标价 $10.4/百万字符">$20.8 / $10.4（AA）</td><td class="c11" data-v="AA Provider #7 / #13">AA Provider #7 / #13</td></tr><tr data-i="5"><td class="c0" data-v="HeyGen Voice"><div class="mname">HeyGen Voice</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-9" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="HeyGen">HeyGen</td><td class="c2" data-v="20261009">2026-10-09</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="文档语言列表含 zh">文档语言列表含 zh</td><td class="c5" data-v="支持">支持</td><td class="c6" data-v="39">39 种基础语言代码（文档）</td><td class="c7" data-v="单段录音 IVC；PVC 需 30 分钟~3 小时">单段录音 IVC；PVC 需 30 分钟~3 小时</td><td class="c8" data-v="新闻稿称有自然的强调、情感和节奏">新闻稿称有自然的强调、情感和节奏</td><td class="c9" data-v="有 SSE 流式接口（无毫秒数）">有 SSE 流式接口（无毫秒数）</td><td class="c10" data-v="30.0" title="筛选/排序用：最低标价 $30/百万字符">新闻稿称平台和 API 内免费；AA 标 $30；PVC 附加 $99/月</td><td class="c11" data-v="AA Controlled #1（1195）">AA Controlled #1（1195）</td></tr><tr data-i="6"><td class="c0" data-v="Simba 3.2"><div class="mname">Simba 3.2</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-9" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Speechify">Speechify</td><td class="c2" data-v="20260700">2026-07（AA）</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="未核实">未核实</td><td class="c5" data-v="未核实">未核实</td><td class="c6" data-v="">未核实</td><td class="c7" data-v="未核实">未核实</td><td class="c8" data-v="未核实">未核实</td><td class="c9" data-v="未核实">未核实</td><td class="c10" data-v="6.6" title="筛选/排序用：最低标价 $6.6/百万字符">$6.6（AA）</td><td class="c11" data-v="AA Provider #9、Controlled #9">AA Provider #9、Controlled #9</td></tr><tr data-i="7"><td class="c0" data-v="Speech 2.8 HD / Turbo"><div class="mname">Speech 2.8 HD / Turbo</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-6" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="MiniMax">MiniMax</td><td class="c2" data-v="20260123">2026-01-23</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持（优化了中日跨语言）">支持（优化了中日跨语言）</td><td class="c5" data-v="强">强</td><td class="c6" data-v="">多语种</td><td class="c7" data-v="10 秒">10 秒</td><td class="c8" data-v="语气标签">语气标签</td><td class="c9" data-v="未核实">未核实</td><td class="c10" data-v="60.0" title="筛选/排序用：最低标价 $60/百万字符">$100 / $60（AA）</td><td class="c11" data-v="AA 1175；Arena V2 1540">AA 1175；Arena V2 1540</td></tr><tr data-i="8"><td class="c0" data-v="豆包语音合成 2.0"><div class="mname">豆包语音合成 2.0</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-7" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="字节 / 火山引擎">字节 / 火山引擎</td><td class="c2" data-v="20251016">2025-10-16</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持（未上公开榜）">支持（未上公开榜）</td><td class="c5" data-v="-">-</td><td class="c6" data-v="">未核实</td><td class="c7" data-v="声音复刻 2.0">声音复刻 2.0</td><td class="c8" data-v="自然语言控制；公式朗读准确率 90%（官方）">自然语言控制；公式朗读准确率 90%（官方）</td><td class="c9" data-v="未核实">未核实</td><td class="c10" data-v="" title="筛选/排序用：仅人民币标价（未换算）">2.1~2.8 元/万字符（资源包）</td><td class="c11" data-v="未上榜">未上榜</td></tr><tr data-i="9"><td class="c0" data-v="StepAudio 2.5 TTS"><div class="mname">StepAudio 2.5 TTS</div><div class="mtags"><span class="tag t-com">商业</span> <a class="card-link" href="#s3-a-8" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="阶跃星辰">阶跃星辰</td><td class="c2" data-v="20260416">2026-04-16（AA 另有 2026-08 条目）</td><td class="c3" data-v="商业">商业</td><td class="c4" data-v="支持">支持</td><td class="c5" data-v="支持">支持</td><td class="c6" data-v="">未核实</td><td class="c7" data-v="零样本">零样本</td><td class="c8" data-v="全局 + 句中语境">全局 + 句中语境</td><td class="c9" data-v="未核实">未核实</td><td class="c10" data-v="85.0" title="筛选/排序用：最低标价 $85/百万字符">$85（AA）</td><td class="c11" data-v="AA Provider 1211（8 月条目）/ Controlled 1074">AA Provider 1211（8 月条目）/ Controlled 1074</td></tr><tr data-i="10"><td class="c0" data-v="Fish Audio Drama 3"><div class="mname">Fish Audio Drama 3</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-1" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Fish Audio">Fish Audio</td><td class="c2" data-v="20261013">2026-10-13</td><td class="c3" data-v="开放权重（社区许可）">开放权重（社区许可）</td><td class="c4" data-v="支持（分语种等级未公布）">支持（分语种等级未公布）</td><td class="c5" data-v="强">强</td><td class="c6" data-v="83">83</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="自由形式方括号指令 + 局部标签">自由形式方括号指令 + 局部标签</td><td class="c9" data-v="支持流式（首包未核实）">支持流式（首包未核实）</td><td class="c10" data-v="50.0" title="筛选/排序用：最低标价 $50/百万字符">年营收 &lt;50 万美元可免费商用；API $50（推广价 $10）</td><td class="c11" data-v="AA 开放权重 #1（1243）">AA 开放权重 #1（1243）</td></tr><tr data-i="11"><td class="c0" data-v="Fish Audio S2 Pro"><div class="mname">Fish Audio S2 Pro</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-2" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Fish Audio">Fish Audio</td><td class="c2" data-v="20260300">2026-03</td><td class="c3" data-v="开放权重（研究许可）">开放权重（研究许可）</td><td class="c4" data-v="Tier 1">Tier 1</td><td class="c5" data-v="强">强</td><td class="c6" data-v="80">80+</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="15,000+ 种标签">15,000+ 种标签</td><td class="c9" data-v="H200 上首包约 100ms">H200 上首包约 100ms</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">商用需授权</td><td class="c11" data-v="Seed zh 0.54 / en 0.99（转引）">Seed zh 0.54 / en 0.99（转引）</td></tr><tr data-i="12"><td class="c0" data-v="Breeze TTS 2"><div class="mname">Breeze TTS 2</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-3" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="BreezeBlue">BreezeBlue</td><td class="c2" data-v="20260825">2026-08-25</td><td class="c3" data-v="开放权重（非商用）">开放权重（非商用）</td><td class="c4" data-v="✓">✓</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="2">仅中英</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="Voice Design / Direction / 声音事件">Voice Design / Direction / 声音事件</td><td class="c9" data-v="H100 上 TTFA &lt;40ms">H100 上 TTFA &lt;40ms</td><td class="c10" data-v="34.0" title="筛选/排序用：最低标价 $34/百万字符">非商用；API $34</td><td class="c11" data-v="AA 开放权重 #2">AA 开放权重 #2</td></tr><tr data-i="13"><td class="c0" data-v="Qwen3-TTS"><div class="mname">Qwen3-TTS</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-4" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="阿里通义">阿里通义</td><td class="c2" data-v="20260122">2026-01-22</td><td class="c3" data-v="Apache-2.0"><strong>Apache-2.0</strong></td><td class="c4" data-v="强，含方言音色">强，含方言音色</td><td class="c5" data-v="强">强</td><td class="c6" data-v="10">10</td><td class="c7" data-v="3 秒">3 秒</td><td class="c8" data-v="指令 + Voice Design">指令 + Voice Design</td><td class="c9" data-v="首包最低 97ms">首包最低 97ms</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">免费商用</td><td class="c11" data-v="Seed zh 0.77 / en 1.24（自报）">Seed zh 0.77 / en 1.24（自报）</td></tr><tr data-i="14"><td class="c0" data-v="Fun-CosyVoice3-0.5B"><div class="mname">Fun-CosyVoice3-0.5B</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-5" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="阿里通义">阿里通义</td><td class="c2" data-v="20251200">2025-12</td><td class="c3" data-v="Apache-2.0"><strong>Apache-2.0</strong></td><td class="c4" data-v="强（18+ 方言）">强（18+ 方言）</td><td class="c5" data-v="中上">中上</td><td class="c6" data-v="9">9</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="指令（方言、情绪、语速）">指令（方言、情绪、语速）</td><td class="c9" data-v="双向流式约 150ms">双向流式约 150ms</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">免费商用</td><td class="c11" data-v="RL 版 zh 0.81 / hard 5.44">RL 版 zh 0.81 / hard 5.44</td></tr><tr data-i="15"><td class="c0" data-v="VoxCPM2"><div class="mname">VoxCPM2</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-6" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="OpenBMB">OpenBMB</td><td class="c2" data-v="20260400">2026-04</td><td class="c3" data-v="Apache-2.0"><strong>Apache-2.0</strong></td><td class="c4" data-v="强（9 种方言）">强（9 种方言）</td><td class="c5" data-v="强">强</td><td class="c6" data-v="30">30</td><td class="c7" data-v="✓ 可控克隆">✓ 可控克隆</td><td class="c8" data-v="Voice Design + 风格指令">Voice Design + 风格指令</td><td class="c9" data-v="4090 上 RTF 0.13~0.30，支持流式">4090 上 RTF 0.13~0.30，支持流式</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">免费商用</td><td class="c11" data-v="zh 0.97 / SIM 79.5">zh 0.97 / SIM 79.5</td></tr><tr data-i="16"><td class="c0" data-v="IndexTTS-2.5"><div class="mname">IndexTTS-2.5</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-7" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="B 站">B 站</td><td class="c2" data-v="20260810">2026-08-10</td><td class="c3" data-v="开源（bilibili 许可）">开源（bilibili 许可）</td><td class="c4" data-v="强">强</td><td class="c5" data-v="强">强</td><td class="c6" data-v="5">5</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="音色 / 情感解耦、情感向量；语速 duration_factor 0.5~2.0x">音色 / 情感解耦、情感向量；语速 <code>duration_factor</code> 0.5~2.0x</td><td class="c9" data-v="无毫秒数（可用 vLLM 部署）">无毫秒数（可用 vLLM 部署）</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">有规模门槛（以原文为准）</td><td class="c11" data-v="CV3 跨语种平均 6.17，表中最优">CV3 跨语种平均 6.17，表中最优</td></tr><tr data-i="17"><td class="c0" data-v="OmniVoice"><div class="mname">OmniVoice</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-8" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="k2-fsa">k2-fsa</td><td class="c2" data-v="20260300">2026-03/04</td><td class="c3" data-v="权重 CC-BY-NC">权重 CC-BY-NC</td><td class="c4" data-v="✓">✓</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="600">600+</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="属性设计、非语言符号">属性设计、非语言符号</td><td class="c9" data-v="RTF 0.025">RTF 0.025</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">非商用</td><td class="c11" data-v="HF Open TTS 多语种 #1">HF Open TTS 多语种 #1</td></tr><tr data-i="18"><td class="c0" data-v="Higgs TTS 3"><div class="mname">Higgs TTS 3</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-9" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Boson AI">Boson AI</td><td class="c2" data-v="20260600">2026-06</td><td class="c3" data-v="非商用 + 创作者授权">非商用 + 创作者授权</td><td class="c4" data-v="✓">✓</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="102">102</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="丰富的情绪 / 风格 / 韵律 token">丰富的情绪 / 风格 / 韵律 token</td><td class="c9" data-v="SSE 流式，首包亚秒级">SSE 流式，首包亚秒级</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">非商用</td><td class="c11" data-v="SeedTTS 宏平均 1.11（Boson 重跑）">SeedTTS 宏平均 1.11（Boson 重跑）</td></tr><tr data-i="19"><td class="c0" data-v="Voxtral TTS"><div class="mname">Voxtral TTS</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-10" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Mistral">Mistral</td><td class="c2" data-v="20260300">2026-03</td><td class="c3" data-v="CC-BY-NC-4.0">CC-BY-NC-4.0</td><td class="c4" data-v="✗">✗</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="9">9</td><td class="c7" data-v="可适配新音色">可适配新音色</td><td class="c8" data-v="官方称有自然韵律和情感范围">官方称有自然韵律和情感范围</td><td class="c9" data-v="H200 上 70ms">H200 上 70ms</td><td class="c10" data-v="16.0" title="筛选/排序用：最低标价 $16/百万字符">非商用；API $16</td><td class="c11" data-v="AA 1088">AA 1088</td></tr><tr data-i="20"><td class="c0" data-v="Step-Audio-EditX"><div class="mname">Step-Audio-EditX</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <span class="tag t-warn">许可未核实</span> <a class="card-link" href="#s3-b-11" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="阶跃星辰">阶跃星辰</td><td class="c2" data-v="20251000">2025-10~11</td><td class="c3" data-v="代码 Apache-2.0，权重许可未核实">代码 Apache-2.0，权重许可未核实</td><td class="c4" data-v="✓（另有川、粤标签）">✓（另有川、粤标签）</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="">+日、韩（2025-11-28）</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="情绪 / 风格 / 副语言的迭代编辑；多音字控制">情绪 / 风格 / 副语言的迭代编辑；多音字控制</td><td class="c9" data-v="未核实">未核实</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">未核实</td><td class="c11" data-v="AA 开放权重 #4（1097）">AA 开放权重 #4（1097）</td></tr><tr data-i="21"><td class="c0" data-v="Chatterbox Turbo / Nano / ML-V3"><div class="mname">Chatterbox Turbo / Nano / ML-V3</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-12" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Resemble AI">Resemble AI</td><td class="c2" data-v="20251200">Turbo 2025-12；原版 2025-05（窗口外）</td><td class="c3" data-v="MIT">MIT</td><td class="c4" data-v="ML-V3 支持语言含中文">ML-V3 支持语言含中文</td><td class="c5" data-v="强">强</td><td class="c6" data-v="23">23+</td><td class="c7" data-v="✓">✓</td><td class="c8" data-v="副语言标签 + exaggeration">副语言标签 + exaggeration</td><td class="c9" data-v="Turbo 面向低延迟；Nano 可在 CPU 运行">Turbo 面向低延迟；Nano 可在 CPU 运行</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">免费商用（带水印）</td><td class="c11" data-v="AA 1026（原版）">AA 1026（原版）</td></tr><tr data-i="22"><td class="c0" data-v="VibeVoice-Realtime-0.5B"><div class="mname">VibeVoice-Realtime-0.5B</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-13" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="微软">微软</td><td class="c2" data-v="20251203">2025-12-03</td><td class="c3" data-v="MIT（官方不建议商用）">MIT（官方不建议商用）</td><td class="c4" data-v="未核实">未核实</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="9">9 种语言的实验性音色</td><td class="c7" data-v="-">-</td><td class="c8" data-v="-">-</td><td class="c9" data-v="首包约 300ms">首包约 300ms</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">研究向</td><td class="c11" data-v="en WER 2.05">en WER 2.05</td></tr><tr data-i="23"><td class="c0" data-v="Pocket TTS"><div class="mname">Pocket TTS</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <span class="tag t-warn">来源说法不一致</span> <a class="card-link" href="#s3-b-14" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Kyutai">Kyutai</td><td class="c2" data-v="20260113">2026-01-13（训练代码 2026-08）</td><td class="c3" data-v="博客称 MIT / HF 标签 CC-BY-4.0（不一致）">博客称 MIT / HF 标签 CC-BY-4.0（不一致）</td><td class="c4" data-v="✗">✗</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="7">7 种欧洲语言</td><td class="c7" data-v="✓（约 5 秒，gated）">✓（约 5 秒，gated）</td><td class="c8" data-v="-">-</td><td class="c9" data-v="2 核 CPU 首包约 200ms">2 核 CPU 首包约 200ms</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">见许可列</td><td class="c11" data-v="HF Open TTS en 1.62">HF Open TTS en 1.62</td></tr><tr data-i="24"><td class="c0" data-v="Supertonic 3"><div class="mname">Supertonic 3</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-15" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="Supertone">Supertone</td><td class="c2" data-v="20260500">2026-05</td><td class="c3" data-v="OpenRAIL-M">OpenRAIL-M</td><td class="c4" data-v="✗（31 种语言中不含中文）">✗（31 种语言中不含中文）</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="31">31</td><td class="c7" data-v="-">-</td><td class="c8" data-v="-">-</td><td class="c9" data-v="无流式">无流式</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">有使用限制</td><td class="c11" data-v="HF Open TTS en #2">HF Open TTS en #2</td></tr><tr data-i="25"><td class="c0" data-v="Magpie Multilingual 357M"><div class="mname">Magpie Multilingual 357M</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-16" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="NVIDIA">NVIDIA</td><td class="c2" data-v="20251200">2025-12 / 2026-07</td><td class="c3" data-v="NVIDIA Open Model License">NVIDIA Open Model License</td><td class="c4" data-v="✓">✓</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="12">12</td><td class="c7" data-v="✗">✗</td><td class="c8" data-v="固定音色">固定音色</td><td class="c9" data-v="-">-</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">可商用</td><td class="c11" data-v="AA 1065">AA 1065</td></tr><tr data-i="26"><td class="c0" data-v="Raon-OpenTTS-1B"><div class="mname">Raon-OpenTTS-1B</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-18" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="KRAFTON">KRAFTON</td><td class="c2" data-v="20260520">2026-05-20（arXiv v1）</td><td class="c3" data-v="Apache-2.0（开放权重 + 开放数据）">Apache-2.0（开放权重 + 开放数据）</td><td class="c4" data-v="✗">✗</td><td class="c5" data-v="✓">✓</td><td class="c6" data-v="1">仅英文</td><td class="c7" data-v="✓（零样本）">✓（零样本）</td><td class="c8" data-v="-">-</td><td class="c9" data-v="未核实">未核实</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">免费商用</td><td class="c11" data-v="Seed-EN WER 1.78 / SIM 0.749">Seed-EN WER 1.78 / SIM 0.749</td></tr><tr data-i="27"><td class="c0" data-v="Kokoro-82M（窗口外）"><div class="mname">Kokoro-82M（窗口外）</div><div class="mtags"><span class="tag t-open">开源/开放权重</span> <a class="card-link" href="#s3-b-17" title="跳到模型卡片">卡片↗</a></div></td><td class="c1" data-v="hexgrad">hexgrad</td><td class="c2" data-v="20250127">2025-01-27</td><td class="c3" data-v="Apache-2.0">Apache-2.0</td><td class="c4" data-v="8 个普通话音色（质量未核实）">8 个普通话音色（质量未核实）</td><td class="c5" data-v="强">强</td><td class="c6" data-v="8">8 种语言 / 54 个音色</td><td class="c7" data-v="✗">✗</td><td class="c8" data-v="-">-</td><td class="c9" data-v="CPU 可运行">CPU 可运行</td><td class="c10" data-v="" title="筛选/排序用：无 API 标价">免费商用</td><td class="c11" data-v="HF Open TTS en #1">HF Open TTS en #1</td></tr></tbody></table></div><p class="derive-note">筛选分类由构建脚本按表格原文关键词归类：许可看“开源 / 商业”列；许可原文含“不一致”或“未核实”的单独归类；中文看“中文”列（以 ✗ 开头 = 不支持，“无公开数据 / 未核实”单列，其余视为支持）；语种数取“多语种”列中的第一个数字，日期不计（“仅中英”记为 2，“仅英文”记为 1）；价格取“价格 / 许可”列中的美元价（有“AA 折算”时取其中最低值，否则取最低标价；不含推广价、按 token 计价和按月订阅；人民币价不换算）。表格单元格始终显示原文。</p><p class="empty" id="cmp-empty" hidden>没有符合条件的模型。</p></div><p>（<span class="stars" aria-label="1 星">★</span> 和“强 / 中上”是根据上文榜单和自报数据做的定性判断，不是统一评测结果；“未核实”表示本次没有找到一手数据。）</p>
+</div></section><section class="sec lv2" data-id="s6"><h2 class="sec-h" id="s6"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">6. 场景推荐</span><a class="anchor" href="#s6" aria-label="本节链接">#</a></h2><div class="sec-b"><div class="widget" id="scen-widget"><div class="w-head"><span class="w-title">选择你的场景（以下为报告原文）</span><span class="spacer"></span><label class="inl"><input type="checkbox" id="scen-all"> 全部展开</label></div><div class="sc-tabs" role="tablist"><button type="button" role="tab" class="sc-tab" aria-selected="true" aria-controls="s6-1" data-k="0"><span class="sc-n">6.1</span><span class="sc-t">中文实时语音 Agent</span><span class="sc-s">客服、陪伴、语音助手</span></button><button type="button" role="tab" class="sc-tab" aria-selected="false" aria-controls="s6-2" data-k="1"><span class="sc-n">6.2</span><span class="sc-t">有声书 / 长篇内容 / 广播剧</span></button><button type="button" role="tab" class="sc-tab" aria-selected="false" aria-controls="s6-3" data-k="2"><span class="sc-n">6.3</span><span class="sc-t">声音克隆</span></button><button type="button" role="tab" class="sc-tab" aria-selected="false" aria-controls="s6-4" data-k="3"><span class="sc-n">6.4</span><span class="sc-t">端侧 / 离线 / CPU</span></button><button type="button" role="tab" class="sc-tab" aria-selected="false" aria-controls="s6-5" data-k="4"><span class="sc-n">6.5</span><span class="sc-t">低成本自托管</span><span class="sc-s">以商用合规为先</span></button><button type="button" role="tab" class="sc-tab" aria-selected="false" aria-controls="s6-6" data-k="5"><span class="sc-n">6.6</span><span class="sc-t">多语种 / 出海</span></button></div><div class="sc-panels"><section class="sc-panel" role="tabpanel" id="s6-1" ><h3 class="sc-h"><span class="h-txt">6.1 中文实时语音 Agent（客服、陪伴、语音助手）</span><a class="anchor" href="#s6-1">#</a></h3><ul>
+<li><strong>首选 API</strong>：<strong>Qwen-Audio-3.1-TTS-Flash</strong>。官方文档写明它面向实时交互，“支持多种语言和方言”和流式合成，按 token 计费（输出 12 元/百万 Token）。如果更看重音质，可以选 3.1-Plus（AA 总榜第 3、克隆榜第 2，AA 标价约为 Eleven v4 的 1/4）。</li>
+<li><strong>备选</strong>：豆包语音合成 2.0（中文生态，资源包 2.1~2.8 元/万字符）、MiniMax Speech 2.8 Turbo。出海或多语种场景可选 <strong>Eleven v4 Turbo</strong>（首声约 150ms）、<strong>Inworld Realtime TTS-2</strong>（能感知前文音频，兼容 OpenAI Realtime 协议）、<strong>Cartesia Sonic 3.6</strong>（&lt;90ms）。</li>
+<li><strong>自托管</strong>：<strong>Qwen3-TTS 1.7B / 0.6B</strong>（Apache，首包最低 97ms；建议配合 Photon、vLLM-Omni 等优化引擎，同一份权重换引擎 TTFA 相差可达 17 倍），或 <strong>Fun-CosyVoice3-0.5B</strong>（双向流式约 150ms，方言多）。</li>
+<li>⚠️ 这些延迟基本都是厂商在 H100/H200 上自测的。上线前请用自己的网络和硬件实测 P50/P95 首包延迟。</li>
+</ul>
+</section><section class="sc-panel" role="tabpanel" id="s6-2" hidden><h3 class="sc-h"><span class="h-txt">6.2 有声书 / 长篇内容 / 广播剧</span><a class="anchor" href="#s6-2">#</a></h3><ul>
+<li><strong>商业</strong>：
+<ul>
+<li><strong>Eleven v4</strong>：官方称 context stitching 能让整本有声书像一次录完；支持多说话人和音效，重复生成不漂移（见 <a class="xref" href="#s3-a-1">§3.A.1</a>）。</li>
+<li><strong>Gemini 3.8 Flash TTS</strong>：官方称能在数小时连续音频中保持音色和节奏，支持双人剧本，价格低（见 <a class="xref" href="#s3-a-4">§3.A.4</a>）。</li>
+<li><strong>Qwen-Audio-3.1-TTS-Next</strong>：人声、音效、环境音一体生成，文档列出的语种为中文和英文。但它是<strong>非流式</strong>的，单次生成上限为播客 240 秒、其他场景 120 秒，长篇需要分段（见 <a class="xref" href="#s3-a-2">§3.A.2</a>）。</li>
+</ul>
+</li>
+<li><strong>开放权重</strong>：<strong>Fish Audio Drama 3</strong>（AA 开放权重第 1，发音鲁棒性第 1，面向“渲染一次、长期保留”的剧本内容；年营收低于 50 万美元的团队可免费商用）。</li>
+<li><strong>完全开源可商用</strong>：<strong>VoxCPM2</strong>（48kHz，Voice Design，Apache）。<strong>IndexTTS-2.5</strong> 有情感解耦和语速调节（<code>duration_factor</code>），但精确时长控制在 IndexTTS-2 中尚未启用，配音对口型的效果需要实测；另外要注意许可门槛。</li>
+</ul>
+</section><section class="sc-panel" role="tabpanel" id="s6-3" hidden><h3 class="sc-h"><span class="h-txt">6.3 声音克隆</span><a class="anchor" href="#s6-3">#</a></h3><ul>
+<li><strong>商业</strong>：AA Controlled Voice 榜前两名是 <strong>HeyGen Voice</strong>（#1，1195，AA 标 $30）和 <strong>Qwen-Audio-3.1-TTS-Plus</strong>（#2，1180，AA 标 $19.3，在前 8 名中标价最低）。之后是 Eleven v4 / v4 Turbo（$80 / $40）。如果更在意单价，榜上更便宜的有 Simba 3.2（#9，$6.6）、Realtime TTS-2 Flash（#12，$10.4）、Gemini 3.8 Flash-Lite（#13，$11.0），但克隆盲听分明显更低。正规服务都要求音色所有者同意：Google 要求提交同意录音，ElevenLabs 要求验证，HeyGen 要求明确同意。</li>
+<li><strong>开源可商用</strong>：<strong>Qwen3-TTS Base</strong>（3 秒克隆，HF Open TTS 克隆视图中排名最高的 Apache 模型）、<strong>VoxCPM2</strong>（9 语言克隆视图 SIM 最高，支持可控克隆）、<strong>Fun-CosyVoice3</strong>（中文 SIM 高）。</li>
+<li><strong>仅限研究</strong>：OmniVoice、Fish S2 Pro、Higgs TTS 3 的克隆客观分很高，但许可受限。</li>
+</ul>
+</section><section class="sc-panel" role="tabpanel" id="s6-4" hidden><h3 class="sc-h"><span class="h-txt">6.4 端侧 / 离线 / CPU</span><a class="anchor" href="#s6-4">#</a></h3><ul>
+<li><strong>英文和欧洲语言</strong>：<strong>Pocket TTS</strong>（2 核 CPU，首包约 200ms，支持克隆，可在浏览器运行；许可证说法不一，见 <a class="xref" href="#s3-b-14">§3.B.14</a>）、<strong>Kokoro-82M</strong>（Apache，吞吐高，不支持克隆）、<strong>Chatterbox-Nano</strong>（MIT，110M）。</li>
+<li><strong>多语种（不含中文）</strong>：<strong>Supertonic 3</strong>（31 种语言，但没有流式，OpenRAIL-M 有使用限制）。</li>
+<li><strong>含中文的轻量选项</strong>：Kokoro-82M 带 8 个普通话音色（质量未核实，不支持克隆）；<strong>VoxCPM2 GGUF</strong>（llama.cpp，在 M4 Pro 上非实时）。</li>
+<li><strong>结论</strong>：<strong>目前还没有经过公开验证、能在端侧做中文实时合成的高质量小模型</strong>。建议对 Kokoro 普通话音色或量化后的 Qwen3-TTS-0.6B 做实测。</li>
+</ul>
+</section><section class="sc-panel" role="tabpanel" id="s6-5" hidden><h3 class="sc-h"><span class="h-txt">6.5 低成本自托管（以商用合规为先）</span><a class="anchor" href="#s6-5">#</a></h3><ul>
+<li>按许可证友好程度排序：<strong>Qwen3-TTS（Apache）≈ VoxCPM2（Apache）≈ Fun-CosyVoice3（Apache）&gt; Chatterbox（MIT，带水印）&gt; Magpie（NVIDIA 许可）</strong>。只做英文的话，还可以考虑 Raon-OpenTTS（Apache，开放数据）。</li>
+<li>单卡参考：VoxCPM2 约 8GB 显存（官方）；Breeze TTS 2 约 7.7GiB（官方，但非商用）；Qwen3-TTS、CosyVoice3 的官方显存数字本次未核实（CosyVoice3 只有 0.5B，参数量更小）。</li>
+<li>不想自备 GPU 的话，可以直接用 API：Qwen-Audio-3.1-TTS-Flash（输出 12 元/百万 Token）、Gemini 3.8 Flash-Lite TTS（AA 折算 $11/百万字符）、Speechify Simba 3.2（$6.6/百万字符，AA Provider 第 9；能力细节未核实）。</li>
+</ul>
+</section><section class="sc-panel" role="tabpanel" id="s6-6" hidden><h3 class="sc-h"><span class="h-txt">6.6 多语种 / 出海</span><a class="anchor" href="#s6-6">#</a></h3><ul>
+<li><strong>商业</strong>：Eleven v4（90+）、Gemini 3.8（100+）、Inworld TTS-2（100+，同一音色跨语种）、Cartesia Sonic 3.6（44 种语言 / 61 locale，印度语种强）。</li>
+<li><strong>开源可商用</strong>：<strong>VoxCPM2（30 种语言）</strong>、<strong>Qwen3-TTS（10 种语言，9 语言客观榜上排名最高的 Apache 模型）</strong>。</li>
+<li><strong>长尾语言（仅限研究）</strong>：OmniVoice（600+）、Higgs TTS 3（102）、Fish S2 Pro / Drama 3（80+ / 83）。</li>
+</ul>
+</section></div></div></div></section><section class="sec lv2" data-id="s7"><h2 class="sec-h" id="s7"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">7. 风险与注意事项</span><a class="anchor" href="#s7" aria-label="本节链接">#</a></h2><div class="sec-b"><ol>
+<li><strong>榜单时效性</strong>：AA 在 2026-10-14 的快照里，前 10 名中有 9 个是近两个月发布的。X 上各日期帖子引用的 Elo 数值都不一样（比如 Eleven v4 在 1319~1328 之间）。选型前请重新查看实时榜单。</li>
+<li><strong>AA 榜单只有英语口音</strong>（Controlled 榜明确是 4 个美音 + 4 个英音，Provider 榜筛选项只有 US/UK）。<strong>中文质量不能直接用 AA 排名推断</strong>，中文场景应以 Seed-TTS-eval（zh）、方言测试和自己的盲听为准。</li>
+<li><strong>“开放权重” ≠ “可商用”</strong>：Drama 3（营收门槛）、S2 Pro、Breeze TTS 2、OmniVoice、Voxtral、Higgs TTS 3 都有商用限制；IndexTTS 使用自定义许可证。</li>
+<li><strong>价格口径不同</strong>：AA 统一折算为“每百万字符美元价”，阿里、火山引擎是“元/万字符”或“元/百万 token”，Gemini 按 token 计费，而且 2027-01-01 起涨价一倍。另外，Fish Drama 3 的官方 API 价（$50）与 AA 标注（$15）不一致。</li>
+<li><strong>合规</strong>：克隆功能普遍要求同意验证；Gemini 自带 SynthID，Chatterbox 自带 PerTh 水印。在国内上线还需要遵守深度合成相关规定（本报告未展开）。</li>
+</ol>
+</div></section><section class="sec lv2" data-id="s8"><h2 class="sec-h" id="s8"><button class="tog" type="button" aria-expanded="true" aria-label="折叠/展开"></button><span class="h-txt">8. 来源清单（均为本次实际抓取；arXiv 链接取自官方 README、卡片或博客，Raon 的摘要页已直接抓取）</span><a class="anchor" href="#s8" aria-label="本节链接">#</a></h2><div class="sec-b"><p><strong>榜单与评测</strong></p>
+<ul>
+<li>Artificial Analysis Provider Voice：<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice" target="_blank" rel="noopener noreferrer">https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice</a></li>
+<li>AA 开放权重：<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice/open-weights" target="_blank" rel="noopener noreferrer">https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice/open-weights</a></li>
+<li>AA Controlled Voice：<a href="https://artificialanalysis.ai/text-to-speech/leaderboard/controlled-voice" target="_blank" rel="noopener noreferrer">https://artificialanalysis.ai/text-to-speech/leaderboard/controlled-voice</a></li>
+<li>TTS Arena V2 API：<a href="https://tts-agi-tts-arena-v2.hf.space/api/leaderboard" target="_blank" rel="noopener noreferrer">https://tts-agi-tts-arena-v2.hf.space/api/leaderboard</a></li>
+<li>HF Open TTS Leaderboard 博客：<a href="https://huggingface.co/blog/open-tts-leaderboard" target="_blank" rel="noopener noreferrer">https://huggingface.co/blog/open-tts-leaderboard</a></li>
+<li>creativeainews 对 Open TTS 榜的转述和许可证解读（第三方）：<a href="https://www.creativeainews.com/articles/open-tts-leaderboard-license-cpu-test-2026/" target="_blank" rel="noopener noreferrer">https://www.creativeainews.com/articles/open-tts-leaderboard-license-cpu-test-2026/</a></li>
+<li>Seed-TTS-eval：<a href="https://github.com/BytedanceSpeech/seed-tts-eval/" target="_blank" rel="noopener noreferrer">https://github.com/BytedanceSpeech/seed-tts-eval/</a></li>
+</ul>
+<p><strong>商业模型</strong></p>
+<ul>
+<li>ElevenLabs v4 博客：<a href="https://elevenlabs.io/blog/eleven-v4" target="_blank" rel="noopener noreferrer">https://elevenlabs.io/blog/eleven-v4</a> ；产品页：<a href="https://elevenlabs.io/v4" target="_blank" rel="noopener noreferrer">https://elevenlabs.io/v4</a> ；TechCrunch：<a href="https://techcrunch.com/2026/09/28/elevenlabs-new-v4-speech-model-supports-more-expression-control-and-90-languages/" target="_blank" rel="noopener noreferrer">https://techcrunch.com/2026/09/28/elevenlabs-new-v4-speech-model-supports-more-expression-control-and-90-languages/</a></li>
+<li>阿里 Qwen-Audio-3.1 发布（IT之家）：<a href="https://www.ithome.com/1/006/280.htm" target="_blank" rel="noopener noreferrer">https://www.ithome.com/1/006/280.htm</a>
+<ul>
+<li>3.0-TTS-Plus 文档：<a href="https://help.aliyun.com/zh/model-studio/qwen-audio-3-0-tts-plus" target="_blank" rel="noopener noreferrer">https://help.aliyun.com/zh/model-studio/qwen-audio-3-0-tts-plus</a></li>
+<li>3.1-TTS-Flash 文档：<a href="https://help.aliyun.com/zh/model-studio/qwen-audio-3-1-tts-flash" target="_blank" rel="noopener noreferrer">https://help.aliyun.com/zh/model-studio/qwen-audio-3-1-tts-flash</a></li>
+<li>3.1-TTS-Next 文档：<a href="https://help.aliyun.com/zh/model-studio/qwen-audio-3-1-tts-next" target="_blank" rel="noopener noreferrer">https://help.aliyun.com/zh/model-studio/qwen-audio-3-1-tts-next</a></li>
+</ul>
+</li>
+<li>Cartesia Sonic 3.6：<a href="https://www.cartesia.ai/blog/sonic-3.6" target="_blank" rel="noopener noreferrer">https://www.cartesia.ai/blog/sonic-3.6</a></li>
+<li>Gemini 3.8 TTS：<a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-text-to-speech/" target="_blank" rel="noopener noreferrer">https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-text-to-speech/</a> ；定价：<a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">https://ai.google.dev/gemini-api/docs/pricing</a></li>
+<li>Inworld Realtime TTS-2：<a href="https://inworld.ai/blog/realtime-tts-2" target="_blank" rel="noopener noreferrer">https://inworld.ai/blog/realtime-tts-2</a></li>
+<li>HeyGen Voice 新闻稿（HeyGen 经 PRNewswire 发布，BusinessPressWire 转载）：<a href="https://businesspresswire.com/2026/10/09/heygen-launches-heygen-voice-debuting-at-1-on-artificial-analysis-leaderboard/" target="_blank" rel="noopener noreferrer">https://businesspresswire.com/2026/10/09/heygen-launches-heygen-voice-debuting-at-1-on-artificial-analysis-leaderboard/</a> ；开发者文档：<a href="https://developers.heygen.com/docs/voices/heygen-voice-instant-clone" target="_blank" rel="noopener noreferrer">https://developers.heygen.com/docs/voices/heygen-voice-instant-clone</a></li>
+<li>MiniMax Speech 2.8：<a href="https://www.minimax.io/news/minimax-speech-28" target="_blank" rel="noopener noreferrer">https://www.minimax.io/news/minimax-speech-28</a></li>
+<li>豆包语音合成 2.0（IT之家）：<a href="https://www.ithome.com/0/889/888.htm" target="_blank" rel="noopener noreferrer">https://www.ithome.com/0/889/888.htm</a> ；火山引擎计费：<a href="https://www.volcengine.com/docs/6561/1359370" target="_blank" rel="noopener noreferrer">https://www.volcengine.com/docs/6561/1359370</a></li>
+<li>StepAudio 2.5 TTS（IT之家）：<a href="https://www.ithome.com/0/939/919.htm" target="_blank" rel="noopener noreferrer">https://www.ithome.com/0/939/919.htm</a></li>
+</ul>
+<p><strong>开源模型</strong></p>
+<ul>
+<li>Fish Audio Drama 3 博客：<a href="https://fish.audio/blog/fish-audio-drama-3/" target="_blank" rel="noopener noreferrer">https://fish.audio/blog/fish-audio-drama-3/</a> ；fish-speech：<a href="https://github.com/fishaudio/fish-speech" target="_blank" rel="noopener noreferrer">https://github.com/fishaudio/fish-speech</a> ；S2 Pro：<a href="https://huggingface.co/fishaudio/s2-pro" target="_blank" rel="noopener noreferrer">https://huggingface.co/fishaudio/s2-pro</a> ；S2 技术报告 <a href="https://arxiv.org/abs/2603.08823" target="_blank" rel="noopener noreferrer">arXiv 2603.08823</a></li>
+<li>Breeze TTS 2：<a href="https://huggingface.co/BreezeBlue/Breeze-TTS-2" target="_blank" rel="noopener noreferrer">https://huggingface.co/BreezeBlue/Breeze-TTS-2</a></li>
+<li>Qwen3-TTS：<a href="https://github.com/QwenLM/Qwen3-TTS" target="_blank" rel="noopener noreferrer">https://github.com/QwenLM/Qwen3-TTS</a></li>
+<li>CosyVoice：<a href="https://github.com/FunAudioLLM/CosyVoice" target="_blank" rel="noopener noreferrer">https://github.com/FunAudioLLM/CosyVoice</a></li>
+<li>VoxCPM：<a href="https://github.com/OpenBMB/VoxCPM" target="_blank" rel="noopener noreferrer">https://github.com/OpenBMB/VoxCPM</a> ；VoxCPM2 技术报告 <a href="https://arxiv.org/abs/2606.06928" target="_blank" rel="noopener noreferrer">arXiv 2606.06928</a>；VoxCPM 技术报告 <a href="https://arxiv.org/abs/2509.24650" target="_blank" rel="noopener noreferrer">arXiv 2509.24650</a></li>
+<li>IndexTTS：<a href="https://github.com/index-tts/index-tts" target="_blank" rel="noopener noreferrer">https://github.com/index-tts/index-tts</a></li>
+<li>OmniVoice：<a href="https://github.com/k2-fsa/OmniVoice" target="_blank" rel="noopener noreferrer">https://github.com/k2-fsa/OmniVoice</a> ；<a href="https://huggingface.co/k2-fsa/OmniVoice" target="_blank" rel="noopener noreferrer">https://huggingface.co/k2-fsa/OmniVoice</a> ；<a href="https://arxiv.org/abs/2604.00688" target="_blank" rel="noopener noreferrer">arXiv 2604.00688</a></li>
+<li>Higgs TTS 3：<a href="https://huggingface.co/bosonai/higgs-tts-3-4b" target="_blank" rel="noopener noreferrer">https://huggingface.co/bosonai/higgs-tts-3-4b</a></li>
+<li>Voxtral TTS：<a href="https://huggingface.co/mistralai/Voxtral-4B-TTS-2603" target="_blank" rel="noopener noreferrer">https://huggingface.co/mistralai/Voxtral-4B-TTS-2603</a> ；<a href="https://arxiv.org/abs/2603.25551" target="_blank" rel="noopener noreferrer">arXiv 2603.25551</a></li>
+<li>Step-Audio-EditX：<a href="https://huggingface.co/stepfun-ai/Step-Audio-EditX" target="_blank" rel="noopener noreferrer">https://huggingface.co/stepfun-ai/Step-Audio-EditX</a></li>
+<li>Chatterbox：<a href="https://github.com/resemble-ai/chatterbox" target="_blank" rel="noopener noreferrer">https://github.com/resemble-ai/chatterbox</a> ；<a href="https://huggingface.co/ResembleAI/chatterbox-turbo" target="_blank" rel="noopener noreferrer">https://huggingface.co/ResembleAI/chatterbox-turbo</a></li>
+<li>VibeVoice：<a href="https://github.com/microsoft/VibeVoice" target="_blank" rel="noopener noreferrer">https://github.com/microsoft/VibeVoice</a></li>
+<li>Pocket TTS：<a href="https://github.com/kyutai-labs/pocket-tts" target="_blank" rel="noopener noreferrer">https://github.com/kyutai-labs/pocket-tts</a> ；技术报告 / 博客：<a href="https://kyutai.org/blog/2026-01-13-pocket-tts" target="_blank" rel="noopener noreferrer">https://kyutai.org/blog/2026-01-13-pocket-tts</a></li>
+<li>Supertonic 3：<a href="https://huggingface.co/Supertone/supertonic-3" target="_blank" rel="noopener noreferrer">https://huggingface.co/Supertone/supertonic-3</a></li>
+<li>Magpie TTS：<a href="https://huggingface.co/nvidia/magpie_tts_multilingual_357m" target="_blank" rel="noopener noreferrer">https://huggingface.co/nvidia/magpie_tts_multilingual_357m</a></li>
+<li>Kokoro-82M：<a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener noreferrer">https://huggingface.co/hexgrad/Kokoro-82M</a> ；音色列表：<a href="https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md" target="_blank" rel="noopener noreferrer">https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md</a></li>
+<li>Raon-OpenTTS：<a href="https://github.com/krafton-ai/RAON-OpenTTS" target="_blank" rel="noopener noreferrer">https://github.com/krafton-ai/RAON-OpenTTS</a> ；<a href="https://arxiv.org/abs/2605.20830" target="_blank" rel="noopener noreferrer">arXiv 2605.20830</a></li>
+<li>Hugging Face Hub API（仓库创建时间、许可证标签）：<a href="https://huggingface.co/api/models/" target="_blank" rel="noopener noreferrer">https://huggingface.co/api/models/</a>&lt;repo&gt;</li>
+</ul>
+<p><strong>X（交叉印证）</strong></p>
+<ul>
+<li>AA：Eleven v4 Turbo 登顶 <a href="https://x.com/ArtificialAnlys/status/2107267465604649164" target="_blank" rel="noopener noreferrer">https://x.com/ArtificialAnlys/status/2107267465604649164</a></li>
+<li>AA：HeyGen Voice 登顶 Controlled 榜 <a href="https://x.com/ArtificialAnlys/status/2108608255387935199" target="_blank" rel="noopener noreferrer">https://x.com/ArtificialAnlys/status/2108608255387935199</a> ；发音鲁棒性 <a href="https://x.com/ArtificialAnlys/status/2108608264317599814" target="_blank" rel="noopener noreferrer">https://x.com/ArtificialAnlys/status/2108608264317599814</a></li>
+<li>AA：Drama 3 Preview 成为开放权重第 1 <a href="https://x.com/ArtificialAnlys/status/2110081938140582085" target="_blank" rel="noopener noreferrer">https://x.com/ArtificialAnlys/status/2110081938140582085</a></li>
+<li>Pocket TTS 训练代码开源讨论：<a href="https://x.com/daivbr/status/2092466396143722501" target="_blank" rel="noopener noreferrer">https://x.com/daivbr/status/2092466396143722501</a></li>
+</ul>
+<blockquote>
+<p>说明：“HF 仓库创建于”指 Hugging Face API 返回的 createdAt，可能早于正式公开发布的日期；正式发布日期以 README、博客中的 News 条目为准。</p>
+</blockquote>
+</div></section>
+    <footer class="foot">由 build-tts/build.py 自 tts-models-report.md 生成 · 单文件、离线可用</footer>
+  </main>
+</div>
+<button type="button" class="totop" id="totop" aria-label="回到顶部">↑</button>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script type="application/json" id="data">{"cmp": [{"name": "Eleven v4 / v4 Turbo", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": 90, "langB": "30–99", "price": 40.0, "priceNote": "最低标价 $40/百万字符", "priceB": "$20–50", "date": "20260928", "card": "s3-a-1", "text": "Eleven v4 / v4 Turbo ElevenLabs 2026-09-28 商业 支持（官方称普通话、粤语提升大；无中文盲测） ★★★★★ 90+ 10 秒 IVC + PVC 可叠加的内联音频标签；多说话人；context stitching Turbo 推理约 100ms，首声约 150ms，双向流式 $40（Turbo）/ $80 每百万字符（AA） AA Provider #1/#2"}, {"name": "Qwen-Audio-3.1-TTS-Plus / Flash", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": null, "langB": "未给数字", "price": 19.3, "priceNote": "最低标价 $19.3/百万字符", "priceB": "≤ $20", "date": "20260923", "card": "s3-a-2", "text": "Qwen-Audio-3.1-TTS-Plus / Flash 阿里 2026-09-23 商业 支持，多方言（具体列表未核实） 支持 多语种 + 跨语言音色迁移 ✓（Flash 对噪声参考更鲁棒） free-style 指令 + 标签 Flash 支持 WebSocket 流式（无毫秒数） Plus $19.3（AA，官方价未核实）；Flash 输出 12 元/百万 Token；3.0-Plus 1.4 元/万字符 AA Provider #3、Controlled #2"}, {"name": "Sonic 3.6", "kind": "商业", "lic": "商业 API", "zh": "未核实 / 无数据", "langs": 44, "langB": "30–99", "price": 49.0, "priceNote": "最低标价 $49/百万字符", "priceB": "$20–50", "date": "20260827", "card": "s3-a-3", "text": "Sonic 3.6 Cartesia 2026-08-27 商业 无公开数据 强 44 种语言 / 61 locale IVC 随上下文调整情感（官方自述） 首包 <90ms $49（AA） AA Provider #4"}, {"name": "Gemini 3.8 Flash TTS / Flash-Lite", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": 100, "langB": "≥100", "price": 11.0, "priceNote": "AA 折算最低 $11/百万字符", "priceB": "≤ $20", "date": "20260923", "card": "s3-a-4", "text": "Gemini 3.8 Flash TTS / Flash-Lite Google 2026-09-23 商业 支持（100+ 种语言之一） 强 100+ 30 秒复刻（需同意录音） 自然语言导演、双人对话；官方称可保持数小时长音频稳定 无数字 输入 $0.5 / 输出 $9 每百万 token（2027 起翻倍）；AA 折算 $16.5 / $11 AA Provider #5 / #8；Controlled #18 / #13"}, {"name": "Realtime TTS-2 / TTS-2 Flash", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": 100, "langB": "≥100", "price": 10.4, "priceNote": "最低标价 $10.4/百万字符", "priceB": "≤ $20", "date": "20260831", "card": "s3-a-5", "text": "Realtime TTS-2 / TTS-2 Flash Inworld 2026-08-31 GA 商业 支持（100+ 种语言之一） 强 100+ 5~15 秒 自然语言方向 + 感知前文音频 中位首包 <200ms $20.8 / $10.4（AA） AA Provider #7 / #13"}, {"name": "HeyGen Voice", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": 39, "langB": "30–99", "price": 30.0, "priceNote": "最低标价 $30/百万字符", "priceB": "$20–50", "date": "20261009", "card": "s3-a-9", "text": "HeyGen Voice HeyGen 2026-10-09 商业 文档语言列表含 zh 支持 39 种基础语言代码（文档） 单段录音 IVC；PVC 需 30 分钟~3 小时 新闻稿称有自然的强调、情感和节奏 有 SSE 流式接口（无毫秒数） 新闻稿称平台和 API 内免费；AA 标 $30；PVC 附加 $99/月 AA Controlled #1（1195）"}, {"name": "Simba 3.2", "kind": "商业", "lic": "商业 API", "zh": "未核实 / 无数据", "langs": null, "langB": "未给数字", "price": 6.6, "priceNote": "最低标价 $6.6/百万字符", "priceB": "≤ $20", "date": "20260700", "card": "s3-a-9", "text": "Simba 3.2 Speechify 2026-07（AA） 商业 未核实 未核实 未核实 未核实 未核实 未核实 $6.6（AA） AA Provider #9、Controlled #9"}, {"name": "Speech 2.8 HD / Turbo", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": null, "langB": "未给数字", "price": 60.0, "priceNote": "最低标价 $60/百万字符", "priceB": "> $50", "date": "20260123", "card": "s3-a-6", "text": "Speech 2.8 HD / Turbo MiniMax 2026-01-23 商业 支持（优化了中日跨语言） 强 多语种 10 秒 语气标签 未核实 $100 / $60（AA） AA 1175；Arena V2 1540"}, {"name": "豆包语音合成 2.0", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": null, "langB": "未给数字", "price": null, "priceNote": "仅人民币标价（未换算）", "priceB": "仅人民币标价", "date": "20251016", "card": "s3-a-7", "text": "豆包语音合成 2.0 字节 / 火山引擎 2025-10-16 商业 支持（未上公开榜） - 未核实 声音复刻 2.0 自然语言控制；公式朗读准确率 90%（官方） 未核实 2.1~2.8 元/万字符（资源包） 未上榜"}, {"name": "StepAudio 2.5 TTS", "kind": "商业", "lic": "商业 API", "zh": "支持", "langs": null, "langB": "未给数字", "price": 85.0, "priceNote": "最低标价 $85/百万字符", "priceB": "> $50", "date": "20260416", "card": "s3-a-8", "text": "StepAudio 2.5 TTS 阶跃星辰 2026-04-16（AA 另有 2026-08 条目） 商业 支持 支持 未核实 零样本 全局 + 句中语境 未核实 $85（AA） AA Provider 1211（8 月条目）/ Controlled 1074"}, {"name": "Fish Audio Drama 3", "kind": "开源 / 开放权重", "lic": "自定义 / 有条件许可", "zh": "支持", "langs": 83, "langB": "30–99", "price": 50.0, "priceNote": "最低标价 $50/百万字符", "priceB": "$20–50", "date": "20261013", "card": "s3-b-1", "text": "Fish Audio Drama 3 Fish Audio 2026-10-13 开放权重（社区许可） 支持（分语种等级未公布） 强 83 ✓ 自由形式方括号指令 + 局部标签 支持流式（首包未核实） 年营收 <50 万美元可免费商用；API $50（推广价 $10） AA 开放权重 #1（1243）"}, {"name": "Fish Audio S2 Pro", "kind": "开源 / 开放权重", "lic": "非商用 / 研究许可", "zh": "支持", "langs": 80, "langB": "30–99", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260300", "card": "s3-b-2", "text": "Fish Audio S2 Pro Fish Audio 2026-03 开放权重（研究许可） Tier 1 强 80+ ✓ 15,000+ 种标签 H200 上首包约 100ms 商用需授权 Seed zh 0.54 / en 0.99（转引）"}, {"name": "Breeze TTS 2", "kind": "开源 / 开放权重", "lic": "非商用 / 研究许可", "zh": "支持", "langs": 2, "langB": "<10", "price": 34.0, "priceNote": "最低标价 $34/百万字符", "priceB": "$20–50", "date": "20260825", "card": "s3-b-3", "text": "Breeze TTS 2 BreezeBlue 2026-08-25 开放权重（非商用） ✓ ✓ 仅中英 ✓ Voice Design / Direction / 声音事件 H100 上 TTFA <40ms 非商用；API $34 AA 开放权重 #2"}, {"name": "Qwen3-TTS", "kind": "开源 / 开放权重", "lic": "Apache-2.0", "zh": "支持", "langs": 10, "langB": "10–29", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260122", "card": "s3-b-4", "text": "Qwen3-TTS 阿里通义 2026-01-22 Apache-2.0 强，含方言音色 强 10 3 秒 指令 + Voice Design 首包最低 97ms 免费商用 Seed zh 0.77 / en 1.24（自报）"}, {"name": "Fun-CosyVoice3-0.5B", "kind": "开源 / 开放权重", "lic": "Apache-2.0", "zh": "支持", "langs": 9, "langB": "<10", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20251200", "card": "s3-b-5", "text": "Fun-CosyVoice3-0.5B 阿里通义 2025-12 Apache-2.0 强（18+ 方言） 中上 9 ✓ 指令（方言、情绪、语速） 双向流式约 150ms 免费商用 RL 版 zh 0.81 / hard 5.44"}, {"name": "VoxCPM2", "kind": "开源 / 开放权重", "lic": "Apache-2.0", "zh": "支持", "langs": 30, "langB": "30–99", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260400", "card": "s3-b-6", "text": "VoxCPM2 OpenBMB 2026-04 Apache-2.0 强（9 种方言） 强 30 ✓ 可控克隆 Voice Design + 风格指令 4090 上 RTF 0.13~0.30，支持流式 免费商用 zh 0.97 / SIM 79.5"}, {"name": "IndexTTS-2.5", "kind": "开源 / 开放权重", "lic": "自定义 / 有条件许可", "zh": "支持", "langs": 5, "langB": "<10", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260810", "card": "s3-b-7", "text": "IndexTTS-2.5 B 站 2026-08-10 开源（bilibili 许可） 强 强 5 ✓ 音色 / 情感解耦、情感向量；语速 duration_factor 0.5~2.0x 无毫秒数（可用 vLLM 部署） 有规模门槛（以原文为准） CV3 跨语种平均 6.17，表中最优"}, {"name": "OmniVoice", "kind": "开源 / 开放权重", "lic": "非商用 / 研究许可", "zh": "支持", "langs": 600, "langB": "≥100", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260300", "card": "s3-b-8", "text": "OmniVoice k2-fsa 2026-03/04 权重 CC-BY-NC ✓ ✓ 600+ ✓ 属性设计、非语言符号 RTF 0.025 非商用 HF Open TTS 多语种 #1"}, {"name": "Higgs TTS 3", "kind": "开源 / 开放权重", "lic": "非商用 / 研究许可", "zh": "支持", "langs": 102, "langB": "≥100", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260600", "card": "s3-b-9", "text": "Higgs TTS 3 Boson AI 2026-06 非商用 + 创作者授权 ✓ ✓ 102 ✓ 丰富的情绪 / 风格 / 韵律 token SSE 流式，首包亚秒级 非商用 SeedTTS 宏平均 1.11（Boson 重跑）"}, {"name": "Voxtral TTS", "kind": "开源 / 开放权重", "lic": "非商用 / 研究许可", "zh": "不支持", "langs": 9, "langB": "<10", "price": 16.0, "priceNote": "最低标价 $16/百万字符", "priceB": "≤ $20", "date": "20260300", "card": "s3-b-10", "text": "Voxtral TTS Mistral 2026-03 CC-BY-NC-4.0 ✗ ✓ 9 可适配新音色 官方称有自然韵律和情感范围 H200 上 70ms 非商用；API $16 AA 1088"}, {"name": "Step-Audio-EditX", "kind": "开源 / 开放权重", "lic": "许可未核实", "zh": "支持", "langs": null, "langB": "未给数字", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20251000", "card": "s3-b-11", "text": "Step-Audio-EditX 阶跃星辰 2025-10~11 代码 Apache-2.0，权重许可未核实 ✓（另有川、粤标签） ✓ +日、韩（2025-11-28） ✓ 情绪 / 风格 / 副语言的迭代编辑；多音字控制 未核实 未核实 AA 开放权重 #4（1097）"}, {"name": "Chatterbox Turbo / Nano / ML-V3", "kind": "开源 / 开放权重", "lic": "MIT", "zh": "支持", "langs": 23, "langB": "10–29", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20251200", "card": "s3-b-12", "text": "Chatterbox Turbo / Nano / ML-V3 Resemble AI Turbo 2025-12；原版 2025-05（窗口外） MIT ML-V3 支持语言含中文 强 23+ ✓ 副语言标签 + exaggeration Turbo 面向低延迟；Nano 可在 CPU 运行 免费商用（带水印） AA 1026（原版）"}, {"name": "VibeVoice-Realtime-0.5B", "kind": "开源 / 开放权重", "lic": "MIT", "zh": "未核实 / 无数据", "langs": 9, "langB": "<10", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20251203", "card": "s3-b-13", "text": "VibeVoice-Realtime-0.5B 微软 2025-12-03 MIT（官方不建议商用） 未核实 ✓ 9 种语言的实验性音色 - - 首包约 300ms 研究向 en WER 2.05"}, {"name": "Pocket TTS", "kind": "开源 / 开放权重", "lic": "来源说法不一致", "zh": "不支持", "langs": 7, "langB": "<10", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260113", "card": "s3-b-14", "text": "Pocket TTS Kyutai 2026-01-13（训练代码 2026-08） 博客称 MIT / HF 标签 CC-BY-4.0（不一致） ✗ ✓ 7 种欧洲语言 ✓（约 5 秒，gated） - 2 核 CPU 首包约 200ms 见许可列 HF Open TTS en 1.62"}, {"name": "Supertonic 3", "kind": "开源 / 开放权重", "lic": "自定义 / 有条件许可", "zh": "不支持", "langs": 31, "langB": "30–99", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260500", "card": "s3-b-15", "text": "Supertonic 3 Supertone 2026-05 OpenRAIL-M ✗（31 种语言中不含中文） ✓ 31 - - 无流式 有使用限制 HF Open TTS en #2"}, {"name": "Magpie Multilingual 357M", "kind": "开源 / 开放权重", "lic": "自定义 / 有条件许可", "zh": "支持", "langs": 12, "langB": "10–29", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20251200", "card": "s3-b-16", "text": "Magpie Multilingual 357M NVIDIA 2025-12 / 2026-07 NVIDIA Open Model License ✓ ✓ 12 ✗ 固定音色 - 可商用 AA 1065"}, {"name": "Raon-OpenTTS-1B", "kind": "开源 / 开放权重", "lic": "Apache-2.0", "zh": "不支持", "langs": 1, "langB": "<10", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20260520", "card": "s3-b-18", "text": "Raon-OpenTTS-1B KRAFTON 2026-05-20（arXiv v1） Apache-2.0（开放权重 + 开放数据） ✗ ✓ 仅英文 ✓（零样本） - 未核实 免费商用 Seed-EN WER 1.78 / SIM 0.749"}, {"name": "Kokoro-82M（窗口外）", "kind": "开源 / 开放权重", "lic": "Apache-2.0", "zh": "支持", "langs": 8, "langB": "<10", "price": null, "priceNote": "无 API 标价", "priceB": "无 API 标价", "date": "20250127", "card": "s3-b-17", "text": "Kokoro-82M（窗口外） hexgrad 2025-01-27 Apache-2.0 8 个普通话音色（质量未核实） 强 8 种语言 / 54 个音色 ✗ - CPU 可运行 免费商用 HF Open TTS en #1"}], "cmpHeader": ["模型", "发布方", "发布时间", "开源 / 商业", "中文", "英文", "多语种", "克隆", "情感 / 指令控制", "延迟 / 流式（多为自报）", "价格 / 许可", "代表性榜单"], "eval": [{"name": "Seed-TTS（闭源参照，2024，窗口外）", "params": "-", "open": "✗", "closed": true, "src": "VoxCPM README", "card": null, "oow": true, "zhcer": {"t": "num", "v": 1.12}, "zhsim": {"t": "num", "v": 79.6}, "enwer": {"t": "num", "v": 2.25}, "ensim": {"t": "num", "v": 76.2}, "hard": {"t": "num", "v": 7.59}, "hardsim": {"t": "num", "v": 77.6}}, {"name": "MiniMax-Speech（旧版，窗口外）", "params": "-", "open": "✗", "closed": true, "src": "VoxCPM README", "card": "s3-a-6", "oow": true, "zhcer": {"t": "num", "v": 0.83}, "zhsim": {"t": "num", "v": 78.3}, "enwer": {"t": "num", "v": 1.65}, "ensim": {"t": "num", "v": 69.2}, "hard": {"t": "none"}, "hardsim": {"t": "none"}}, {"name": "Fish Audio S2（VoxCPM 表中写作 “FishAudio S2, 4B”，即 §3.B.2 的 S2 Pro：Slow AR 4B + Fast AR 0.4B）", "params": "4B+0.4B", "open": "权重（研究许可）", "closed": false, "src": "VoxCPM README（转引）", "card": "s3-b-2", "oow": false, "zhcer": {"t": "num", "v": 0.54}, "zhsim": {"t": "none"}, "enwer": {"t": "num", "v": 0.99}, "ensim": {"t": "none"}, "hard": {"t": "num", "v": 5.99}, "hardsim": {"t": "none"}}, {"name": "Qwen3-TTS-12Hz-1.7B-Base（自报）", "params": "1.7B", "open": "✓ Apache", "closed": false, "src": "Qwen3-TTS README", "card": "s3-b-4", "oow": false, "zhcer": {"t": "num", "v": 0.77}, "zhsim": {"t": "none"}, "enwer": {"t": "num", "v": 1.24}, "ensim": {"t": "none"}, "hard": {"t": "none"}, "hardsim": {"t": "none"}}, {"name": "Qwen3-TTS 1.7B（转引）", "params": "1.7B", "open": "✓ Apache", "closed": false, "src": "VoxCPM README", "card": "s3-b-4", "oow": false, "zhcer": {"t": "num", "v": 1.22}, "zhsim": {"t": "num", "v": 77.0}, "enwer": {"t": "num", "v": 1.23}, "ensim": {"t": "num", "v": 71.7}, "hard": {"t": "num", "v": 6.76}, "hardsim": {"t": "num", "v": 74.8}}, {"name": "Qwen3-TTS-12Hz-0.6B-Base（自报）", "params": "0.6B", "open": "✓ Apache", "closed": false, "src": "Qwen3-TTS README", "card": "s3-b-4", "oow": false, "zhcer": {"t": "num", "v": 0.92}, "zhsim": {"t": "none"}, "enwer": {"t": "num", "v": 1.32}, "ensim": {"t": "none"}, "hard": {"t": "none"}, "hardsim": {"t": "none"}}, {"name": "Fun-CosyVoice3-0.5B-2512_RL", "params": "0.5B", "open": "✓ Apache", "closed": false, "src": "CosyVoice README", "card": "s3-b-5", "oow": false, "zhcer": {"t": "num", "v": 0.81}, "zhsim": {"t": "num", "v": 77.4}, "enwer": {"t": "num", "v": 1.68}, "ensim": {"t": "num", "v": 69.5}, "hard": {"t": "num", "v": 5.44}, "hardsim": {"t": "num", "v": 75.0}}, {"name": "Fun-CosyVoice3-0.5B-2512", "params": "0.5B", "open": "✓ Apache", "closed": false, "src": "CosyVoice README", "card": "s3-b-5", "oow": false, "zhcer": {"t": "num", "v": 1.21}, "zhsim": {"t": "num", "v": 78.0}, "enwer": {"t": "num", "v": 2.24}, "ensim": {"t": "num", "v": 71.8}, "hard": {"t": "num", "v": 6.71}, "hardsim": {"t": "num", "v": 75.8}}, {"name": "VoxCPM2", "params": "2B", "open": "✓ Apache", "closed": false, "src": "VoxCPM README", "card": "s3-b-6", "oow": false, "zhcer": {"t": "num", "v": 0.97}, "zhsim": {"t": "num", "v": 79.5}, "enwer": {"t": "num", "v": 1.84}, "ensim": {"t": "num", "v": 75.3}, "hard": {"t": "num", "v": 8.13}, "hardsim": {"t": "num", "v": 75.3}}, {"name": "IndexTTS2（2025-09，窗口外）", "params": "1.5B", "open": "✓ bilibili 许可", "closed": false, "src": "VoxCPM / CosyVoice README（两处一致）", "card": "s3-b-7", "oow": true, "zhcer": {"t": "num", "v": 1.03}, "zhsim": {"t": "num", "v": 76.5}, "enwer": {"t": "num", "v": 2.23}, "ensim": {"t": "num", "v": 70.6}, "hard": {"t": "num", "v": 7.12}, "hardsim": {"t": "num", "v": 75.5}}, {"name": "VibeVoice-1.5B（2025-08，窗口外）", "params": "1.5B", "open": "✓ MIT", "closed": false, "src": "VoxCPM / CosyVoice README（两处一致）", "card": "s3-b-13", "oow": true, "zhcer": {"t": "num", "v": 1.16}, "zhsim": {"t": "num", "v": 74.4}, "enwer": {"t": "num", "v": 3.04}, "ensim": {"t": "num", "v": 68.9}, "hard": {"t": "none"}, "hardsim": {"t": "none"}}, {"name": "VibeVoice-Realtime-0.5B", "params": "0.5B", "open": "✓ MIT", "closed": false, "src": "CosyVoice README", "card": "s3-b-13", "oow": false, "zhcer": {"t": "none"}, "zhsim": {"t": "none"}, "enwer": {"t": "num", "v": 2.05}, "ensim": {"t": "num", "v": 63.3}, "hard": {"t": "none"}, "hardsim": {"t": "none"}}, {"name": "Raon-OpenTTS-1B", "params": "1B", "open": "✓ Apache", "closed": false, "src": "Raon README", "card": "s3-b-18", "oow": false, "zhcer": {"t": "none"}, "zhsim": {"t": "none"}, "enwer": {"t": "num", "v": 1.78}, "ensim": {"t": "num", "v": 74.9}, "hard": {"t": "none"}, "hardsim": {"t": "none"}}], "top20": [{"rank": 1, "name": "Eleven v4 Turbo", "elo": 1330, "ci": 18, "date": "2026-09", "price": 40.0, "open": false}, {"rank": 2, "name": "Eleven v4", "elo": 1328, "ci": 17, "date": "2026-09", "price": 80.0, "open": false}, {"rank": 3, "name": "Qwen-Audio-3.1-TTS-Plus", "elo": 1300, "ci": 17, "date": "2026-09", "price": 19.3, "open": false}, {"rank": 4, "name": "Sonic 3.6（Cartesia）", "elo": 1286, "ci": 15, "date": "2026-08", "price": 49.0, "open": false}, {"rank": 5, "name": "Gemini 3.8 Flash TTS", "elo": 1274, "ci": 15, "date": "2026-09", "price": 16.5, "open": false}, {"rank": 6, "name": "Qwen-Audio-3.0-TTS-Plus", "elo": 1268, "ci": 15, "date": "2026-09", "price": 19.3, "open": false}, {"rank": 7, "name": "Realtime TTS-2（Inworld）", "elo": 1260, "ci": 15, "date": "2026-08", "price": 20.8, "open": false}, {"rank": 8, "name": "Gemini 3.8 Flash-Lite TTS", "elo": 1248, "ci": 14, "date": "2026-09", "price": 11.0, "open": false}, {"rank": 9, "name": "Simba 3.2（Speechify）", "elo": 1245, "ci": 13, "date": "2026-07", "price": 6.6, "open": false}, {"rank": 10, "name": "Fish Audio Drama 3 Preview（开放权重）", "elo": 1243, "ci": 16, "date": "2026-10", "price": 15.0, "open": true}, {"rank": 11, "name": "Breeze TTS 2（开放权重）", "elo": 1221, "ci": 14, "date": "2026-08", "price": 34.0, "open": true}, {"rank": 12, "name": "Luna TTS", "elo": 1218, "ci": 12, "date": "2026-06", "price": 15.0, "open": false}, {"rank": 13, "name": "Realtime TTS-2 Flash（Inworld）", "elo": 1218, "ci": 14, "date": "2026-08", "price": 10.4, "open": false}, {"rank": 14, "name": "Gemini 3.1 Flash TTS", "elo": 1213, "ci": 11, "date": "2026-04", "price": 18.3, "open": false}, {"rank": 15, "name": "StepAudio 2.5 TTS（Aug 2026）", "elo": 1211, "ci": 15, "date": "2026-08", "price": 85.0, "open": false}, {"rank": 16, "name": "v3 Conversational（ElevenLabs）", "elo": 1209, "ci": 14, "date": "2026-08", "price": 50.0, "open": false}, {"rank": 17, "name": "Sonic 3.5", "elo": 1193, "ci": 12, "date": "2026-05", "price": 49.0, "open": false}, {"rank": 18, "name": "Fish Audio S2.1 Pro（Oct 2026）", "elo": 1192, "ci": 15, "date": "2026-10", "price": 15.0, "open": false}, {"rank": 19, "name": "Soniox TTS Real-Time v2", "elo": 1180, "ci": 11, "date": "2026-08", "price": 14.2, "open": false}, {"rank": 20, "name": "Eleven v3", "elo": 1176, "ci": 11, "date": "2026-02", "price": 100.0, "open": false}]}</script>
+<script>(function(){
+"use strict";
+var D = JSON.parse(document.getElementById('data').textContent);
+var $ = function(s, r){ return (r || document).querySelector(s); };
+var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+var SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, txt){ var e = document.createElement(tag); for (var k in (attrs||{})) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; return e; }
+function sv(tag, attrs, txt){ var e = document.createElementNS(SVGNS, tag); for (var k in (attrs||{})) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; return e; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+var collator = new Intl.Collator('zh-Hans-CN', {numeric: true});
+
+/* ---------------- theme ---------------- */
+var root = document.documentElement;
+function curTheme(){ return root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+$('#theme-btn').addEventListener('click', function(){
+  var t = curTheme() === 'dark' ? 'light' : 'dark'; root.dataset.theme = t;
+  try { localStorage.setItem('tts-theme', t); } catch(e){}
+});
+
+/* ---------------- tooltip ---------------- */
+var tip = $('#tip');
+function showTip(html, ev){ tip.innerHTML = html; tip.hidden = false; moveTip(ev); }
+function moveTip(ev){ var x = ev.clientX + 14, y = ev.clientY + 14; var w = tip.offsetWidth, h = tip.offsetHeight;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - 14; if (y + h > innerHeight - 8) y = ev.clientY - h - 14; tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
+function hideTip(){ tip.hidden = true; }
+
+/* ---------------- collapsing ---------------- */
+document.addEventListener('click', function(e){
+  var t = e.target.closest('.tog'); if (!t) return;
+  var box = t.closest('.card') || t.closest('.sec');
+  var c = box.classList.toggle('collapsed'); t.setAttribute('aria-expanded', String(!c));
+});
+function setAll(collapsed){
+  $$('.sec, .card').forEach(function(s){ s.classList.toggle('collapsed', collapsed); var t = $('.tog', s); if (t) t.setAttribute('aria-expanded', String(!collapsed)); });
+  scheduleActive();
+}
+$('#expand-all').addEventListener('click', function(){ setAll(false); });
+$('#collapse-all').addEventListener('click', function(){ setAll(true); });
+$('#print-btn').addEventListener('click', function(){ window.print(); });
+
+function ensureVisible(target){
+  if (!target) return;
+  var p = target;
+  while (p && p !== document.body){
+    if (p.classList && (p.classList.contains('sec') || p.classList.contains('card')) && p.classList.contains('collapsed')){
+      // only expand ancestors, or the target itself if it is a heading of that box
+      p.classList.remove('collapsed'); var t = $('.tog', p); if (t) t.setAttribute('aria-expanded', 'true');
+    }
+    if (p.classList && p.classList.contains('sc-panel') && p.hidden) selectScen(p.id);
+    if (p.classList && p.classList.contains('card') && p.classList.contains('hidden')) resetCards();
+    if (p.tagName === 'TR' && p.hidden) resetCmp();
+    p = p.parentElement;
+  }
+}
+function goTo(id, opts){
+  var t = document.getElementById(id); if (!t) return;
+  ensureVisible(t);
+  t.scrollIntoView({block: 'start', behavior: (opts && opts.instant) ? 'auto' : 'smooth'});
+  if (!(opts && opts.noflash)){ t.classList.remove('flash'); void t.offsetWidth; t.classList.add('flash'); }
+  if (history.replaceState) history.replaceState(null, '', '#' + id);
+  closeNav();
+}
+document.addEventListener('click', function(e){
+  var a = e.target.closest('a[href^="#"]'); if (!a || a.closest('.results')) return;
+  var id = a.getAttribute('href').slice(1); if (!id || !document.getElementById(id)) return;
+  e.preventDefault();
+  if (a.classList.contains('jump-cmp')){ resetCmp(); var tr = $('#cmp-table tr[data-i="' + a.dataset.cmp + '"]'); goTo('cmp-widget', {noflash: true}); if (tr) setTimeout(function(){ tr.scrollIntoView({block:'center', behavior:'smooth'}); tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); }, 350); return; }
+  goTo(id);
+});
+
+/* ---------------- mobile nav ---------------- */
+var navBtn = $('#nav-btn'), scrim = $('#scrim');
+function closeNav(){ document.body.classList.remove('nav-open'); navBtn.setAttribute('aria-expanded', 'false'); scrim.hidden = true; }
+navBtn.addEventListener('click', function(){ var o = document.body.classList.toggle('nav-open'); navBtn.setAttribute('aria-expanded', String(o)); scrim.hidden = !o; });
+scrim.addEventListener('click', closeNav);
+
+/* ---------------- TOC active highlighting ---------------- */
+var tocLinks = $$('#toc a'); var sidebar = $('#sidebar');
+var heads = tocLinks.map(function(a){ return {a: a, el: document.getElementById(a.dataset.id)}; }).filter(function(h){ return h.el; });
+var activeA = null, rafPending = false;
+function scheduleActive(){ if (!rafPending){ rafPending = true; requestAnimationFrame(updateActive); } }
+function updateActive(){
+  rafPending = false;
+  var y = 80 + 10, cur = null;
+  for (var i = 0; i < heads.length; i++){
+    var h = heads[i]; if (!h.el.offsetParent) continue;
+    var r = h.el.getBoundingClientRect(); if (r.top - y <= 0) cur = h; else break;
+  }
+  if (!cur) cur = heads[0];
+  var doc = document.documentElement; var p = doc.scrollTop / Math.max(1, doc.scrollHeight - innerHeight);
+  $('#progress').style.width = (p * 100).toFixed(1) + '%';
+  $('#totop').classList.toggle('show', doc.scrollTop > 800);
+  if (cur.a === activeA) return;
+  if (activeA) activeA.classList.remove('active');
+  $$('#toc .on-path').forEach(function(x){ x.classList.remove('on-path'); });
+  $$('#toc li.open').forEach(function(x){ x.classList.remove('open'); });
+  activeA = cur.a; activeA.classList.add('active');
+  var li = activeA.parentElement;
+  while (li && li.id !== 'toc'){ if (li.tagName === 'LI'){ li.classList.add('open'); var aa = li.firstElementChild; if (aa !== activeA) aa.classList.add('on-path'); } li = li.parentElement; }
+  var ar = activeA.getBoundingClientRect(), sr = sidebar.getBoundingClientRect();
+  if (ar.top < sr.top + 60 || ar.bottom > sr.bottom - 20) sidebar.scrollTop += (ar.top - sr.top) - sr.height / 3;
+}
+addEventListener('scroll', scheduleActive, {passive: true}); addEventListener('resize', scheduleActive);
+// heads must be in document order (cards/scenario panels are)
+heads.sort(function(a, b){ return a.el.compareDocumentPosition(b.el) & 4 ? -1 : 1; });
+$('#totop').addEventListener('click', function(){ scrollTo({top: 0, behavior: 'smooth'}); });
+
+/* ---------------- full-text search ---------------- */
+var q = $('#q'), results = $('#results'), toc = $('#toc');
+var blocks = null;
+function buildIndex(){
+  blocks = [];
+  $$('main p, main li, main td, main h1, main .h-txt, main .card-h h4, main blockquote').forEach(function(b){
+    if (b.tagName === 'BLOCKQUOTE' && b.querySelector('p')) return;
+    if (b.tagName === 'LI' && b.querySelector('p')) return;
+    if (b.closest('.chart') || b.closest('.filters')) return;
+    var host = b.closest('.card') || b.closest('.sc-panel') || b.closest('.sec');
+    var title = '';
+    if (host){ var h = host.classList.contains('card') ? $('h4', host) : (host.classList.contains('sc-panel') ? $('.h-txt', host) : $(':scope > .sec-h .h-txt', host)); title = h ? h.textContent : ''; }
+    var anchor = b.id ? b : (b.closest('[id]'));
+    if (b.closest('tr')) { var tr = b.closest('tr'); var t = tr.closest('table'); if (!tr.id){ tr.id = (t.id || 'tbl') + '-r' + tr.rowIndex; } anchor = tr; }
+    else if (!b.id) { if (!b.dataset.sid) { b.dataset.sid = 'q' + blocks.length; b.id = b.dataset.sid; } anchor = b; }
+    blocks.push({el: b, text: b.textContent.replace(/\s+/g, ' '), title: title, id: anchor.id});
+  });
+}
+var hlName = 'q';
+function setHighlights(term){
+  if (!(window.CSS && CSS.highlights && window.Highlight)) return;
+  CSS.highlights.delete(hlName); if (!term) return;
+  var ranges = [], walker = document.createTreeWalker($('main'), NodeFilter.SHOW_TEXT), n, lt = term.toLowerCase();
+  while ((n = walker.nextNode())){
+    var s = n.nodeValue.toLowerCase(), i = s.indexOf(lt);
+    while (i > -1 && ranges.length < 2000){ var r = new Range(); r.setStart(n, i); r.setEnd(n, i + term.length); ranges.push(r); i = s.indexOf(lt, i + lt.length); }
+  }
+  CSS.highlights.set(hlName, new Highlight(...ranges));
+}
+var st = document.createElement('style'); st.textContent = '::highlight(q){background:var(--mark);color:inherit}'; document.head.appendChild(st);
+var selIdx = -1;
+function doSearch(){
+  var term = q.value.trim(); selIdx = -1;
+  if (!term){ results.hidden = true; toc.hidden = false; setHighlights(''); return; }
+  if (!blocks) buildIndex();
+  var lt = term.toLowerCase(), html = '', nh = 0, nb = 0;
+  var th = tocLinks.filter(function(a){ return a.textContent.toLowerCase().indexOf(lt) > -1; });
+  if (th.length){ html += '<div class="r-h">章节 / 模型（' + th.length + '）</div>'; th.slice(0, 30).forEach(function(a){ html += '<a href="#' + a.dataset.id + '" data-id="' + a.dataset.id + '">' + hl(a.textContent, term) + '</a>'; nh++; }); }
+  var hits = blocks.filter(function(b){ return b.text.toLowerCase().indexOf(lt) > -1; });
+  html += '<div class="r-h">正文匹配（' + hits.length + (hits.length > 80 ? '，显示前 80' : '') + '）</div>';
+  hits.slice(0, 80).forEach(function(b){
+    var i = b.text.toLowerCase().indexOf(lt), s = Math.max(0, i - 24), e = Math.min(b.text.length, i + term.length + 40);
+    html += '<a href="#' + b.id + '" data-id="' + b.id + '"><b>' + esc(b.title) + '</b>' + (s > 0 ? '…' : '') + hl(b.text.slice(s, e), term) + (e < b.text.length ? '…' : '') + '</a>'; nb++;
+  });
+  if (!nh && !hits.length) html = '<div class="r-h">没有找到“' + esc(term) + '”</div>';
+  results.innerHTML = html; results.hidden = false; toc.hidden = true; setHighlights(term);
+}
+function hl(s, term){ var lt = term.toLowerCase(), ls = s.toLowerCase(), out = '', p = 0, i;
+  while ((i = ls.indexOf(lt, p)) > -1){ out += esc(s.slice(p, i)) + '<mark>' + esc(s.slice(i, i + term.length)) + '</mark>'; p = i + term.length; }
+  return out + esc(s.slice(p)); }
+var qt; q.addEventListener('input', function(){ clearTimeout(qt); qt = setTimeout(doSearch, 120); });
+results.addEventListener('click', function(e){ var a = e.target.closest('a'); if (!a) return; e.preventDefault(); goTo(a.dataset.id); });
+q.addEventListener('keydown', function(e){
+  var items = $$('a', results);
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); if (!items.length) return; selIdx = (selIdx + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length; items.forEach(function(a, i){ a.classList.toggle('sel', i === selIdx); }); items[selIdx].scrollIntoView({block: 'nearest'}); }
+  else if (e.key === 'Enter'){ var a = items[selIdx > -1 ? selIdx : 0]; if (a) goTo(a.dataset.id); }
+  else if (e.key === 'Escape'){ q.value = ''; doSearch(); }
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); if (innerWidth <= 960) navBtn.click(); q.focus(); }
+});
+
+/* ---------------- sortable tables ---------------- */
+function makeSortable(table, onSort){
+  var tbody = table.tBodies[0]; var orig = Array.prototype.slice.call(tbody.rows);
+  var ths = $$('thead th', table);
+  function sortBy(k, dir){
+    ths.forEach(function(t){ t.setAttribute('aria-sort', 'none'); });
+    var rows = orig.slice();
+    if (dir){
+      var th = ths[k]; th.setAttribute('aria-sort', dir === 1 ? 'ascending' : 'descending');
+      var type = th.dataset.type;
+      rows.sort(function(a, b){
+        var va = a.cells[k].dataset.v, vb = b.cells[k].dataset.v;
+        var ea = va === '' || va == null, eb = vb === '' || vb == null;
+        if (ea || eb) return ea === eb ? 0 : (ea ? 1 : -1);  // empty always last
+        var r = type === 'text' ? collator.compare(va, vb) : (parseFloat(va) - parseFloat(vb));
+        return r * dir;
+      });
+    }
+    rows.forEach(function(r){ tbody.appendChild(r); });
+    table._sort = {k: k, dir: dir};
+    if (onSort) onSort();
+  }
+  ths.forEach(function(th, k){
+    function act(){ var s = table._sort || {}; var dir = s.k === k ? (s.dir === 1 ? -1 : s.dir === -1 ? 0 : 1) : 1; sortBy(k, dir); }
+    th.addEventListener('click', act);
+    th.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); act(); } });
+    th.title = '点击排序（升序 → 降序 → 原顺序）';
+  });
+  table._resort = function(){ var s = table._sort; if (s && s.dir) sortBy(s.k, s.dir); };
+  table._sortBy = sortBy;
+}
+// plain md tables marked sortable-auto: derive sort values/types from cell text
+$$('table.sortable-auto').forEach(function(t){
+  var ths = $$('thead th', t), rows = Array.prototype.slice.call(t.tBodies[0].rows);
+  ths.forEach(function(th, k){
+    var vals = rows.map(function(r){ return r.cells[k].textContent.trim(); });
+    var num = vals.every(function(v){ return /^\d/.test(v); });
+    th.dataset.type = num ? 'num' : 'text'; th.tabIndex = 0; th.setAttribute('aria-sort', 'none');
+    th.insertAdjacentHTML('beforeend', '<span class="sort-ind"></span>');
+    rows.forEach(function(r, i){ r.cells[k].dataset.v = num ? String(parseFloat(vals[i])) : (/^（/.test(vals[i]) ? '' : vals[i]); });
+  });
+  t.classList.add('sortable');
+});
+$$('table.sortable').forEach(function(t){ makeSortable(t); });
+
+/* ---------------- comparison filters ---------------- */
+var cmpTable = $('#cmp-table');
+var cmpState = {kind: 'all', lic: [], zh: 'all', langB: [], priceB: [], q: ''};
+var F = $('#cmp-filters');
+function countBy(key){ var m = {}; D.cmp.forEach(function(r){ m[r[key]] = (m[r[key]] || 0) + 1; }); return m; }
+function chipGroup(label, key, opts, multi, wide){
+  var g = el('div', {'class': 'f-grp' + (wide ? ' wide' : '')}); g.appendChild(el('div', {'class': 'f-l'}, label));
+  var box = el('div', {'class': 'chips', role: 'group', 'aria-label': label});
+  var cnt = countBy(key);
+  if (!multi){ var b0 = el('button', {type: 'button', 'class': 'chip', 'data-v': 'all', 'aria-pressed': 'true'}, '全部'); box.appendChild(b0); }
+  opts.forEach(function(o){ if (!cnt[o]) return; var b = el('button', {type: 'button', 'class': 'chip', 'data-v': o, 'aria-pressed': 'false'}); b.innerHTML = esc(o) + '<span class="n">' + cnt[o] + '</span>'; box.appendChild(b); });
+  box.addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if (!b) return; var v = b.dataset.v;
+    if (multi){ var a = cmpState[key], i = a.indexOf(v); if (i > -1) a.splice(i, 1); else a.push(v); b.setAttribute('aria-pressed', String(i < 0)); }
+    else { cmpState[key] = v; $$('.chip', box).forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); }
+    applyCmp();
+  });
+  g.appendChild(box); F.appendChild(g);
+}
+chipGroup('类型', 'kind', ['商业', '开源 / 开放权重'], false);
+chipGroup('许可（可多选）', 'lic', ['商业 API', 'Apache-2.0', 'MIT', 'CC-BY-4.0', '自定义 / 有条件许可', '非商用 / 研究许可', '来源说法不一致', '许可未核实'], true);
+chipGroup('中文支持（“中文”列）', 'zh', ['支持', '不支持', '未核实 / 无数据'], false);
+chipGroup('语种数（“多语种”列）', 'langB', ['≥100', '30–99', '10–29', '<10', '未给数字'], true);
+chipGroup('价格（美元 / 百万字符，可多选）', 'priceB', ['≤ $20', '$20–50', '> $50', '仅人民币标价', '无 API 标价'], true);
+(function(){ var g = el('div', {'class': 'f-grp wide'}); g.appendChild(el('div', {'class': 'f-l'}, '文本搜索（任意列）'));
+  var i = el('input', {type: 'search', id: 'cmp-q', placeholder: '如：方言、WebSocket、水印、H200、克隆…', 'aria-label': '在对比表中搜索'}); g.appendChild(i); F.appendChild(g);
+  i.addEventListener('input', function(){ cmpState.q = i.value.trim().toLowerCase(); applyCmp(); }); })();
+var rowsByI = {}; $$('tbody tr', cmpTable).forEach(function(tr){ rowsByI[tr.dataset.i] = tr; });
+function applyCmp(){
+  var n = 0, s = cmpState;
+  D.cmp.forEach(function(r, i){
+    var ok = (s.kind === 'all' || r.kind === s.kind) && (!s.lic.length || s.lic.indexOf(r.lic) > -1) && (s.zh === 'all' || r.zh === s.zh)
+      && (!s.langB.length || s.langB.indexOf(r.langB) > -1) && (!s.priceB.length || s.priceB.indexOf(r.priceB) > -1)
+      && (!s.q || r.text.toLowerCase().indexOf(s.q) > -1);
+    rowsByI[i].hidden = !ok; if (ok) n++;
+  });
+  $('#cmp-count').textContent = '显示 ' + n + ' / ' + D.cmp.length + ' 款模型';
+  $('#cmp-empty').hidden = n > 0;
+}
+function resetCmp(){
+  cmpState = {kind: 'all', lic: [], zh: 'all', langB: [], priceB: [], q: ''};
+  $$('.chip', F).forEach(function(c){ c.setAttribute('aria-pressed', String(c.dataset.v === 'all')); });
+  $('#cmp-q').value = ''; applyCmp();
+}
+$('#cmp-reset').addEventListener('click', resetCmp);
+applyCmp();
+// column chooser
+(function(){
+  var box = $('#cmp-cols');
+  D.cmpHeader.forEach(function(h, k){ if (k === 0) return;
+    var l = el('label'); var c = el('input', {type: 'checkbox'}); c.checked = true; l.appendChild(c); l.appendChild(document.createTextNode(' ' + h)); box.appendChild(l);
+    c.addEventListener('change', function(){ $$('.c' + k, cmpTable).forEach(function(x){ x.classList.toggle('hide-col', !c.checked); }); fitCols(); });
+  });
+  // approximate width budget per column so wide text columns keep wrapping nicely
+  var base = [170, 100, 110, 130, 140, 80, 90, 100, 180, 180, 190, 170];
+  function fitCols(){ var w = 0; base.forEach(function(b, k){ var th = $('th.c' + k, cmpTable); if (!th.classList.contains('hide-col')) w += b; }); cmpTable.style.minWidth = w + 'px'; }
+  fitCols();
+})();
+
+/* ---------------- AA Top-20 scatter ---------------- */
+(function(){
+  var box = $('#top20-chart .chart-box'); if (!box) return;
+  var W = 820, H = 360, m = {l: 52, r: 20, t: 14, b: 42};
+  var pts = D.top20.filter(function(d){ return d.price != null; });
+  var x0 = Math.log(5), x1 = Math.log(120), y0 = 1150, y1 = 1360;
+  function X(p){ return m.l + (Math.log(p) - x0) / (x1 - x0) * (W - m.l - m.r); }
+  function Y(e){ return H - m.b - (e - y0) / (y1 - y0) * (H - m.t - m.b); }
+  var s = sv('svg', {viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'AA Provider Voice Top 20：Elo 与价格散点图'});
+  [5, 10, 20, 50, 100].forEach(function(p){ s.appendChild(sv('line', {'class': 'grid', x1: X(p), x2: X(p), y1: m.t, y2: H - m.b})); s.appendChild(sv('text', {x: X(p), y: H - m.b + 16, 'text-anchor': 'middle'}, '$' + p)); });
+  for (var e = 1150; e <= 1350; e += 50){ s.appendChild(sv('line', {'class': 'grid', x1: m.l, x2: W - m.r, y1: Y(e), y2: Y(e)})); s.appendChild(sv('text', {x: m.l - 6, y: Y(e) + 4, 'text-anchor': 'end'}, e)); }
+  s.appendChild(sv('line', {'class': 'ax', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b}));
+  s.appendChild(sv('text', {x: (W + m.l) / 2, y: H - 6, 'text-anchor': 'middle'}, 'AA 标注 API 价（美元 / 百万字符，对数坐标）'));
+  s.appendChild(sv('text', {x: 14, y: (H - m.b + m.t) / 2, transform: 'rotate(-90 14 ' + ((H - m.b + m.t) / 2) + ')', 'text-anchor': 'middle'}, 'Elo'));
+  var byRank = {};
+  pts.forEach(function(d){
+    var g = sv('g', {'data-rank': d.rank});
+    g.appendChild(sv('line', {'class': 'ci' + (d.open ? ' ow' : ''), x1: X(d.price), x2: X(d.price), y1: Y(d.elo - d.ci), y2: Y(d.elo + d.ci)}));
+    var c = sv('circle', {'class': 'pt' + (d.open ? ' ow' : ''), cx: X(d.price), cy: Y(d.elo), r: 6}); g.appendChild(c);
+    g.appendChild(sv('text', {'class': 'lbl', x: X(d.price) + 9, y: Y(d.elo) + 4}, '#' + d.rank));
+    var html = '<b>#' + d.rank + ' ' + esc(d.name) + '</b><br>Elo ' + d.elo + ' ±' + d.ci + '<br>$' + d.price + ' / 百万字符 · ' + esc(d.date);
+    g.addEventListener('mouseenter', function(ev){ showTip(html, ev); hlRow(d.rank, true); }); g.addEventListener('mousemove', moveTip);
+    g.addEventListener('mouseleave', function(){ hideTip(); hlRow(d.rank, false); });
+    s.appendChild(g); byRank[d.rank] = c;
+  });
+  box.appendChild(s);
+  function hlRow(rank, on){ $$('#top20-table tbody tr').forEach(function(tr){ if (tr.cells[0].dataset.v == rank) tr.classList.toggle('flash', false), tr.style.outline = on ? '2px solid var(--acc)' : ''; }); }
+  $$('#top20-table tbody tr').forEach(function(tr){ var r = tr.cells[0].dataset.v;
+    tr.addEventListener('mouseenter', function(){ if (byRank[r]) byRank[r].classList.add('hl'); });
+    tr.addEventListener('mouseleave', function(){ if (byRank[r]) byRank[r].classList.remove('hl'); }); });
+})();
+
+/* ---------------- Seed-TTS-eval chart ---------------- */
+(function(){
+  var W = $('#eval-widget'); if (!W) return;
+  var metrics = [{k: 'zhcer', l: 'test-zh CER↓', low: true}, {k: 'enwer', l: 'test-en WER↓', low: true}, {k: 'hard', l: 'test-hard CER↓', low: true},
+                 {k: 'zhsim', l: 'zh SIM↑', low: false}, {k: 'ensim', l: 'en SIM↑', low: false}, {k: 'hardsim', l: 'hard SIM↑', low: false}];
+  var cur = metrics[0];
+  var seg = $('#eval-metric');
+  metrics.forEach(function(mt, i){ var b = el('button', {type: 'button', 'aria-pressed': String(i === 0), 'data-k': mt.k}, mt.l); seg.appendChild(b);
+    b.addEventListener('click', function(){ cur = mt; $$('button', seg).forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); draw(); }); });
+  var oow = $('#eval-oow');
+  function applyOow(){ var n = 0; $$('#eval-table tbody tr').forEach(function(tr){ tr.hidden = oow.checked && tr.classList.contains('oow'); if (!tr.hidden) n++; });
+    $('#eval-count').textContent = '显示 ' + n + ' / ' + D.eval.length + ' 行'; draw(); }
+  oow.addEventListener('change', applyOow);
+  function val(c){ return c.t === 'num' ? c.v : null; }
+  function shown(d){ return !(oow.checked && d.oow); }
+  function draw(){
+    var box = $('.chart-box', W); box.innerHTML = '';
+    var rows = D.eval.filter(shown).map(function(d){ return {d: d, v: val(d[cur.k]), alt: null}; }).filter(function(r){ return r.v != null; });
+    rows.sort(function(a, b){ return cur.low ? a.v - b.v : b.v - a.v; });
+    var none = D.eval.filter(shown).filter(function(d){ return d[cur.k].t === 'none'; }).map(function(d){ return d.name; });
+    var txt = D.eval.filter(shown).filter(function(d){ return d[cur.k].t === 'text'; }).map(function(d){ return d.name + '（表中为“' + d[cur.k].s + '”）'; });
+    var ref = D.eval.filter(function(d){ return /^Seed-TTS/.test(d.name); })[0];
+    var refv = ref ? val(ref[cur.k]) : null;
+    var Wd = 820, bh = 24, m = {l: 250, r: 70, t: 10, b: 30}, Hh = m.t + m.b + rows.length * bh;
+    var all = rows.map(function(r){ return Math.max(r.v, r.alt || 0); });
+    var xmax = Math.max.apply(null, all) * 1.08, xmin = 0;
+    if (!cur.low){ xmin = Math.floor((Math.min.apply(null, rows.map(function(r){ return r.v; })) - 6) / 5) * 5; xmax = Math.ceil(Math.max.apply(null, all) + 2); }
+    function X(v){ return m.l + (v - xmin) / (xmax - xmin) * (Wd - m.l - m.r); }
+    var s = sv('svg', {viewBox: '0 0 ' + Wd + ' ' + Hh, role: 'img', 'aria-label': 'Seed-TTS-eval ' + cur.l + ' 条形图'});
+    var step = cur.low ? (xmax > 6 ? 2 : xmax > 2.5 ? 0.5 : 0.25) : 5;
+    for (var g = xmin; g <= xmax + 1e-9; g += step){ s.appendChild(sv('line', {'class': 'grid', x1: X(g), x2: X(g), y1: m.t, y2: Hh - m.b})); s.appendChild(sv('text', {x: X(g), y: Hh - m.b + 15, 'text-anchor': 'middle'}, +g.toFixed(2))); }
+    rows.forEach(function(r, i){
+      var y = m.t + i * bh, gg = sv('g', {'class': 'bar-g'});
+      gg.appendChild(sv('text', {'class': 'lbl', x: m.l - 8, y: y + bh / 2 + 4, 'text-anchor': 'end'}, r.d.name.length > 34 ? r.d.name.slice(0, 33) + '…' : r.d.name));
+      gg.appendChild(sv('rect', {'class': r.d.closed ? 'b-closed' : 'b-open', x: X(xmin), y: y + 4, width: Math.max(1, X(r.v) - X(xmin)), height: bh - 8, rx: 3}));
+      gg.appendChild(sv('text', {x: X(r.v) + 5, y: y + bh / 2 + 4}, r.v));
+      if (r.alt != null){ var ax = X(r.alt), ay = y + bh / 2; gg.appendChild(sv('path', {'class': 'alt', d: 'M' + ax + ' ' + (ay - 6) + 'L' + (ax + 6) + ' ' + ay + 'L' + ax + ' ' + (ay + 6) + 'L' + (ax - 6) + ' ' + ay + 'Z'})); }
+      var tipH = '<b>' + esc(r.d.name) + '</b><br>' + cur.l + '：' + r.v + (r.alt != null ? '<br>另一来源：' + r.alt + '（◇）' : '') + '<br>参数：' + esc(r.d.params) + ' · ' + esc(r.d.open) + '<br>来源：' + esc(r.d.src);
+      gg.addEventListener('mouseenter', function(ev){ showTip(tipH, ev); }); gg.addEventListener('mousemove', moveTip); gg.addEventListener('mouseleave', hideTip);
+      s.appendChild(gg);
+    });
+    if (refv != null){ s.appendChild(sv('line', {'class': 'ref', x1: X(refv), x2: X(refv), y1: m.t, y2: Hh - m.b})); }
+    box.appendChild(s);
+    var note = [];
+    if (!cur.low) note.push('横轴从 ' + xmin + ' 起（截断坐标，放大差异）。');
+    if (refv != null && !shown(ref)) note.push('参照线 Seed-TTS 的行已隐藏，虚线仍按其数值绘制。');
+    if (none.length) note.push('本项无数据（表中为“-”或“未报告”）：' + none.join('、') + '。');
+    if (txt.length) note.push('非分项指标，未入图：' + txt.join('；') + '。');
+    $('.chart-note', W).textContent = note.join(' ');
+  }
+  applyOow();
+})();
+
+/* ---------------- scenario picker ---------------- */
+var scTabs = $$('.sc-tab'), scAll = $('#scen-all');
+function selectScen(id){
+  scTabs.forEach(function(t){ var on = t.getAttribute('aria-controls') === id; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
+  $$('.sc-panel').forEach(function(p){ p.hidden = !(scAll.checked || p.id === id); });
+  scheduleActive();
+}
+scTabs.forEach(function(t, i){
+  t.addEventListener('click', function(){ scAll.checked = false; selectScen(t.getAttribute('aria-controls')); });
+  t.addEventListener('keydown', function(e){ var d = {ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1}[e.key]; if (!d) return; e.preventDefault(); var n = scTabs[(i + d + scTabs.length) % scTabs.length]; n.focus(); n.click(); });
+});
+scAll.addEventListener('change', function(){ var s = scTabs.filter(function(t){ return t.getAttribute('aria-selected') === 'true'; })[0]; selectScen(s ? s.getAttribute('aria-controls') : scTabs[0].getAttribute('aria-controls')); });
+selectScen(scTabs[0].getAttribute('aria-controls'));
+
+/* ---------------- model card filter ---------------- */
+var cardSeg = $('#card-seg'), cardQ = $('#card-q'), cardGroup = 'all';
+function applyCards(){
+  var t = cardQ.value.trim().toLowerCase(), n = 0, all = $$('.card');
+  all.forEach(function(c){ var ok = (cardGroup === 'all' || c.dataset.group === cardGroup) && (!t || c.textContent.toLowerCase().indexOf(t) > -1); c.classList.toggle('hidden', !ok); if (ok) n++; });
+  ['s3-a', 's3-b'].forEach(function(g){ var sec = $('section[data-id="' + g + '"]'); sec.hidden = cardGroup !== 'all' && cardGroup !== g; });
+  $('#card-count').textContent = n + ' / ' + all.length + ' 张卡片'; scheduleActive();
+}
+function resetCards(){ cardGroup = 'all'; cardQ.value = ''; $$('button', cardSeg).forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.v === 'all')); }); applyCards(); }
+cardSeg.addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; cardGroup = b.dataset.v; $$('button', cardSeg).forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); applyCards(); });
+cardQ.addEventListener('input', applyCards);
+var cardsCollapsed = false;
+$('#cards-collapse').addEventListener('click', function(){ cardsCollapsed = !cardsCollapsed; $$('.card').forEach(function(c){ c.classList.toggle('collapsed', cardsCollapsed); $('.tog', c).setAttribute('aria-expanded', String(!cardsCollapsed)); }); this.textContent = cardsCollapsed ? '全部展开卡片' : '全部折叠卡片'; scheduleActive(); });
+// ensureVisible must also unhide a hidden §3 group
+var _ev = ensureVisible; ensureVisible = function(t){ if (t && t.closest && t.closest('section[hidden]')) resetCards(); _ev(t); };
+applyCards();
+
+/* ---------------- hero stats ---------------- */
+(function(){
+  var nC = D.cmp.filter(function(r){ return r.kind === '商业'; }).length;
+  var cards = $$('.card'), a = cards.filter(function(c){ return c.dataset.group === 's3-a'; }).length;
+  var st = [[cards.length, '模型章节（商业 ' + a + ' · 开源 ' + (cards.length - a) + '）'], [D.cmp.length, '综合对比表行（商业 ' + nC + ' · 开源 ' + (D.cmp.length - nC) + '）'],
+            [D.top20.length, 'AA Provider Voice Top'], [D.eval.length, 'Seed-TTS-eval 表行'], [scTabs.length, '场景推荐']];
+  $('#stats').innerHTML = st.map(function(s){ return '<div class="stat"><b>' + s[0] + '</b><span>' + esc(s[1]) + '</span></div>'; }).join('');
+})();
+
+/* ---------------- print: show everything ---------------- */
+var preState = null;
+addEventListener('beforeprint', function(){ preState = scAll.checked; scAll.checked = true; selectScen($('.sc-tab[aria-selected=true]').getAttribute('aria-controls')); });
+addEventListener('afterprint', function(){ if (preState != null){ scAll.checked = preState; selectScen($('.sc-tab[aria-selected=true]').getAttribute('aria-controls')); } });
+
+/* ---------------- initial hash ---------------- */
+if (location.hash.length > 1){ var id = decodeURIComponent(location.hash.slice(1)); if (document.getElementById(id)) setTimeout(function(){ goTo(id, {instant: true, noflash: true}); }, 30); }
+updateActive();
+})();
+</script>
+</body>
+</html>
