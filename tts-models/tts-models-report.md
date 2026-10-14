@@ -90,9 +90,9 @@ AA 的说明是“97 个模型中 17 个为开放权重”。上面已经列出�
 | 6 | star-june-2026 | 1540 ± 33 | B | 494 |
 | 7 | Hume Octave | 1526 ± 21 | B | 1141 |
 | 8 | MiniMax Speech 2.8 HD | 1540 ± 33 | （无） | 502 |
+| 0（未正式排名） | Vocu V3.0 | 1564 ± 22 | （无） | 1444 |
 
 > 复核（2026-10-14 重新请求 API）：star-june-2026 和 MiniMax Speech 2.8 HD 的 API 返回值确实都是 elo 1540、uncertainty 33。两者是不同条目：票数分别为 494 和 502，胜率分别为 53.24% 和 53.19%，tier 分别为 B 和无。这不是转录错误。
-| 0（未正式排名） | Vocu V3.0 | 1564 ± 22 | （无） | 1444 |
 
 - **按 Elo 数值排序**：Aurora 1566 > Vocu V3.0 1564 > CastleFlow 1561 > Inworld TTS MAX 1558 > Papla P1 1550 > Inworld TTS 1542 > MiniMax Speech 2.8 HD 1540 = star-june-2026 1540 > Hume Octave 1526。
 - 开源模型中，Chatterbox 为 1481（rank 28），Kokoro v1.0 为 1478（rank 29）。

@@ -41,9 +41,18 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .btn,.icon-btn{font:inherit;font-size:13px;line-height:1;border:1px solid var(--line2);background:var(--panel);color:var(--fg2);border-radius:7px;padding:7px 10px;cursor:pointer}
 .btn:hover,.icon-btn:hover{border-color:var(--acc);color:var(--acc)}
 .icon-btn{width:34px;height:32px;padding:0;font-size:16px}
-#nav-btn{display:none}
+#nav-btn{display:inline-flex;align-items:center;justify-content:center}
+#nav-btn[aria-expanded=false] .side-fill{opacity:0}
 /* layout */
-.layout{display:grid;grid-template-columns:var(--side) minmax(0,1fr);align-items:start}
+.layout{display:grid;grid-template-columns:var(--side) minmax(0,1fr);align-items:start;transition:grid-template-columns .25s ease}
+.sidebar{transition:opacity .2s ease,visibility 0s linear 0s}
+main{transition:max-width .25s ease}
+@media (min-width:961px){
+  html[data-side=collapsed] .layout{grid-template-columns:0 minmax(0,1fr)}
+  html[data-side=collapsed] .sidebar{opacity:0;visibility:hidden;overflow:hidden;padding-left:0;padding-right:0;border-right:0;transition:opacity .15s ease,visibility 0s linear .25s}
+  html[data-side=collapsed] main{max-width:1640px}
+}
+html.no-anim .layout,html.no-anim .sidebar,html.no-anim main{transition:none!important}
 .sidebar{position:sticky;top:var(--top);height:calc(100vh - var(--top));overflow:auto;border-right:1px solid var(--line);background:var(--bg2);padding:14px 10px 40px 14px;scrollbar-width:thin}
 main{min-width:0;max-width:1180px;padding:28px 40px 80px;margin:0 auto;width:100%}
 /* search */
@@ -209,7 +218,6 @@ svg .bar-g:hover rect{opacity:.8}
 @media (max-width:1100px){main{padding:24px 24px 70px}.cards{grid-template-columns:1fr}}
 @media (max-width:960px){
   .layout{grid-template-columns:1fr}
-  #nav-btn{display:inline-block}
   .sidebar{position:fixed;left:0;top:var(--top);bottom:0;width:min(86vw,330px);z-index:20;transform:translateX(-102%);transition:transform .2s;box-shadow:var(--shadow)}
   body.nav-open .sidebar{transform:none}
   #expand-all,#collapse-all,#print-btn{display:none}
@@ -241,12 +249,12 @@ svg .bar-g:hover rect{opacity:.8}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
-<script>(function(){try{var t=localStorage.getItem('tts-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+<script>(function(){var d=document.documentElement;d.classList.add('no-anim');try{var t=localStorage.getItem('tts-theme');if(t==='light'||t==='dark')d.dataset.theme=t;if(localStorage.getItem('tts-sidebar')==='collapsed')d.dataset.side='collapsed';}catch(e){}})();</script>
 </head>
 <body>
 <a class="skip" href="#main">跳到正文</a>
 <header class="topbar">
-  <button type="button" class="icon-btn" id="nav-btn" aria-label="目录" aria-controls="sidebar" aria-expanded="false">☰</button>
+  <button type="button" class="icon-btn" id="nav-btn" aria-label="目录" aria-controls="sidebar" aria-expanded="true"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7.5" y1="3.5" x2="7.5" y2="16.5" stroke="currentColor" stroke-width="1.5"/><rect class="side-fill" x="3.3" y="4.3" width="3.5" height="11.4" fill="currentColor" opacity=".35"/></svg></button>
   <span class="tb-title">TTS 模型调研 · 2026-10</span>
   <span class="spacer"></span>
   <div class="progress" aria-hidden="true"><i id="progress"></i></div>
@@ -873,13 +881,47 @@ document.addEventListener('click', function(e){
 });
 
 /* ---------------- mobile nav ---------------- */
-var navBtn = $('#nav-btn'), scrim = $('#scrim');
-function closeNav(){ document.body.classList.remove('nav-open'); navBtn.setAttribute('aria-expanded', 'false'); scrim.hidden = true; }
-navBtn.addEventListener('click', function(){ var o = document.body.classList.toggle('nav-open'); navBtn.setAttribute('aria-expanded', String(o)); scrim.hidden = !o; });
+/* ---------------- sidebar: collapsible on desktop, drawer on small screens ---------------- */
+var navBtn = $('#nav-btn'), scrim = $('#scrim'), sidebar = $('#sidebar');
+var mqSmall = matchMedia('(max-width: 960px)');
+var isMac = /Mac|iPhone|iPad/.test((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '');
+var keyHint = isMac ? '⌘B' : 'Ctrl+B';
+function sideCollapsed(){ return root.dataset.side === 'collapsed'; }
+function syncNavBtn(){
+  var open = mqSmall.matches ? document.body.classList.contains('nav-open') : !sideCollapsed();
+  navBtn.setAttribute('aria-expanded', String(open));
+  var label = (open ? '收起目录' : '展开目录') + '（' + keyHint + '）';
+  navBtn.setAttribute('aria-label', label); navBtn.title = label;
+  // collapsed desktop sidebar is visibility:hidden, so it also leaves the tab order
+}
+function setCollapsed(c){
+  if (c && sidebar.contains(document.activeElement)) navBtn.focus();
+  if (c) root.dataset.side = 'collapsed'; else delete root.dataset.side;
+  try { localStorage.setItem('tts-sidebar', c ? 'collapsed' : 'expanded'); } catch(e){}
+  syncNavBtn(); setTimeout(scheduleActive, 300);
+}
+function openNav(){ document.body.classList.add('nav-open'); scrim.hidden = false; syncNavBtn(); }
+function closeNav(){ var was = document.body.classList.contains('nav-open'); document.body.classList.remove('nav-open'); scrim.hidden = true; syncNavBtn(); if (was && sidebar.contains(document.activeElement)) navBtn.focus(); }
+function toggleNav(){
+  if (mqSmall.matches){ document.body.classList.contains('nav-open') ? closeNav() : openNav(); }
+  else setCollapsed(!sideCollapsed());
+}
+navBtn.addEventListener('click', toggleNav);
 scrim.addEventListener('click', closeNav);
+(mqSmall.addEventListener ? mqSmall.addEventListener.bind(mqSmall, 'change') : mqSmall.addListener.bind(mqSmall))(function(){ if (!mqSmall.matches) closeNav(); syncNavBtn(); });
+function typingIn(t){ return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+document.addEventListener('keydown', function(e){
+  var mod = isMac ? (e.metaKey && !e.ctrlKey) : (e.ctrlKey && !e.metaKey);
+  if (mod && !e.altKey && !e.shiftKey && (e.code === 'KeyB' || e.key === 'b' || e.key === 'B')){
+    if (typingIn(e.target)) return;  // leave Cmd/Ctrl+B to text fields
+    e.preventDefault(); toggleNav();
+  } else if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav();
+});
+syncNavBtn();
+requestAnimationFrame(function(){ requestAnimationFrame(function(){ root.classList.remove('no-anim'); }); });
 
 /* ---------------- TOC active highlighting ---------------- */
-var tocLinks = $$('#toc a'); var sidebar = $('#sidebar');
+var tocLinks = $$('#toc a');
 var heads = tocLinks.map(function(a){ return {a: a, el: document.getElementById(a.dataset.id)}; }).filter(function(h){ return h.el; });
 var activeA = null, rafPending = false;
 function scheduleActive(){ if (!rafPending){ rafPending = true; requestAnimationFrame(updateActive); } }
@@ -968,7 +1010,7 @@ q.addEventListener('keydown', function(e){
   else if (e.key === 'Escape'){ q.value = ''; doSearch(); }
 });
 document.addEventListener('keydown', function(e){
-  if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); if (innerWidth <= 960) navBtn.click(); q.focus(); }
+  if (e.key === '/' && !typingIn(document.activeElement)){ e.preventDefault(); if (mqSmall.matches) openNav(); else if (sideCollapsed()) setCollapsed(false); setTimeout(function(){ q.focus(); }, mqSmall.matches ? 0 : 260); }
 });
 
 /* ---------------- sortable tables ---------------- */

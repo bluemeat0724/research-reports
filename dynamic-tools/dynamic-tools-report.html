@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>LLM Agent 工具&amp;quot;渐进式暴露&amp;quot;（Progressive Tool Disclosure）深度调研报告</title>
-<script>(function(){try{var t=localStorage.getItem('pdr-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script>(function(){try{var t=localStorage.getItem('pdr-theme');if(t)document.documentElement.setAttribute('data-theme',t);if(localStorage.getItem('pdr-side')==='collapsed')document.documentElement.setAttribute('data-side','collapsed');}catch(e){}})();</script>
 <style>:root{
   --font-sans:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --font-mono:"JetBrains Mono","SF Mono","Cascadia Code",Menlo,Consolas,"Noto Sans Mono CJK SC","Liberation Mono",monospace;
@@ -314,13 +314,30 @@ mark.branch{background:color-mix(in srgb,var(--accent) 16%,transparent);border-r
   .sub-h,.ch-body h4.h4,.widget{scroll-margin-top:0}
   .result{position:static}
 }
+/* v5: collapsible sidebar */
+#side-toggle{gap:6px;grid-auto-flow:column;padding:0 9px}
+#side-toggle .st-kbd{font:600 11px/1 var(--font-sans);color:var(--text-3);border:1px solid var(--border);border-radius:5px;padding:2px 5px;background:var(--bg-sunk)}
+#side-toggle[aria-expanded="false"] .st-fill{opacity:0}
+#side-toggle[aria-expanded="true"]{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+@media (min-width:901px){
+  .layout{transition:none}
+  html.side-anim .layout{transition:grid-template-columns .28s cubic-bezier(.4,0,.2,1)}
+  html.side-anim #sidebar{transition:opacity .2s ease,visibility 0s linear 0s}
+  html[data-side="collapsed"] .layout{grid-template-columns:0 minmax(0,1fr)}
+  html[data-side="collapsed"] #sidebar{opacity:0;visibility:hidden;overflow:hidden;border-right-color:transparent}
+  html.side-anim[data-side="collapsed"] #sidebar{transition:opacity .18s ease,visibility 0s linear .28s}
+  html.side-anim main>*{transition:max-width .28s cubic-bezier(.4,0,.2,1)}
+  html[data-side="collapsed"] main>*{max-width:1200px}
+  html[data-side="collapsed"] .layout{max-width:1600px}
+}
+@media (prefers-reduced-motion:reduce){html.side-anim .layout,html.side-anim #sidebar,html.side-anim main>*{transition:none!important}}
 </style>
 </head>
 <body>
 <div id="progress" aria-hidden="true"></div>
 <a class="skip" href="#main">跳到正文</a>
 <header class="topbar">
-  <button id="nav-open" class="icon-btn only-mobile" type="button" aria-label="打开目录"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  <button id="side-toggle" class="icon-btn" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="收起目录"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path class="st-bar" d="M9 4v16" stroke="currentColor" stroke-width="1.8"/><path class="st-fill" d="M4.2 5.2h3.9v13.6H4.2z" fill="currentColor" opacity=".28"/></svg><kbd class="st-kbd hide-sm" aria-hidden="true"></kbd></button>
   <a class="brand" href="#top"><span class="logo" aria-hidden="true">◇</span><span class="brand-t">渐进式工具暴露 · 调研报告</span></a>
   <div class="top-actions">
     <a class="pill-link hide-sm" href="#cmp-widget">对比表</a>
@@ -1810,7 +1827,7 @@ $('#expand-all').addEventListener('click',function(){$$('.chapter').forEach(func
 $('#collapse-all').addEventListener('click',function(){$$('.sub').forEach(function(s){setSub(s,true)});$$('.chapter').forEach(function(s){setChapter(s,false)});window.scrollTo({top:$('#sec-0').offsetTop-80});schedule()});
 function reveal(id){var el=document.getElementById(id);if(!el)return null;var sec=el.closest('.chapter');if(sec)setChapter(sec,true);var sub=el.closest('.sub');if(sub)setSub(sub,true);return el}
 function go(id,smooth){var el=reveal(id);if(!el)return;requestAnimationFrame(function(){el.scrollIntoView({behavior:smooth===false?'instant':'smooth',block:'start'});history.replaceState(null,'','#'+id)})}
-document.addEventListener('click',function(e){var a=e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1));if(!id||!document.getElementById(id))return;e.preventDefault();go(id);document.body.classList.remove('nav-open')});
+document.addEventListener('click',function(e){var a=e.target.closest('a[href^="#"]');if(!a)return;var id=decodeURIComponent(a.getAttribute('href').slice(1));if(!id||!document.getElementById(id))return;e.preventDefault();go(id);if(document.body.classList.contains('nav-open')){document.body.classList.remove('nav-open');syncSide()}});
 window.addEventListener('beforeprint',function(){$$('details.orig').forEach(function(d){d.open=true})});
 
 /* ---------- nav: scrollspy, progress, filter, drawer ---------- */
@@ -1840,10 +1857,32 @@ $('#nav-filter').addEventListener('input',function(){var q=this.value.trim().toL
   $$('.toc .n2').forEach(function(li){var any=false;$$('.n3',li).forEach(function(s){var m=!q||s.textContent.toLowerCase().indexOf(q)>-1;s.classList.toggle('hidden',!m);if(m&&q)any=true});
     var self=!q||$('a',li).textContent.toLowerCase().indexOf(q)>-1;li.classList.toggle('hidden',!(self||any));li.classList.toggle('open',!!q&&any)});
   if(!q){lastActive=null;schedule()}});
-$('#nav-open').addEventListener('click',function(){document.body.classList.add('nav-open')});
-$('#nav-close').addEventListener('click',function(){document.body.classList.remove('nav-open')});
-$('#scrim').addEventListener('click',function(){document.body.classList.remove('nav-open')});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')document.body.classList.remove('nav-open')});
+/* sidebar: collapsible on desktop (persisted), slide-out drawer on small screens; one toggle + Cmd/Ctrl+B */
+var side=$('#sidebar'),stBtn=$('#side-toggle'),mq=window.matchMedia('(max-width: 900px)');
+var isMac=/Mac|iPhone|iPad|iPod/i.test((navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||navigator.userAgent);
+var kb=isMac?'⌘B':'Ctrl+B';$('.st-kbd',stBtn).textContent=kb;
+function collapsed(){return root.getAttribute('data-side')==='collapsed'}
+function drawerOpen(){return document.body.classList.contains('nav-open')}
+function syncSide(){var open=mq.matches?drawerOpen():!collapsed();
+  stBtn.setAttribute('aria-expanded',String(open));
+  var lbl=(open?'收起目录':'展开目录')+'（'+kb+'）';stBtn.setAttribute('aria-label',lbl);stBtn.title=lbl;
+  if('inert' in side)side.inert=!open;else side.setAttribute('aria-hidden',String(!open))}
+function setCollapsed(c){if(c)root.setAttribute('data-side','collapsed');else root.removeAttribute('data-side');try{localStorage.setItem('pdr-side',c?'collapsed':'expanded')}catch(e){}syncSide();setTimeout(function(){lastActive=null;schedule()},300)}
+function setDrawer(o,focusBack){document.body.classList.toggle('nav-open',o);syncSide();
+  if(o){var a=$('.toc a.active')||$('#nav-filter');if(a)setTimeout(function(){a.focus({preventScroll:true})},60)}else if(focusBack)stBtn.focus()}
+function toggleSide(){if(mq.matches)setDrawer(!drawerOpen(),true);else setCollapsed(!collapsed())}
+stBtn.addEventListener('click',toggleSide);
+$('#nav-close').addEventListener('click',function(){setDrawer(false,true)});
+$('#scrim').addEventListener('click',function(){setDrawer(false,true)});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&drawerOpen()){setDrawer(false,true);return}
+  if((e.key==='b'||e.key==='B')&&(isMac?e.metaKey:e.ctrlKey)&&!e.altKey&&!e.shiftKey&&!(isMac&&e.ctrlKey)){
+    var t=e.target,tag=t&&t.tagName;
+    if(t&&(t.isContentEditable||tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'))return; /* don't hijack while typing */
+    e.preventDefault();toggleSide()}});
+(mq.addEventListener?mq.addEventListener.bind(mq,'change'):mq.addListener.bind(mq))(function(){if(!mq.matches)document.body.classList.remove('nav-open');syncSide()});
+syncSide();
+requestAnimationFrame(function(){root.classList.add('side-anim')}); /* enable transitions only after first paint (no flash on load) */
 
 /* ---------- code: highlight, copy, diagram ---------- */
 var KW={python:'def|return|for|in|if|not|and|or|while|True|False|None|class|import|from|break|continue|lambda|with|as|set',rust:'pub|enum|fn|struct|impl|let|mut|use|self',jsonc:'true|false|null',json:'true|false|null'};
