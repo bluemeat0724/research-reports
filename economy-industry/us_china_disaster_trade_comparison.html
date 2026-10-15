@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>灾难冲击、制造业优势与体系权力：二战美国与疫情后中国比较研究</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --paper: rgba(255,255,255,.86);
+      --paper-solid: #fffdf8;
+      --ink: #151a20;
+      --muted: #67707a;
+      --line: rgba(21,26,32,.13);
+      --us: #183a61;
+      --us-soft: #dce8f3;
+      --cn: #9d2c2c;
+      --cn-soft: #f3dddd;
+      --gold: #b18432;
+      --green: #386a55;
+      --shadow: 0 18px 50px rgba(36, 39, 42, .10);
+      --radius: 22px;
+      --max: 1180px;
+    }
+    [data-theme="dark"] {
+      --bg: #101419;
+      --paper: rgba(27,32,38,.9);
+      --paper-solid: #191f25;
+      --ink: #f0eee8;
+      --muted: #a9b1ba;
+      --line: rgba(255,255,255,.12);
+      --us: #76a9dc;
+      --us-soft: #20354b;
+      --cn: #ec8a8a;
+      --cn-soft: #4a282b;
+      --gold: #d7b66f;
+      --green: #8fc4ab;
+      --shadow: 0 18px 50px rgba(0,0,0,.3);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(24,58,97,.12), transparent 34rem),
+        radial-gradient(circle at 90% 10%, rgba(157,44,44,.10), transparent 28rem),
+        var(--bg);
+      line-height: 1.78;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    .progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0;
+      background: linear-gradient(90deg, var(--us), var(--gold), var(--cn));
+      z-index: 100;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      backdrop-filter: blur(18px);
+      background: color-mix(in srgb, var(--bg) 84%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: var(--max); margin: auto; padding: 10px 22px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .brand { font-size: 13px; font-weight: 800; letter-spacing: .12em; white-space: nowrap; }
+    .nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+    .nav a { text-decoration: none; color: var(--muted); padding: 7px 10px; border-radius: 999px; white-space: nowrap; font-size: 13px; }
+    .nav a:hover, .nav a.active { color: var(--ink); background: var(--paper); }
+    .tools { display: flex; gap: 8px; }
+    .icon-btn, .chip-btn {
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+      border-radius: 999px; cursor: pointer; padding: 8px 11px; box-shadow: 0 3px 14px rgba(0,0,0,.04);
+    }
+    .icon-btn:hover, .chip-btn:hover { transform: translateY(-1px); }
+    .hero { max-width: var(--max); margin: 0 auto; padding: 76px 24px 46px; }
+    .eyebrow { color: var(--gold); font-weight: 800; letter-spacing: .16em; font-size: 12px; text-transform: uppercase; }
+    h1 { font-size: clamp(38px, 6vw, 78px); letter-spacing: -.055em; line-height: 1.04; margin: 18px 0 24px; max-width: 1040px; }
+    .lead { max-width: 880px; font-size: clamp(18px, 2.2vw, 25px); color: var(--muted); line-height: 1.6; }
+    .hero-grid { margin-top: 38px; display: grid; grid-template-columns: 1.3fr .7fr; gap: 18px; }
+    .thesis, .hero-side { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .thesis { padding: 28px; position: relative; overflow: hidden; }
+    .thesis::before { content:""; position:absolute; width:220px; height:220px; right:-80px; top:-90px; border-radius:50%; background:linear-gradient(135deg,var(--us-soft),var(--cn-soft)); filter:blur(4px); }
+    .thesis strong { font-size: 25px; line-height: 1.45; position:relative; }
+    .hero-side { padding: 22px; display: grid; gap: 16px; }
+    .hero-stat { display:flex; justify-content:space-between; gap:18px; border-bottom:1px solid var(--line); padding-bottom:14px; }
+    .hero-stat:last-child { border:0; padding:0; }
+    .hero-stat b { font-size: 26px; letter-spacing: -.04em; }
+    .hero-stat span { color: var(--muted); font-size:13px; text-align:right; }
+    .container { max-width: var(--max); margin: auto; padding: 0 24px 100px; }
+    section { scroll-margin-top: 82px; margin-top: 88px; }
+    .section-head { display:grid; grid-template-columns: .34fr 1fr; gap: 28px; align-items:start; margin-bottom:28px; }
+    .section-no { font-size: 13px; color: var(--gold); font-weight: 800; letter-spacing:.14em; }
+    h2 { margin:0; font-size:clamp(28px,4vw,48px); line-height:1.15; letter-spacing:-.035em; }
+    h3 { font-size: 23px; line-height:1.35; margin: 0 0 12px; letter-spacing:-.02em; }
+    h4 { margin:0 0 8px; font-size:17px; }
+    p { margin: 0 0 17px; }
+    .muted { color: var(--muted); }
+    .callout { border-left: 5px solid var(--gold); padding: 22px 24px; background: var(--paper); border-radius: 0 var(--radius) var(--radius) 0; font-size: 19px; box-shadow: var(--shadow); }
+    .grid-2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+    .card { border:1px solid var(--line); background:var(--paper); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); }
+    .card.us { border-top: 5px solid var(--us); }
+    .card.cn { border-top: 5px solid var(--cn); }
+    .tag { display:inline-flex; align-items:center; padding:5px 10px; border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.05em; margin-bottom:14px; }
+    .tag.us { color:var(--us); background:var(--us-soft); }
+    .tag.cn { color:var(--cn); background:var(--cn-soft); }
+    .tag.neutral { color:var(--green); background: color-mix(in srgb, var(--green) 14%, transparent); }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+    .metric { border:1px solid var(--line); border-radius:18px; padding:18px; background:var(--paper); min-height:150px; }
+    .metric .value { font-size:clamp(27px,4vw,45px); font-weight:850; line-height:1.05; letter-spacing:-.045em; margin:14px 0 8px; }
+    .metric small { color:var(--muted); }
+    .chart-card { border:1px solid var(--line); background:var(--paper); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); overflow:hidden; }
+    .chart-top { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; margin-bottom:16px; }
+    .segmented { display:inline-flex; padding:4px; border:1px solid var(--line); border-radius:999px; background:color-mix(in srgb,var(--bg) 70%,transparent); }
+    .segmented button { border:0; background:transparent; color:var(--muted); border-radius:999px; padding:7px 11px; cursor:pointer; font-size:12px; }
+    .segmented button.active { background:var(--paper-solid); color:var(--ink); box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    canvas { width:100%; height:360px; display:block; }
+    .note { font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:12px; margin-top:10px; }
+    .mechanism { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:stretch; }
+    .mechanism .step { position:relative; min-height:150px; border:1px solid var(--line); background:var(--paper); border-radius:18px; padding:17px; }
+    .mechanism .step:not(:last-child)::after { content:"→"; position:absolute; right:-13px; top:55px; z-index:2; color:var(--gold); font-size:23px; font-weight:900; }
+    .step b { display:block; font-size:14px; margin-bottom:9px; }
+    .step span { color:var(--muted); font-size:13px; line-height:1.55; }
+    .compare-controls { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+    .dimension-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .dimension { border:1px solid var(--line); background:var(--paper); border-radius:18px; overflow:hidden; transition:.25s; }
+    .dimension button { width:100%; border:0; color:var(--ink); background:transparent; padding:18px; cursor:pointer; text-align:left; display:grid; grid-template-columns: 1fr 50px 50px; align-items:center; gap:10px; }
+    .score-pill { font-weight:850; text-align:center; border-radius:999px; padding:4px 0; font-size:12px; }
+    .score-pill.us { color:var(--us); background:var(--us-soft); }
+    .score-pill.cn { color:var(--cn); background:var(--cn-soft); }
+    .dimension-detail { display:none; padding:0 18px 18px; color:var(--muted); font-size:14px; }
+    .dimension.open .dimension-detail { display:block; }
+    .dimension.hidden { display:none; }
+    .ladder { display:grid; gap:12px; }
+    .rung { display:grid; grid-template-columns:180px 1fr 1fr; gap:14px; align-items:center; }
+    .rung-label { font-weight:800; }
+    .bar-wrap { height:28px; background:color-mix(in srgb,var(--bg) 60%,transparent); border-radius:999px; overflow:hidden; border:1px solid var(--line); }
+    .bar { height:100%; display:flex; align-items:center; padding:0 10px; color:white; font-weight:800; font-size:12px; min-width:40px; }
+    .bar.us { background:var(--us); }
+    .bar.cn { background:var(--cn); }
+    .scenario { display:grid; grid-template-columns:.9fr 1.1fr; gap:18px; }
+    .slider-row { display:grid; grid-template-columns:1fr 80px; gap:10px; align-items:center; margin:18px 0; }
+    input[type="range"] { width:100%; accent-color:var(--gold); }
+    .output-score { width:150px; height:150px; border-radius:50%; margin:8px auto 20px; display:grid; place-items:center; border:12px solid color-mix(in srgb,var(--green) 18%,var(--line)); position:relative; }
+    .output-score::before { content:""; position:absolute; inset:-12px; border-radius:50%; border:12px solid var(--green); clip-path:polygon(0 0, 100% 0, 100% var(--score), 0 var(--score)); opacity:.8; }
+    .output-score b { font-size:46px; letter-spacing:-.06em; z-index:1; }
+    .scenario-text { font-size:18px; }
+    .timeline { position:relative; margin-left:15px; padding-left:30px; border-left:2px solid var(--line); }
+    .event { position:relative; padding:0 0 28px 12px; }
+    .event::before { content:""; position:absolute; left:-39px; top:7px; width:14px; height:14px; border-radius:50%; background:var(--paper-solid); border:4px solid var(--gold); }
+    .event time { font-size:13px; font-weight:850; color:var(--gold); }
+    .event h4 { margin-top:5px; }
+    .conclusion { padding:34px; border-radius:var(--radius); color:#fff; background:linear-gradient(120deg,#17385d,#412f3f 56%,#862d2d); box-shadow:var(--shadow); }
+    .conclusion h2 { color:#fff; }
+    .conclusion p { color:rgba(255,255,255,.82); }
+    .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size:16px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.2); border-radius:15px; padding:18px; overflow:auto; }
+    .sources { display:grid; gap:10px; counter-reset:src; }
+    .source { counter-increment:src; border-bottom:1px solid var(--line); padding:12px 0; display:grid; grid-template-columns:34px 1fr; gap:10px; }
+    .source::before { content:counter(src); width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:var(--paper); border:1px solid var(--line); font-weight:800; font-size:12px; }
+    .source a { text-decoration:none; font-weight:700; }
+    .source a:hover { text-decoration:underline; }
+    sup a { text-decoration:none; color:var(--gold); font-weight:800; }
+    .evidence { display:none; border:1px dashed var(--gold); padding:12px 15px; border-radius:14px; color:var(--muted); font-size:13px; margin:12px 0; }
+    body.show-evidence .evidence { display:block; }
+    .method-box { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .method-box div { border:1px solid var(--line); background:var(--paper); border-radius:18px; padding:19px; }
+    .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:18px; background:var(--paper); }
+    table { width:100%; border-collapse:collapse; min-width:780px; }
+    th,td { padding:13px 15px; border-bottom:1px solid var(--line); text-align:right; }
+    th:first-child, td:first-child { text-align:left; }
+    th { font-size:12px; color:var(--muted); letter-spacing:.04em; position:sticky; top:0; background:var(--paper-solid); }
+    tr:hover td { background:color-mix(in srgb,var(--gold) 6%,transparent); }
+    footer { max-width:var(--max); margin:auto; padding:0 24px 60px; color:var(--muted); font-size:13px; }
+    @media (max-width: 900px) {
+      .hero-grid, .scenario, .section-head { grid-template-columns:1fr; }
+      .metrics { grid-template-columns:repeat(2,1fr); }
+      .grid-3 { grid-template-columns:1fr; }
+      .mechanism { grid-template-columns:repeat(2,1fr); }
+      .mechanism .step::after { display:none; }
+      .rung { grid-template-columns:1fr; gap:6px; }
+      .method-box { grid-template-columns:1fr; }
+    }
+    @media (max-width: 650px) {
+      .brand { display:none; }
+      .hero { padding-top:48px; }
+      .grid-2, .dimension-grid { grid-template-columns:1fr; }
+      .metrics { grid-template-columns:1fr; }
+      .mechanism { grid-template-columns:1fr; }
+      canvas { height:300px; }
+      .tools .chip-btn { display:none; }
+    }
+    @media print {
+      .topbar, .progress, .compare-controls, .segmented, .scenario-controls, .tools { display:none !important; }
+      body { background:white; color:#111; }
+      .hero, .container { max-width:none; }
+      .card, .chart-card, .metric, .thesis, .hero-side { box-shadow:none; break-inside:avoid; background:white; }
+      section { margin-top:50px; }
+      .evidence { display:block; }
+      a { text-decoration:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">COMPARATIVE POLITICAL ECONOMY</div>
+      <nav class="nav" id="nav">
+        <a href="#summary">摘要</a><a href="#method">方法</a><a href="#data">数据</a><a href="#mechanism">机制</a><a href="#conversion">权力转化</a><a href="#scenarios">情景</a><a href="#conclusion">结论</a><a href="#sources">来源</a>
+      </nav>
+      <div class="tools">
+        <button class="chip-btn" id="evidenceBtn">证据模式</button>
+        <button class="icon-btn" id="printBtn" title="打印 / 导出 PDF">⤓</button>
+        <button class="icon-btn" id="themeBtn" title="切换主题">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow">深度研究报告 · 2026年7月</div>
+      <h1>灾难冲击、制造业优势与体系权力</h1>
+      <p class="lead">二战时期美国与新冠疫情后中国的比较研究：为什么两国都在全球供给受冲击时扩大贸易优势，却走向了不同的金融、货币与国际秩序结果？</p>
+      <div class="hero-grid">
+        <article class="thesis">
+          <div class="tag neutral">核心判断</div>
+          <strong>中国复制了二战美国路径的前半段——相对供给韧性、制造业集中和贸易盈余扩张；但尚未复制后半段——把工业优势转化为全球需求创造、储备货币、金融资产中心与制度主导权。</strong>
+        </article>
+        <aside class="hero-side">
+          <div class="hero-stat"><b>21.8%</b><span>美国占世界商品出口<br>1948年</span></div>
+          <div class="hero-stat"><b>14.6%</b><span>中国占世界商品出口<br>2024年，推算</span></div>
+          <div class="hero-stat"><b>57.13 / 1.99</b><span>美元 / 人民币占全球外汇储备<br>2026年一季度，%</span></div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="summary">
+        <div class="section-head"><div class="section-no">01 / EXECUTIVE SUMMARY</div><div><h2>比较的重点不是“谁的顺差更大”，而是谁能把相对生产优势变成长期体系优势</h2></div></div>
+        <div class="grid-3">
+          <article class="card us"><div class="tag us">二战美国</div><h3>结构性供给真空</h3><p>主要工业竞争者的工厂、交通、能源和城市资本遭受长期物理破坏。美国不仅保存了本土资本，还通过战争订单实现超常扩产。</p></article>
+          <article class="card cn"><div class="tag cn">疫情后中国</div><h3>阶段性生产错位</h3><p>竞争者主要经历停工、物流和人员流动中断，固定资本并未被摧毁。中国率先复产承接订单，但其他经济体具备恢复能力。</p></article>
+          <article class="card"><div class="tag neutral">决定性分叉</div><h3>盈余如何循环</h3><p>美国把商品、信贷、美元、市场、重建资金和安全承诺绑定起来；中国主要完成商品与部分资本输出，货币和制度转化仍有限。</p></article>
+        </div>
+        <div class="callout" style="margin-top:18px"><b>研究结论：</b>美国在1940年代形成了“工业—贸易—资本—货币—制度—安全”的闭环；中国目前形成的是“工业—贸易—部分资本输出”的强链条。差异并不主要来自制造能力，而来自灾难性质、需求结构、金融开放、盟友体系和公共品供给方式。</div>
+      </section>
+
+      <section id="method">
+        <div class="section-head"><div class="section-no">02 / METHOD</div><div><h2>比较边界、统一指标与不可比之处</h2></div></div>
+        <div class="method-box">
+          <div><h4>时间窗口</h4><p class="muted">美国采用1939—1945年战时贸易，并以1938和1948年的联合国可比世界份额作为前后基准；中国采用2020—2025年货物贸易，并以2024年全球贸易份额和2026年初金融指标补充。</p></div>
+          <div><h4>统一指标</h4><p class="muted">使用“顺差强度＝顺差÷进出口总额”和“出口／进口比”降低币种、价格水平与经济规模差异的干扰。</p></div>
+          <div><h4>关键限制</h4><p class="muted">联合国因战争、汇率和资料异常，没有发布1939—1947年完整世界贸易序列，因此不能构造1945年精确世界份额。1948年是恢复可比性的战后基准。</p></div>
+        </div>
+        <div class="evidence">联合国历史贸易统计明确说明，两次世界大战期间及紧随其后的年份因异常条件不提供数据；因此本报告不使用虚构的1945年世界贸易分母。<sup><a href="#src2">[2]</a></sup></div>
+        <p style="margin-top:22px">这不是道德或灾难规模的等同。二战是工业资本和人口的大规模物理毁灭；疫情是公共卫生危机及经济运行中断。本文比较的是一个狭义机制：<b>当全球供给网络遭遇冲击时，受损较轻或恢复较快的制造业大国如何获得相对经济优势。</b></p>
+      </section>
+
+      <section id="data">
+        <div class="section-head"><div class="section-no">03 / DATA SNAPSHOT</div><div><h2>数据表明：两国都扩大了盈余，但美国战时贸易结构的极端程度更高</h2></div></div>
+        <div class="metrics">
+          <div class="metric"><small>美国顺差强度峰值</small><div class="value" style="color:var(--us)">56.9%</div><small>1944年；顺差占进出口总额</small></div>
+          <div class="metric"><small>中国顺差强度</small><div class="value" style="color:var(--cn)">18.7%</div><small>2025年；较2020年的11.5%上升</small></div>
+          <div class="metric"><small>美国出口／进口</small><div class="value" style="color:var(--us)">3.64×</div><small>1944年峰值</small></div>
+          <div class="metric"><small>中国出口／进口</small><div class="value" style="color:var(--cn)">1.46×</div><small>2025年</small></div>
+        </div>
+
+        <div class="chart-card" style="margin-top:18px">
+          <div class="chart-top"><div><h3>贸易失衡强度的演变</h3><p class="muted">统一尺度比较，不直接比较不同时代的名义金额。</p></div><div class="segmented" id="tradeMetric"><button data-mode="intensity" class="active">顺差强度</button><button data-mode="ratio">出口／进口比</button></div></div>
+          <canvas id="tradeChart" aria-label="贸易强度图"></canvas>
+          <div class="note">美国数据为百万美元；中国数据为十亿元人民币。顺差强度和出口／进口比不受币种影响。美国来源：美国人口普查局历史统计；中国来源：国家统计局年度公报。<sup><a href="#src1">[1]</a></sup><sup><a href="#src3">[3]</a></sup>–<sup><a href="#src8">[8]</a></sup></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="chart-card">
+            <h3>世界贸易地位</h3>
+            <canvas id="shareChart" aria-label="世界出口份额图"></canvas>
+            <div class="note">美国：1938年13.5%，1948年21.8%；中国：2024年商品出口3.5765万亿美元，全球商品出口24.43万亿美元，推算14.6%。<sup><a href="#src2">[2]</a></sup><sup><a href="#src9">[9]</a></sup><sup><a href="#src10">[10]</a></sup></div>
+          </div>
+          <div class="card">
+            <div class="tag neutral">必须避免的误读</div>
+            <h3>商品出口份额 ≠ 制造业规模份额</h3>
+            <p>美国1948年占世界<b>制造品出口</b>30.5%；UNIDO估计中国2020年占全球<b>制造业增加值</b>31.3%。两者衡量的是不同概念，不能把“30.5%”与“31.3%”直接视为同一指标。</p>
+            <p>但它们共同说明，两国在各自时代都具有系统性工业供给能力，而非依赖单一商品。</p>
+            <div class="evidence">UNIDO数据显示，中国全球制造业增加值份额从1990年的4%升至2020年的31.3%。<sup><a href="#src11">[11]</a></sup></div>
+          </div>
+        </div>
+
+        <details class="card" style="margin-top:18px">
+          <summary style="cursor:pointer;font-weight:850">查看年度基础数据</summary>
+          <div class="grid-2" style="margin-top:18px">
+            <div><h4>美国商品贸易，1939—1945</h4><div class="table-wrap"><table><thead><tr><th>年份</th><th>出口</th><th>进口</th><th>顺差</th><th>顺差强度</th></tr></thead><tbody id="usTable"></tbody></table></div><p class="note">单位：百万美元。</p></div>
+            <div><h4>中国货物贸易，2020—2025</h4><div class="table-wrap"><table><thead><tr><th>年份</th><th>出口</th><th>进口</th><th>顺差</th><th>顺差强度</th></tr></thead><tbody id="cnTable"></tbody></table></div><p class="note">单位：十亿元人民币。</p></div>
+          </div>
+        </details>
+      </section>
+
+      <section id="mechanism">
+        <div class="section-head"><div class="section-no">04 / CAUSAL MECHANISM</div><div><h2>同一条因果链，在“竞争者损失”和“盈余循环”两个环节发生分叉</h2></div></div>
+        <div class="mechanism">
+          <div class="step"><b>① 全球灾难</b><span>战争或公共卫生危机破坏跨境生产与物流。</span></div>
+          <div class="step"><b>② 损失不均</b><span>部分经济体停产或资本被摧毁，供给能力重新排序。</span></div>
+          <div class="step"><b>③ 订单转移</b><span>受损较轻的制造中心承接刚性需求与替代订单。</span></div>
+          <div class="step"><b>④ 盈余积累</b><span>出口增速快于进口，贸易顺差及海外资产上升。</span></div>
+          <div class="step"><b>⑤ 资本循环</b><span>顺差如何转化为援助、投资、储备资产或国内需求。</span></div>
+          <div class="step"><b>⑥ 体系权力</b><span>能否输出货币、规则、安全和公共品，决定优势持续性。</span></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:22px">
+          <article class="card us"><div class="tag us">美国：结构性真空</div><h3>竞争者的资本存量被长期摧毁</h3><p>欧洲和日本不仅停产，而且面临厂房、能源、铁路、港口与住房的破坏。战争结束并不意味着供给立即恢复，反而开启了多年重建需求。</p><p>美国的外部需求由战争采购、租借援助和战后重建共同支撑，具有高度刚性。</p></article>
+          <article class="card cn"><div class="tag cn">中国：阶段性错位</div><h3>竞争者可以在限制解除后复产</h3><p>疫情造成工厂停摆、物流拥堵和消费结构改变，但多数国家的工业资本仍然存在。中国获得了显著的时间窗口，却没有获得竞争者产能长期消失形成的垄断性空间。</p><p>订单优势因此更容易转化为关税、补贴竞争、“中国+1”和供应链去风险。</p></article>
+        </div>
+
+        <div class="callout" style="margin-top:18px"><b>关键机制：</b>灾难红利的持续时间，不取决于灾难本身有多严重，而取决于竞争者的生产能力是“暂时停机”还是“需要重建”。</div>
+      </section>
+
+      <section id="conversion">
+        <div class="section-head"><div class="section-no">05 / POWER CONVERSION</div><div><h2>制造和贸易优势只是起点：真正的分水岭是盈余能否形成自我强化的全球循环</h2></div></div>
+        <div class="grid-2">
+          <div class="card us"><div class="tag us">美国的闭环</div><h3>从供应国到体系中心</h3><p>美国通过租借、战后贷款、马歇尔计划、对外投资和海外军事支出，把美元重新投放给贸易伙伴；布雷顿森林体系又把国际结算与美元绑定，美元按每盎司35美元兑换黄金。<sup><a href="#src15">[15]</a></sup></p><p>马歇尔计划既推动欧洲工业恢复，也为美国商品建立市场。<sup><a href="#src17">[17]</a></sup></p></div>
+          <div class="card cn"><div class="tag cn">中国的未完成循环</div><h3>商品强、资产与货币转化弱</h3><p>中国已通过直接投资、海外建厂、基础设施和工程承包输出资本，但大量贸易收入仍以美元或其他主要货币计价并沉淀为外币资产。</p><p>2026年一季度，美元占全球已分配外汇储备57.13%，人民币为1.99%。<sup><a href="#src13">[13]</a></sup></p></div>
+        </div>
+
+        <div class="chart-card" style="margin-top:18px">
+          <div class="chart-top"><div><h3>六级权力转化阶梯</h3><p class="muted">5分代表在相应时期形成全球中心性；评分为机制性判断，不是官方指数。</p></div></div>
+          <div class="ladder" id="ladder"></div>
+        </div>
+
+        <div class="compare-controls" style="margin-top:22px"><button class="chip-btn active" data-filter="all">全部维度</button><button class="chip-btn" data-filter="similar">高相似</button><button class="chip-btn" data-filter="different">显著差异</button></div>
+        <div class="dimension-grid" id="dimensions"></div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <article class="card"><div class="tag neutral">顺差质量</div><h3>中国顺差不全等于生产率红利</h3><p>2025年货物贸易顺差达到8.51万亿元，但服务贸易仍有8287亿元逆差。IMF估计2025年经常账户顺差为GDP的3.3%，并指出私人国内需求仍较弱。<sup><a href="#src8">[8]</a></sup><sup><a href="#src12">[12]</a></sup></p><p>顺差既反映制造竞争力，也反映进口与内需吸收不足。</p></article>
+          <article class="card"><div class="tag neutral">最终市场</div><h3>从“世界供应者”走向“世界购买者”</h3><p>世界银行数据显示，中国居民最终消费在2024年约占GDP的40%。<sup><a href="#src14">[14]</a></sup> 当一个超大经济体的生产能力远强于国内吸收能力，外部平衡压力会不断积累。</p><p>美国战后影响力的一部分来自其最终市场、金融资产和安全承诺，而不只是出口。</p></article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><div class="section-no">06 / POLITICAL REACTION</div><div><h2>为什么美国的出口扩张更容易成为“重建”，而中国的出口扩张更容易成为“产业冲击”</h2></div></div>
+        <div class="grid-3">
+          <div class="card"><h3>需求方是否失去生产能力</h3><p>二战后的欧洲和日本急需美国商品，同时缺乏自主恢复所需的资本品和美元。当前进口中国商品的经济体通常仍保有本国产业。</p></div>
+          <div class="card"><h3>供应者是否同时提供补偿</h3><p>美国资助盟友重建、开放融资并提供安全体系，部分缓解了产业依赖的政治成本。中国更多以低成本产品和产业投资进入竞争性市场。</p></div>
+          <div class="card"><h3>出口是否冲击核心产业</h3><p>汽车、电池、光伏、钢铁、化工和机械直接关联就业、技术与国家安全，因此贸易伙伴更倾向采用关税、补贴、投资审查和本地化要求。</p></div>
+        </div>
+        <div class="callout" style="margin-top:18px">美国面对的是“需要它帮助恢复生产的盟友”；中国面对的是“依赖中国供应，同时担心本国产业被替代的合作方与竞争者”。</div>
+      </section>
+
+      <section id="scenarios">
+        <div class="section-head"><div class="section-no">07 / INTERACTIVE SCENARIOS</div><div><h2>中国未来能否从制造中心升级为体系中心，取决于四个可观察变量</h2></div></div>
+        <div class="scenario">
+          <div class="card scenario-controls">
+            <div class="slider-row"><label><b>国内吸收能力</b><br><small class="muted">居民消费、社会保障与进口需求</small></label><output id="vAbsorb">45</output><input id="absorb" type="range" min="0" max="100" value="45" style="grid-column:1/-1"></div>
+            <div class="slider-row"><label><b>人民币国际化</b><br><small class="muted">结算、储备、安全资产与资本市场</small></label><output id="vCurrency">22</output><input id="currency" type="range" min="0" max="100" value="22" style="grid-column:1/-1"></div>
+            <div class="slider-row"><label><b>全球公共品供给</b><br><small class="muted">市场、融资、规则与危机支持</small></label><output id="vPublic">40</output><input id="publicGoods" type="range" min="0" max="100" value="40" style="grid-column:1/-1"></div>
+            <div class="slider-row"><label><b>外部摩擦强度</b><br><small class="muted">关税、技术限制与供应链分裂</small></label><output id="vFriction">68</output><input id="friction" type="range" min="0" max="100" value="68" style="grid-column:1/-1"></div>
+            <p class="note">这是用于解释因果关系的互动模型，不是经济预测。权重：国内吸收30%、货币30%、公共品20%、低摩擦20%。</p>
+          </div>
+          <div class="card">
+            <div class="output-score" id="scoreRing" style="--score:40%"><b id="scenarioScore">40</b></div>
+            <h3 id="scenarioTitle" style="text-align:center">制造强国，但体系转化受限</h3>
+            <p class="scenario-text" id="scenarioText">较强的工业供给尚未与国内消费、人民币资产和全球公共品形成闭环；外部摩擦会把出口优势部分转化为海外设厂和供应链碎片化，而非货币与制度中心性。</p>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:18px">
+          <article class="card"><div class="tag neutral">路径 A</div><h3>国内再平衡</h3><p>居民收入与社会保障提高，进口和服务消费增长，顺差趋于稳定。中国成为更重要的最终市场，贸易伙伴获得更强的对华出口机会。</p></article>
+          <article class="card"><div class="tag neutral">路径 B</div><h3>出口主导延续</h3><p>制造投资与出口继续快于内需。顺差扩大，但关税和本地化要求上升，中国企业更多通过海外生产绕开贸易壁垒。</p></article>
+          <article class="card"><div class="tag neutral">路径 C</div><h3>体系碎片化</h3><p>技术、金融与安全边界强化，全球出现重复供应链。中国保持工业集团中心地位，却难以形成二战后美国式的单一国际体系。</p></article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><div class="section-no">08 / TIMELINE</div><div><h2>两条时间线：一次从战争动员走向制度设计，一次从疫情复产走向结构性顺差</h2></div></div>
+        <div class="grid-2">
+          <div class="card"><div class="tag us">美国</div><div class="timeline">
+            <div class="event"><time>1939—1941</time><h4>出口优势开始扩大</h4><p class="muted">欧洲战争需求上升，美国商品顺差增加。</p></div>
+            <div class="event"><time>1941</time><h4>租借法案</h4><p class="muted">物资输出与国家信用、盟国战略需求结合。</p></div>
+            <div class="event"><time>1942—1944</time><h4>全面战争动员</h4><p class="muted">出口／进口比在1944年达到3.64倍。</p></div>
+            <div class="event"><time>1944</time><h4>布雷顿森林会议</h4><p class="muted">工业和金融优势被嵌入国际货币制度。</p></div>
+            <div class="event"><time>1948</time><h4>马歇尔计划与出口高位</h4><p class="muted">美国占世界商品出口21.8%，占制造品出口30.5%。</p></div>
+          </div></div>
+          <div class="card"><div class="tag cn">中国</div><div class="timeline">
+            <div class="event"><time>2020</time><h4>率先复产与订单转移</h4><p class="muted">货物贸易顺差3.71万亿元人民币。</p></div>
+            <div class="event"><time>2021—2022</time><h4>供应链与耐用品需求扩张</h4><p class="muted">出口和进口同步扩大，顺差继续增长。</p></div>
+            <div class="event"><time>2023</time><h4>全球复产、贸易降温</h4><p class="muted">总贸易趋于平稳，但顺差保持高位。</p></div>
+            <div class="event"><time>2024—2025</time><h4>出口再加速、进口偏弱</h4><p class="muted">2025年货物顺差达到8.51万亿元人民币。</p></div>
+            <div class="event"><time>2026 Q1</time><h4>货币地位仍不对称</h4><p class="muted">人民币占全球外汇储备1.99%，美元为57.13%。</p></div>
+          </div></div>
+        </div>
+      </section>
+
+      <section id="conclusion">
+        <div class="conclusion">
+          <div class="eyebrow" style="color:#f0cc7b">FINAL ASSESSMENT</div>
+          <h2 style="margin:14px 0 22px">中国更像一个被灾难放大优势的超级制造中心，而不是1945年的美国</h2>
+          <p>中国已经完成供给优势与贸易优势的强化，并在部分资本输出、产业链组织和技术升级上形成显著能力。但二战后美国的特殊性在于，它同时拥有遭到长期破坏的竞争者、巨大的重建刚需、核心金融市场、大量黄金储备、储备货币、盟友体系和制度设计权。</p>
+          <p>因此，判断中国能否实现类似的历史跃升，不能继续把贸易顺差作为唯一指标，而应观察：中国能否扩大居民消费与进口、提供有吸引力的人民币资产、降低资本与金融制度的不确定性、建立可被外部自愿接受的公共品与规则，并在贸易伙伴恢复自身产业能力时维持合作。</p>
+          <div class="formula">长期体系优势 ≈ 工业供给 × 国内市场 × 金融资产吸引力 × 货币信任 × 制度接受度 × 公共品供给 ÷ 外部摩擦</div>
+        </div>
+      </section>
+
+      <section id="sources">
+        <div class="section-head"><div class="section-no">09 / SOURCES & NOTES</div><div><h2>数据来源与口径说明</h2></div></div>
+        <div class="sources">
+          <div class="source" id="src1"><div><a href="https://www2.census.gov/library/publications/1949/compendia/hist_stats_1789-1945/hist_stats_1789-1945-chM.pdf" target="_blank">U.S. Census Bureau, Historical Statistics of the United States, 1789–1945, Chapter M</a><div class="muted">1939—1945年美国商品出口、进口与顺差。</div></div></div>
+          <div class="source" id="src2"><div><a href="https://unstats.un.org/unsd/trade/imts/Historical%20data%201900-1960.pdf" target="_blank">United Nations, International Trade Statistics 1900–1960</a><div class="muted">世界出口、美国出口份额、制造品出口份额及战争年份缺失说明。</div></div></div>
+          <div class="source" id="src3"><div><a href="https://www.stats.gov.cn/english/PressRelease/202102/t20210228_1814177.html" target="_blank">中国国家统计局：2020年国民经济和社会发展统计公报</a></div></div>
+          <div class="source" id="src4"><div><a href="https://www.stats.gov.cn/english/PressRelease/202202/t20220227_1827963.html" target="_blank">中国国家统计局：2021年国民经济和社会发展统计公报</a></div></div>
+          <div class="source" id="src5"><div><a href="https://www.stats.gov.cn/english/PressRelease/202301/t20230117_1892094.html" target="_blank">中国国家统计局：2022年国民经济运行数据</a></div></div>
+          <div class="source" id="src6"><div><a href="https://www.stats.gov.cn/english/PressRelease/202402/t20240228_1947918.html" target="_blank">中国国家统计局：2023年国民经济和社会发展统计公报</a></div></div>
+          <div class="source" id="src7"><div><a href="https://www.stats.gov.cn/english/PressRelease/202502/t20250228_1958822.html" target="_blank">中国国家统计局：2024年国民经济和社会发展统计公报</a></div></div>
+          <div class="source" id="src8"><div><a href="https://www.stats.gov.cn/english/PressRelease/202602/t20260228_1962661.html" target="_blank">中国国家统计局：2025年国民经济和社会发展统计公报</a><div class="muted">货物贸易、服务贸易、对外投资及产业结构。</div></div></div>
+          <div class="source" id="src9"><div><a href="https://ttd.wto.org/en/profiles/china" target="_blank">WTO Tariff & Trade Data — China Profile</a><div class="muted">2024年中国商品出口3.5765万亿美元。</div></div></div>
+          <div class="source" id="src10"><div><a href="https://www.wto.org/english/blogs_e/ce_ralph_ossa_e/blog_ro_16apr25_e.htm" target="_blank">WTO, Global Trade Outlook and Statistics, April 2025</a><div class="muted">2024年世界商品出口24.43万亿美元。</div></div></div>
+          <div class="source" id="src11"><div><a href="https://www.unido.org/sites/default/files/unido-publications/2023-03/IDR-2022-en.pdf" target="_blank">UNIDO, Industrial Development Report 2022</a><div class="muted">中国占全球制造业增加值从1990年4%升至2020年31.3%。</div></div></div>
+          <div class="source" id="src12"><div><a href="https://www.imf.org/en/news/articles/2026/02/18/pr-26053-china-imf-executive-board-concludes-2025-article-iv-consultation" target="_blank">IMF, China 2025 Article IV Consultation</a><div class="muted">2025年国内需求、净出口贡献、储蓄投资与经常账户分析。</div></div></div>
+          <div class="source" id="src13"><div><a href="https://data.imf.org/en/news/imf%20data%20brief%20july%201" target="_blank">IMF COFER Data Brief, 2026 Q1</a><div class="muted">美元57.13%、人民币1.99%。</div></div></div>
+          <div class="source" id="src14"><div><a href="https://data.worldbank.org/indicator/NE.CON.PRVT.ZS?locations=CN" target="_blank">World Bank, Household Final Consumption Expenditure (% of GDP), China</a><div class="muted">2024年约40%。</div></div></div>
+          <div class="source" id="src15"><div><a href="https://www.federalreservehistory.org/essays/bretton-woods-created" target="_blank">Federal Reserve History, Creation of the Bretton Woods System</a></div></div>
+          <div class="source" id="src16"><div><a href="https://www.federalreservehistory.org/essays/gold-convertibility-ends" target="_blank">Federal Reserve History, Gold Convertibility Ends</a><div class="muted">美国曾持有约四分之三的世界官方黄金储备。</div></div></div>
+          <div class="source" id="src17"><div><a href="https://history.state.gov/milestones/1945-1952/marshall-plan" target="_blank">U.S. Department of State, Marshall Plan, 1948</a><div class="muted">欧洲工业复兴与美国商品市场的建立。</div></div></div>
+          <div class="source" id="src18"><div><a href="https://history.state.gov/milestones/1937-1945/lend-lease" target="_blank">U.S. Department of State, Lend-Lease and Military Aid</a></div></div>
+        </div>
+        <div class="callout" style="margin-top:24px"><b>口径提醒：</b>美国战时数据为历史商品贸易口径；中国数据为海关货物贸易人民币口径。商品贸易顺差不等于经常账户顺差，也不等于国家从贸易中获得的净利润。战争援助、服务贸易、投资收益、运输保险和所有权转移的统计处理均可能改变不同口径的结果。</div>
+      </section>
+    </div>
+  </main>
+
+  <footer>本报告为比较政治经济学分析页面。互动评分和情景模型用于揭示机制，不构成预测或政策建议。页面数据更新至2026年7月20日可获得的官方资料。</footer>
+
+  <script>
+    const US = [
+      {y:1939,e:3177.176,i:2318.081},{y:1940,e:4021.146,i:2625.379},{y:1941,e:5147.154,i:3345.005},
+      {y:1942,e:8079.517,i:2744.862},{y:1943,e:12964.906,i:3881.349},{y:1944,e:14258.702,i:3919.270},{y:1945,e:9805.875,i:4135.941}
+    ];
+    const CN = [
+      {y:2020,e:17932.6,i:14223.1},{y:2021,e:21734.8,i:17366.1},{y:2022,e:23965.4,i:18102.4},
+      {y:2023,e:23772.55,i:17984.25},{y:2024,e:25454.5,i:18392.3},{y:2025,e:26989.0,i:18479.5}
+    ];
+    const calc = d => ({...d,b:d.e-d.i,intensity:(d.e-d.i)/(d.e+d.i)*100,ratio:d.e/d.i});
+    const us = US.map(calc), cn = CN.map(calc);
+
+    function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function setupCanvas(c){ const r=window.devicePixelRatio||1; const rect=c.getBoundingClientRect(); c.width=rect.width*r; c.height=rect.height*r; const ctx=c.getContext('2d'); ctx.setTransform(r,0,0,r,0,0); return {ctx,w:rect.width,h:rect.height}; }
+    function lineChart(canvas, series, opts={}){
+      const {ctx,w,h}=setupCanvas(canvas); const pad={l:54,r:20,t:28,b:45};
+      const all=series.flatMap(s=>s.data.map(d=>d.v)); let min=opts.min ?? Math.min(...all), max=opts.max ?? Math.max(...all);
+      const span=max-min||1; min-=span*.08; max+=span*.12;
+      const x=(idx,n)=>pad.l+(w-pad.l-pad.r)*(n<=1?.5:idx/(n-1));
+      const y=v=>pad.t+(h-pad.t-pad.b)*(1-(v-min)/(max-min));
+      ctx.clearRect(0,0,w,h); ctx.font='12px system-ui'; ctx.strokeStyle=css('--line'); ctx.fillStyle=css('--muted'); ctx.lineWidth=1;
+      for(let k=0;k<5;k++){ const val=min+(max-min)*k/4; const yy=y(val); ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillText(opts.format?opts.format(val):val.toFixed(1),5,yy+4); }
+      series.forEach(s=>{
+        ctx.strokeStyle=s.color;ctx.fillStyle=s.color;ctx.lineWidth=3;ctx.beginPath();
+        s.data.forEach((d,idx)=>{const xx=x(idx,s.data.length),yy=y(d.v);idx?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)});ctx.stroke();
+        s.data.forEach((d,idx)=>{const xx=x(idx,s.data.length),yy=y(d.v);ctx.beginPath();ctx.arc(xx,yy,4,0,Math.PI*2);ctx.fill();ctx.fillStyle=css('--muted');ctx.textAlign='center';ctx.fillText(d.label,xx,h-18);ctx.fillStyle=s.color;});
+      });
+      ctx.textAlign='left'; let lx=pad.l; series.forEach(s=>{ctx.fillStyle=s.color;ctx.fillRect(lx,8,16,4);ctx.fillStyle=css('--ink');ctx.fillText(s.name,lx+22,13);lx+=ctx.measureText(s.name).width+62;});
+    }
+    function barChart(canvas, bars){
+      const {ctx,w,h}=setupCanvas(canvas), pad={l:55,r:20,t:30,b:55}, max=Math.max(...bars.map(b=>b.v))*1.15;
+      ctx.clearRect(0,0,w,h);ctx.font='12px system-ui';ctx.strokeStyle=css('--line');ctx.fillStyle=css('--muted');
+      for(let k=0;k<5;k++){const v=max*k/4,yy=h-pad.b-(h-pad.t-pad.b)*v/max;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillText(v.toFixed(0)+'%',10,yy+4)}
+      const gap=18, bw=(w-pad.l-pad.r-gap*(bars.length-1))/bars.length;
+      bars.forEach((b,i)=>{const x=pad.l+i*(bw+gap),bh=(h-pad.t-pad.b)*b.v/max,y=h-pad.b-bh;ctx.fillStyle=b.color;ctx.beginPath();ctx.roundRect(x,y,bw,bh,10);ctx.fill();ctx.fillStyle=css('--ink');ctx.textAlign='center';ctx.font='700 16px system-ui';ctx.fillText(b.v.toFixed(1)+'%',x+bw/2,y-9);ctx.font='12px system-ui';ctx.fillStyle=css('--muted');b.label.split('|').forEach((t,j)=>ctx.fillText(t,x+bw/2,h-pad.b+20+j*15));});
+      ctx.textAlign='left';
+    }
+    function renderTrade(mode='intensity'){
+      const fmt=mode==='intensity'?v=>v.toFixed(0)+'%':v=>v.toFixed(1)+'×';
+      lineChart(document.getElementById('tradeChart'),[
+        {name:'二战美国（1939—1945）',color:css('--us'),data:us.map(d=>({label:d.y,v:d[mode]}))},
+        {name:'疫情后中国（2020—2025）',color:css('--cn'),data:cn.map(d=>({label:d.y,v:d[mode]}))}
+      ],{min:mode==='intensity'?0:1,format:fmt});
+    }
+    function renderShares(){barChart(document.getElementById('shareChart'),[
+      {label:'美国|1938',v:13.5,color:css('--us')},{label:'美国|1948',v:21.8,color:css('--us')},{label:'中国|2024',v:14.64,color:css('--cn')}
+    ])}
+    function fillTables(){
+      const row=d=>`<tr><td>${d.y}</td><td>${d.e.toLocaleString('zh-CN',{maximumFractionDigits:2})}</td><td>${d.i.toLocaleString('zh-CN',{maximumFractionDigits:2})}</td><td>${d.b.toLocaleString('zh-CN',{maximumFractionDigits:2})}</td><td>${d.intensity.toFixed(1)}%</td></tr>`;
+      document.getElementById('usTable').innerHTML=us.map(row).join('');document.getElementById('cnTable').innerHTML=cn.map(row).join('');
+    }
+    const ladderData=[
+      ['工业供给',5.0,5.0],['商品贸易',5.0,4.5],['资本输出',5.0,3.5],['货币中心',5.0,1.5],['制度塑造',5.0,2.5],['安全与公共品',5.0,2.0]
+    ];
+    function renderLadder(){document.getElementById('ladder').innerHTML=ladderData.map(([n,u,c])=>`<div class="rung"><div class="rung-label">${n}</div><div class="bar-wrap"><div class="bar us" style="width:${u/5*100}%">美国 ${u.toFixed(1)}</div></div><div class="bar-wrap"><div class="bar cn" style="width:${c/5*100}%">中国 ${c.toFixed(1)}</div></div></div>`).join('')}
+    const dims=[
+      ['本土资本保存',5,5,'similar','两国在灾难中都没有遭受主要工业资本的大规模物理毁灭。中国经历停工和服务业冲击，但固定资产仍在。'],
+      ['竞争者受损深度',5,2,'different','美国的竞争者需要重建；中国的竞争者主要需要复工。这决定了优势窗口的持续时间。'],
+      ['工业体系完整度',5,5,'similar','两国在危机前已形成大规模、完整且可快速扩张的产业体系。'],
+      ['外部需求刚性',5,3,'different','美国面对战争与重建刚需；中国面对防疫、耐用品、电子和绿色转型需求，刚性与持续性较低。'],
+      ['国内吸收能力',4.5,2.5,'different','美国具有高收入国内市场；中国居民消费占GDP比例较低，强供给与内需偏弱并存。'],
+      ['资本输出能力',5,3.5,'different','中国已是重要投资者，但跨境资本输出与本币金融资产输出尚未完全统一。'],
+      ['货币国际化',5,1.5,'different','美元成为结算与储备中心；人民币储备份额仍接近2%。'],
+      ['制度设计权',5,2.5,'different','美国创建战后核心制度；中国主要在现有体系中扩权，并建设区域和补充性机制。'],
+      ['外部政治接受度',4.5,2,'different','美国以重建与安全提供者身份嵌入盟友体系；中国更多被视为供应者与产业竞争者的叠加。'],
+      ['产业升级潜力',4.5,4.5,'similar','两国都能将规模、工程能力和国家资源转向更高技术部门，但所处技术体系与外部约束不同。']
+    ];
+    function renderDims(filter='all'){
+      const box=document.getElementById('dimensions');box.innerHTML=dims.map((d,i)=>`<article class="dimension ${filter!=='all'&&d[3]!==filter?'hidden':''}"><button aria-expanded="false"><b>${d[0]}</b><span class="score-pill us">美 ${d[1]}</span><span class="score-pill cn">中 ${d[2]}</span></button><div class="dimension-detail">${d[4]}</div></article>`).join('');
+      box.querySelectorAll('.dimension button').forEach(b=>b.addEventListener('click',()=>{const p=b.parentElement;p.classList.toggle('open');b.setAttribute('aria-expanded',p.classList.contains('open'))}));
+    }
+    const absorb=document.getElementById('absorb');
+    const currency=document.getElementById('currency');
+    const publicGoods=document.getElementById('publicGoods');
+    const friction=document.getElementById('friction');
+    const vAbsorb=document.getElementById('vAbsorb');
+    const vCurrency=document.getElementById('vCurrency');
+    const vPublic=document.getElementById('vPublic');
+    const vFriction=document.getElementById('vFriction');
+    const scenarioScore=document.getElementById('scenarioScore');
+    const scoreRing=document.getElementById('scoreRing');
+    const scenarioTitle=document.getElementById('scenarioTitle');
+    const scenarioText=document.getElementById('scenarioText');
+    const themeBtn=document.getElementById('themeBtn');
+    const evidenceBtn=document.getElementById('evidenceBtn');
+    const printBtn=document.getElementById('printBtn');
+    const progress=document.getElementById('progress');
+    function updateScenario(){
+      const a=+absorb.value,c=+currency.value,p=+publicGoods.value,f=+friction.value;
+      vAbsorb.value=a;vCurrency.value=c;vPublic.value=p;vFriction.value=f;
+      const score=Math.round(.30*a+.30*c+.20*p+.20*(100-f));scenarioScore.textContent=score;scoreRing.style.setProperty('--score',score+'%');
+      let title,text;
+      if(score<35){title='制造优势被外部失衡消耗';text='内需、货币和公共品能力不足，且外部摩擦高。贸易顺差可能继续扩大，但更多转化为保护主义、海外本地化生产和金融依赖。';}
+      else if(score<55){title='制造强国，但体系转化受限';text='较强的工业供给尚未与国内消费、人民币资产和全球公共品形成闭环；外部摩擦会把出口优势部分转化为海外设厂和供应链碎片化，而非货币与制度中心性。';}
+      else if(score<75){title='区域性体系中心正在形成';text='国内市场、资本输出与人民币使用开始相互强化，中国可在部分区域和产业形成稳定循环，但仍与美元金融体系并存。';}
+      else {title='接近完整的体系权力闭环';text='国内市场、金融资产、货币与公共品共同支持全球需求，工业优势能够被更稳定地转化为制度影响力。实现这一状态需要显著降低外部摩擦并提高外部自愿接受度。';}
+      scenarioTitle.textContent=title;scenarioText.textContent=text;
+    }
+    document.getElementById('tradeMetric').addEventListener('click',e=>{if(e.target.tagName==='BUTTON'){document.querySelectorAll('#tradeMetric button').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');renderTrade(e.target.dataset.mode)}});
+    document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderDims(b.dataset.filter)}));
+    [absorb,currency,publicGoods,friction].forEach(el=>el.addEventListener('input',updateScenario));
+    themeBtn.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark';document.documentElement.dataset.theme=dark?'light':'dark';localStorage.setItem('report-theme',dark?'light':'dark');setTimeout(()=>{renderTrade(document.querySelector('#tradeMetric .active').dataset.mode);renderShares()},20)});
+    evidenceBtn.addEventListener('click',()=>{document.body.classList.toggle('show-evidence');evidenceBtn.textContent=document.body.classList.contains('show-evidence')?'隐藏证据':'证据模式'});
+    printBtn.addEventListener('click',()=>window.print());
+    window.addEventListener('scroll',()=>{const d=document.documentElement;progress.style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';let current='';document.querySelectorAll('section[id]').forEach(s=>{if(s.getBoundingClientRect().top<150)current=s.id});document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current));});
+    let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{renderTrade(document.querySelector('#tradeMetric .active').dataset.mode);renderShares()},150)});
+    const saved=localStorage.getItem('report-theme');if(saved)document.documentElement.dataset.theme=saved;
+    fillTables();renderTrade();renderShares();renderLadder();renderDims();updateScenario();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1673 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="《股票大作手操盘术》深度研究报告：利弗莫尔的趋势、关键点、资金管理与现代交易系统解读。" />
+  <title>等待市场证明你是对的｜《股票大作手操盘术》深度研究</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --paper: #fffdf8;
+      --paper-2: #f8f4eb;
+      --ink: #171813;
+      --muted: #65675f;
+      --line: #d9d2c4;
+      --line-strong: #b8ae9b;
+      --accent: #b8472f;
+      --accent-2: #1f6b5c;
+      --accent-soft: #f1ddd6;
+      --green-soft: #dcebe5;
+      --amber: #a86d16;
+      --amber-soft: #f6e8cb;
+      --danger: #9f2f2f;
+      --danger-soft: #f4dede;
+      --shadow: 0 18px 48px rgba(49, 43, 31, .10);
+      --radius: 18px;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #111310;
+      --paper: #181b17;
+      --paper-2: #20241e;
+      --ink: #edeee7;
+      --muted: #adb0a6;
+      --line: #353a32;
+      --line-strong: #51584b;
+      --accent: #e87b62;
+      --accent-2: #72c3ac;
+      --accent-soft: #42261f;
+      --green-soft: #1d3730;
+      --amber: #efb85c;
+      --amber-soft: #3f321c;
+      --danger: #f08b8b;
+      --danger-soft: #432324;
+      --shadow: 0 18px 48px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 80% -10%, rgba(184,71,47,.12), transparent 34rem),
+        radial-gradient(circle at -10% 20%, rgba(31,107,92,.08), transparent 30rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.72;
+      font-size: 16px;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+
+    .progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: transparent;
+      z-index: 99;
+    }
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .08s linear;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    }
+    .topbar-inner {
+      max-width: 1500px;
+      margin: auto;
+      min-height: 58px;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      font-weight: 760;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .brand span { color: var(--accent); }
+    .toolbar { display: flex; gap: 8px; }
+    .icon-btn {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .icon-btn:hover { transform: translateY(-1px); border-color: var(--line-strong); }
+
+    .hero {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 66px 24px 44px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+      gap: 34px;
+      align-items: end;
+    }
+    .eyebrow {
+      display: inline-flex;
+      gap: 9px;
+      align-items: center;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: currentColor;
+    }
+    h1 {
+      margin: 18px 0 18px;
+      max-width: 970px;
+      font-family: var(--serif);
+      font-size: clamp(44px, 6.3vw, 92px);
+      line-height: .98;
+      letter-spacing: -.055em;
+      font-weight: 760;
+    }
+    .hero-lead {
+      max-width: 850px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 24px);
+      line-height: 1.55;
+    }
+    .hero-lead strong { color: var(--ink); }
+    .hero-meta {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tag {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: color-mix(in srgb, var(--paper) 80%, transparent);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 420px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background:
+        linear-gradient(155deg, color-mix(in srgb, var(--paper) 92%, var(--accent-soft)), var(--paper));
+      box-shadow: var(--shadow);
+    }
+    .quote-card {
+      position: absolute;
+      inset: 28px 26px auto 26px;
+      z-index: 3;
+    }
+    .quote-mark {
+      font-family: Georgia, serif;
+      font-size: 84px;
+      line-height: .7;
+      color: var(--accent);
+      opacity: .8;
+    }
+    .quote-card blockquote {
+      margin: 8px 0 0;
+      font-family: var(--serif);
+      font-size: 27px;
+      line-height: 1.33;
+      letter-spacing: -.02em;
+    }
+    .quote-card cite {
+      display: block;
+      margin-top: 16px;
+      font-style: normal;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .ticker {
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 190px;
+      opacity: .92;
+    }
+
+    .layout {
+      max-width: 1500px;
+      margin: 0 auto 90px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 900px) minmax(230px, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 86px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      padding: 18px;
+      max-height: calc(100vh - 110px);
+      overflow: auto;
+    }
+    .toc-title {
+      font-size: 12px;
+      letter-spacing: .12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: 7px 9px;
+      margin: 2px 0;
+      border-radius: 9px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .toc a:hover, .toc a.active {
+      color: var(--ink);
+      background: var(--paper-2);
+    }
+    .toc a.active { box-shadow: inset 3px 0 0 var(--accent); }
+
+    main { min-width: 0; }
+    section {
+      scroll-margin-top: 84px;
+      margin-bottom: 70px;
+    }
+    .section-kicker {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0 0 20px;
+      font-family: var(--serif);
+      font-size: clamp(31px, 4vw, 52px);
+      line-height: 1.1;
+      letter-spacing: -.035em;
+    }
+    h3 {
+      margin: 34px 0 12px;
+      font-size: 23px;
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+    h4 { margin: 24px 0 8px; font-size: 17px; }
+    p { margin: 0 0 18px; }
+    .lede {
+      font-family: var(--serif);
+      font-size: 21px;
+      color: color-mix(in srgb, var(--ink) 88%, var(--muted));
+      line-height: 1.65;
+    }
+    .muted { color: var(--muted); }
+
+    .paper {
+      padding: clamp(22px, 4vw, 42px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 10px 26px rgba(55, 48, 34, .05);
+    }
+
+    .executive-grid, .principle-grid, .critique-grid, .mapping-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .executive-grid { grid-template-columns: repeat(3, 1fr); }
+    .principle-grid { grid-template-columns: repeat(2, 1fr); }
+    .critique-grid { grid-template-columns: repeat(2, 1fr); }
+    .mapping-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 18px;
+      background: var(--paper);
+    }
+    .card .num {
+      display: inline-grid;
+      place-items: center;
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .card h3, .card h4 { margin-top: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+
+    .thesis {
+      margin: 28px 0;
+      padding: 28px;
+      border-left: 5px solid var(--accent);
+      background: linear-gradient(90deg, var(--accent-soft), transparent);
+      border-radius: 0 14px 14px 0;
+      font-family: var(--serif);
+      font-size: 25px;
+      line-height: 1.45;
+    }
+
+    .source-note, .caveat, .insight {
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+    }
+    .source-note { background: var(--paper-2); }
+    .caveat { background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, var(--line)); }
+    .insight { background: var(--green-soft); border-color: color-mix(in srgb, var(--accent-2) 35%, var(--line)); }
+    .label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .margin {
+      position: sticky;
+      top: 86px;
+      display: grid;
+      gap: 14px;
+    }
+    .margin-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+    }
+    .margin-card h4 { margin: 0 0 8px; font-size: 14px; }
+    .margin-card p { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .margin-card p:last-child { margin-bottom: 0; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 8px;
+      margin: 28px 0 8px;
+    }
+    .flow-step {
+      position: relative;
+      min-height: 122px;
+      padding: 14px 12px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--paper-2);
+    }
+    .flow-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      right: -12px;
+      top: 45%;
+      color: var(--accent);
+      font-weight: 900;
+    }
+    .flow-step b { display: block; margin-bottom: 7px; font-size: 14px; }
+    .flow-step span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .interactive {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      margin: 28px 0;
+    }
+    .interactive-head {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .interactive-head h3 { margin: 0; font-size: 20px; }
+    .interactive-body { padding: 22px; }
+
+    .stage-tabs, .chart-controls, .scenario-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.active {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+    .stage-panel {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .stage-icon {
+      width: 84px; height: 84px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 30px;
+      font-weight: 900;
+    }
+    .stage-panel h4 { margin: 0 0 8px; font-size: 20px; }
+    .stage-panel p { margin: 0; color: var(--muted); }
+
+    .chart-shell {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        var(--paper);
+      background-size: 48px 36px;
+      overflow: hidden;
+    }
+    #pivotChart { width: 100%; height: 330px; display: block; }
+    .chart-legend {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: var(--paper-2);
+    }
+    .metric small { display: block; color: var(--muted); }
+    .metric strong { font-size: 20px; }
+
+    .rules-table, .modern-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 22px 0;
+      font-size: 14px;
+    }
+    .rules-table th, .rules-table td,
+    .modern-table th, .modern-table td {
+      padding: 13px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+    .rules-table th, .modern-table th {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .state-machine {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .state {
+      min-height: 126px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+    .state strong { display: block; margin-bottom: 7px; }
+    .state small { color: var(--muted); }
+
+    pre {
+      margin: 22px 0;
+      padding: 20px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #111511;
+      color: #e3eadf;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 11px 12px;
+      outline: none;
+    }
+    .field input:focus { border-color: var(--accent); }
+    .calc-result {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .result-box {
+      padding: 15px;
+      border-radius: 12px;
+      background: var(--green-soft);
+      border: 1px solid color-mix(in srgb, var(--accent-2) 32%, var(--line));
+    }
+    .result-box span { display: block; color: var(--muted); font-size: 12px; }
+    .result-box strong { display: block; margin-top: 3px; font-size: 22px; }
+
+    .scenario-output {
+      min-height: 118px;
+      padding: 18px;
+      border-radius: 13px;
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+    }
+    .scenario-output h4 { margin: 0 0 6px; }
+    .scenario-output p { margin: 0; color: var(--muted); }
+
+    .scorecard {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(5, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 13px;
+    }
+    .scorecard > div {
+      padding: 11px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 55px;
+    }
+    .scorecard > div:nth-child(6n) { border-right: 0; }
+    .scorecard .head {
+      background: var(--paper-2);
+      font-weight: 800;
+      color: var(--muted);
+    }
+    .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: 0;
+    }
+    .dot.good { background: var(--accent-2); }
+    .dot.mid { background: var(--amber); }
+    .dot.bad { background: var(--danger); }
+
+    .quote-strip {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper-2);
+      margin: 26px 0;
+    }
+    .quote-strip .big {
+      font-family: var(--serif);
+      font-size: 64px;
+      color: var(--accent);
+      text-align: center;
+    }
+    .quote-strip p {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 21px;
+    }
+
+    .refs {
+      padding-left: 20px;
+    }
+    .refs li { margin-bottom: 12px; }
+    .refs a { color: var(--accent-2); word-break: break-word; }
+
+    .disclaimer {
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
+      background: var(--danger-soft);
+    }
+
+    footer {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 20px 24px 46px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 220px minmax(0, 1fr); }
+      .margin { display: none; }
+      .flow { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; padding-top: 42px; }
+      .hero-visual { min-height: 360px; }
+      .layout { display: block; }
+      .toc { position: static; max-height: none; margin-bottom: 28px; }
+      .toc nav { display: flex; overflow: auto; gap: 4px; }
+      .toc a { white-space: nowrap; }
+      .executive-grid, .principle-grid, .critique-grid, .mapping-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: repeat(2, 1fr); }
+      .chart-legend, .calc-result { grid-template-columns: 1fr; }
+      .calculator { grid-template-columns: 1fr; }
+      .scorecard { grid-template-columns: 1.25fr repeat(2, 1fr); overflow: auto; }
+      .scorecard > div:nth-child(6n) { border-right: 1px solid var(--line); }
+      .state-machine { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      body { font-size: 15px; }
+      .topbar-inner { padding-inline: 14px; }
+      .hero, .layout { padding-inline: 14px; }
+      h1 { font-size: 46px; }
+      .hero-visual { min-height: 380px; }
+      .quote-card blockquote { font-size: 23px; }
+      .paper { padding: 20px; }
+      .flow { grid-template-columns: 1fr; }
+      .flow-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -17px; }
+      .stage-panel { grid-template-columns: 1fr; }
+      .stage-icon { width: 58px; height: 58px; border-radius: 16px; }
+      .state-machine { grid-template-columns: 1fr; }
+      .quote-strip { grid-template-columns: 1fr; }
+      .quote-strip .big { text-align: left; }
+      .toolbar .print-label { display: none; }
+    }
+
+    @media print {
+      .topbar, .progress, .toc, .margin, .toolbar, .interactive button { display: none !important; }
+      body { background: white; color: black; font-size: 11pt; }
+      .hero, .layout, footer { max-width: none; padding-left: 0; padding-right: 0; }
+      .hero { display: block; padding-top: 0; }
+      .hero-visual { display: none; }
+      .layout { display: block; }
+      section { break-inside: avoid; margin-bottom: 36px; }
+      .paper, .interactive { box-shadow: none; border-color: #bbb; }
+      a { text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Deep Research <span>/ Livermore</span></div>
+      <div class="toolbar">
+        <button class="icon-btn" id="themeBtn" aria-label="切换深浅色">◐ 主题</button>
+        <button class="icon-btn" onclick="window.print()" aria-label="打印或导出 PDF">⤓ <span class="print-label">打印 / PDF</span></button>
+      </div>
+    </div>
+  </header>
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Interactive long-form research · 2026</div>
+      <h1>等待市场<br>证明你是对的</h1>
+      <p class="hero-lead">
+        对杰西·利弗莫尔《股票大作手操盘术》的系统拆解：
+        从<strong>趋势、龙头、关键点、加仓与危险信号</strong>，到可被现代交易系统实现的状态机与风险规则。
+      </p>
+      <div class="hero-meta">
+        <span class="tag">原书观点与现代解读分层</span>
+        <span class="tag">单文件 HTML</span>
+        <span class="tag">交互图表与计算器</span>
+        <span class="tag">非投资建议</span>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-label="抽象趋势图与核心引语">
+      <div class="quote-card">
+        <div class="quote-mark">“</div>
+        <blockquote>观点只有在市场按你的方向行动时，才具有交易价值。</blockquote>
+        <cite>— 对书中“市场确认优先于个人判断”的意译</cite>
+      </div>
+      <svg class="ticker" viewBox="0 0 700 190" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="fillTrend" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity=".30"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,160 C45,150 64,145 98,151 C130,158 150,130 184,134 C225,138 235,115 273,119 C310,123 325,98 360,105 C394,112 417,78 450,82 C488,87 506,58 540,67 C579,78 596,38 635,44 C662,48 681,18 700,22 L700,190 L0,190 Z" fill="url(#fillTrend)"/>
+        <path d="M0,160 C45,150 64,145 98,151 C130,158 150,130 184,134 C225,138 235,115 273,119 C310,123 325,98 360,105 C394,112 417,78 450,82 C488,87 506,58 540,67 C579,78 596,38 635,44 C662,48 681,18 700,22" fill="none" stroke="var(--accent)" stroke-width="4"/>
+        <line x1="506" y1="0" x2="506" y2="190" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 6"/>
+        <circle cx="506" cy="58" r="7" fill="var(--accent-2)"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="文章目录">
+      <div class="toc-title">Contents</div>
+      <nav id="tocNav">
+        <a href="#scope">研究范围</a>
+        <a href="#summary">执行摘要</a>
+        <a href="#architecture">决策架构</a>
+        <a href="#confirmation">市场确认</a>
+        <a href="#time">时间与趋势</a>
+        <a href="#leaders">龙头原则</a>
+        <a href="#acting-right">走势是否正确</a>
+        <a href="#pivot">关键点</a>
+        <a href="#money">资金管理</a>
+        <a href="#psychology">心理与纪律</a>
+        <a href="#market-key">价格记录法</a>
+        <a href="#modernization">现代化改写</a>
+        <a href="#critique">批判性评估</a>
+        <a href="#agent">系统工程实现</a>
+        <a href="#checklist">行动清单</a>
+        <a href="#sources">来源与说明</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="scope">
+        <div class="section-kicker">01 · Scope & Method</div>
+        <h2>研究范围与方法</h2>
+        <div class="paper">
+          <p class="lede">
+            本报告不是对视频的逐秒字幕复刻，而是以用户提供的 B 站视频为内容入口，
+            对其对应的《How to Trade in Stocks》核心体系进行原文核对、结构化拆解和现代化解释。
+          </p>
+          <div class="source-note">
+            <span class="label">证据边界</span>
+            B 站页面的完整字幕未被直接读取，因此本文不标注视频时间戳，也不宣称每一段均为视频原话。
+            原书的章节结构、关键论断和规则通过 1940 年英文文本交叉核对；现代风险预算、波动率标准化和状态机实现属于本文的二次分析。
+          </div>
+          <p>
+            原书不是一套以财务报表估值为中心的投资体系，而是一套<strong>面向价格行为的投机决策系统</strong>。
+            它试图回答四个问题：市场是否正在形成重要方向？什么标的最能代表该方向？何时进入最有利？
+            如果判断错误，如何尽快限制损失；如果判断正确，如何让少数大行情贡献主要利润？
+          </p>
+          <p>
+            书中最具生命力的部分，不是固定的“三点、六点、十二点”阈值，而是背后的决策逻辑：
+            <strong>先形成假设，再等待证据；用市场行为证伪自己；把资本集中到被验证的方向；发现异常后退出。</strong>
+          </p>
+        </div>
+      </section>
+
+      <section id="summary">
+        <div class="section-kicker">02 · Executive Summary</div>
+        <h2>执行摘要</h2>
+        <div class="executive-grid">
+          <article class="card">
+            <span class="num">01</span>
+            <h3>不是预测系统</h3>
+            <p>核心不是比市场更早知道答案，而是设计一种机制，只在价格开始验证判断时承担风险。</p>
+          </article>
+          <article class="card">
+            <span class="num">02</span>
+            <h3>利润来自少数大行情</h3>
+            <p>频繁捕捉小波动会消耗注意力与资本；真正的超额结果依赖识别并持有重要趋势。</p>
+          </article>
+          <article class="card">
+            <span class="num">03</span>
+            <h3>风险优先于观点</h3>
+            <p>亏损头寸不加码，盈利头寸才获得扩张资格；资本是否安全比观点是否体面更重要。</p>
+          </article>
+        </div>
+
+        <div class="thesis">
+          利弗莫尔体系可以压缩成一句话：
+          <strong>等待、试探、确认、扩张、观察异常、退出。</strong>
+        </div>
+
+        <div class="principle-grid">
+          <article class="card"><h4>价格高于叙事</h4><p class="muted">消息只是候选解释，价格是否响应才决定它是否具有交易价值。</p></article>
+          <article class="card"><h4>趋势高于波动</h4><p class="muted">不要把每次回调当作反转，也不要把每次反弹当作新趋势。</p></article>
+          <article class="card"><h4>龙头高于便宜</h4><p class="muted">最强标的提供最清晰的群体信号；低价和跌幅大本身不是优势。</p></article>
+          <article class="card"><h4>确认高于抢跑</h4><p class="muted">牺牲最低买价，换取更高的方向确定性和更明确的失效条件。</p></article>
+          <article class="card"><h4>盈利加仓高于亏损摊平</h4><p class="muted">让市场赋予仓位扩张权，而不是让自尊决定继续下注。</p></article>
+          <article class="card"><h4>异常高于希望</h4><p class="muted">当走势不再符合此前的节奏，异常本身就是需要处理的信息。</p></article>
+        </div>
+      </section>
+
+      <section id="architecture">
+        <div class="section-kicker">03 · Decision Architecture</div>
+        <h2>完整决策架构：从假设到现金</h2>
+        <p class="lede">
+          原书散落在不同章节中的原则，可以被重组为一条闭环决策链。
+          每一步都不是为了“提高预测准确率”，而是为了减少在证据不足时暴露资本。
+        </p>
+
+        <div class="flow" aria-label="利弗莫尔决策流程">
+          <div class="flow-step"><b>1. 市场环境</b><span>上升、下降，还是没有值得参与的重要方向。</span></div>
+          <div class="flow-step"><b>2. 强势群组</b><span>哪些行业或主题共同表现出相对强度。</span></div>
+          <div class="flow-step"><b>3. 龙头标的</b><span>选择最能代表群组力量、最活跃的少数标的。</span></div>
+          <div class="flow-step"><b>4. 关键点</b><span>等待突破、恢复趋势或重要反转获得确认。</span></div>
+          <div class="flow-step"><b>5. 试探仓位</b><span>先承担有限风险，预先定义错误时的退出。</span></div>
+          <div class="flow-step"><b>6. 盈利扩张</b><span>只有市场继续证明判断正确，才逐步加仓。</span></div>
+          <div class="flow-step"><b>7. 危险信号</b><span>行为异常或结构失效时，将账面利润转回现金。</span></div>
+        </div>
+
+        <div class="interactive" id="stageExplorer">
+          <div class="interactive-head">
+            <h3>交互解说：七层决策栈</h3>
+            <span class="tag">点击阶段查看含义</span>
+          </div>
+          <div class="interactive-body">
+            <div class="stage-tabs" id="stageTabs"></div>
+            <div class="stage-panel">
+              <div class="stage-icon" id="stageIcon">①</div>
+              <div>
+                <h4 id="stageTitle">市场环境</h4>
+                <p id="stageText"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight">
+          <span class="label">系统性价值</span>
+          这条链的关键在于“门控”：前一层没有通过，后一层就不应启动。
+          例如没有清晰市场环境时，不应因为某只股票“看起来便宜”而跳过群组和关键点确认。
+        </div>
+      </section>
+
+      <section id="confirmation">
+        <div class="section-kicker">04 · Confirmation</div>
+        <h2>市场确认：观点必须接受价格审判</h2>
+        <p class="lede">
+          利弗莫尔反复区分“判断方向正确”和“在正确时点赚钱”。一个人可能最终看对趋势，
+          但因为过早入场、反复止损和情绪耗竭，在真正行情出现时已经失去仓位与勇气。
+        </p>
+
+        <div class="paper">
+          <h3>为什么“提前正确”仍然会亏钱</h3>
+          <p>
+            交易不是静态判断题，而是带有路径依赖的资本过程。假设某标的长期在 22—28 区间震荡，
+            研究者认为其价值可能达到 50。利弗莫尔的建议不是在 25 附近立即重仓，而是等待价格活跃并突破既有区间。
+            这里牺牲的是一部分潜在涨幅，换来的是三个好处：市场需求已经出现、失效位置更清楚、持仓后的心理压力更低。
+          </p>
+
+          <div class="quote-strip">
+            <div class="big">≠</div>
+            <p><strong>基本判断正确</strong>不等于<strong>交易时机正确</strong>。只有市场开始沿预期方向行动，观点才从“解释”变成“可执行信号”。</p>
+          </div>
+
+          <h3>“市场永远正确”应怎样理解</h3>
+          <p>
+            这不是说市场价格在经济意义上永远合理，也不是有效市场假说的严格表述。
+            它是一条操作纪律：交易者无法要求市场按自己的叙事结算，最终损益由成交价格决定。
+            因而当市场行为与观点冲突时，首先调整仓位，而不是追加解释。
+          </p>
+
+          <div class="caveat">
+            <span class="label">误用风险</span>
+            如果把“等待确认”机械化为“任何突破都追入”，会把一条证伪原则退化为追涨规则。
+            真正需要确认的是：市场环境、群组强度、价格结构和风险边界是否同时成立。
+          </div>
+        </div>
+      </section>
+
+      <section id="time">
+        <div class="section-kicker">05 · Time Element</div>
+        <h2>时间维度：重要行情需要时间完成</h2>
+        <p class="lede">
+          原书副标题强调“时间与价格的结合”。利弗莫尔认为，价格水平本身不够；
+          同样的涨跌幅发生在不同节奏、趋势阶段和等待时间中，含义可能完全不同。
+        </p>
+
+        <div class="paper">
+          <h3>从日常噪声中抽离</h3>
+          <p>
+            频繁盯盘容易把注意力锁定在微小涨跌上。交易者会因为每一次回调而怀疑，
+            也会因为每一次反弹而重新乐观。利弗莫尔用“山中交易者”的故事说明：
+            与市场保持一定距离，反而更容易看到真正的趋势变化。
+          </p>
+          <p>
+            这并不是主张信息越慢越好，而是主张把观察频率与决策周期匹配。
+            如果目标是捕捉持续数周或数月的重要运动，那么每分钟的信息不一定增加有效知识，
+            反而可能增加无意义的行动冲动。
+          </p>
+
+          <h3>正常回调与趋势破坏</h3>
+          <table class="rules-table">
+            <thead><tr><th>维度</th><th>正常回调</th><th>危险变化</th></tr></thead>
+            <tbody>
+              <tr><td>幅度</td><td>与此前回调规模大致相称</td><td>突然显著大于历史节奏</td></tr>
+              <tr><td>持续时间</td><td>短暂停顿后恢复原趋势</td><td>长时间无法恢复，价格“变 stale”</td></tr>
+              <tr><td>恢复能力</td><td>重新接近或突破前高</td><td>应当创新高时明显失败</td></tr>
+              <tr><td>群组关系</td><td>龙头与同组标的大体共振</td><td>龙头或群组出现明显背离</td></tr>
+              <tr><td>交易含义</td><td>耐心持有，不被小波动洗出</td><td>降低暴露或退出，等待重新确认</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="leaders">
+        <div class="section-kicker">06 · Follow the Leaders</div>
+        <h2>龙头原则：不要把精力平均分配给整个市场</h2>
+        <p class="lede">
+          利弗莫尔主张从少数重要群组中选择代表性股票，而不是同时追踪大量互不相关的标的。
+          这既是信息压缩，也是风险控制。
+        </p>
+
+        <div class="paper">
+          <h3>龙头不是“涨得最多”这么简单</h3>
+          <p>
+            龙头应同时具备相对强度、流动性、市场关注和群组代表性。
+            单只股票的异动可能来自特殊事件；多个同行共同增强，且其中最强者率先突破，
+            才更接近可持续的市场力量。
+          </p>
+
+          <div class="mapping-grid">
+            <article class="card">
+              <h4>群组确认</h4>
+              <p class="muted">至少观察同一行业或主题中的多个代表标的，避免把孤立事件误判为广泛趋势。</p>
+            </article>
+            <article class="card">
+              <h4>相对强度</h4>
+              <p class="muted">在市场回调时跌得更少、恢复时更快、创新高更早，通常比“低估值”更符合该体系。</p>
+            </article>
+            <article class="card">
+              <h4>集中注意力</h4>
+              <p class="muted">跟踪少数高质量候选，使异常更容易被识别，也降低无计划交易的概率。</p>
+            </article>
+            <article class="card">
+              <h4>动态更换</h4>
+              <p class="muted">今天的龙头不会永久领先；规则必须允许候选集随市场结构变化。</p>
+            </article>
+          </div>
+
+          <div class="insight">
+            <span class="label">现代对应</span>
+            这一原则可映射为横截面相对强度排名、行业广度、市场宽度和成交活跃度筛选。
+            但排名只是候选生成，不应替代关键点和风险边界。
+          </div>
+        </div>
+      </section>
+
+      <section id="acting-right">
+        <div class="section-kicker">07 · Acting Right</div>
+        <h2>“走得正确”：用行为一致性管理持仓</h2>
+        <p class="lede">
+          原书最实用的观察框架之一，是判断股票是否按照它“应该”的方式行动。
+          这里的“应该”不是主观愿望，而是基于其既有趋势节奏和关键位置形成的条件预期。
+        </p>
+
+        <div class="paper">
+          <h3>持仓期间的三类信号</h3>
+          <div class="principle-grid">
+            <article class="card">
+              <span class="num">A</span>
+              <h4>一致</h4>
+              <p class="muted">突破后快速离开关键区；回调受控；恢复时重新增强。策略：继续持有，避免过早止盈。</p>
+            </article>
+            <article class="card">
+              <span class="num">B</span>
+              <h4>可疑</h4>
+              <p class="muted">突破后停滞；相对强度下降；多次测试关键位。策略：停止加仓，缩小风险。</p>
+            </article>
+            <article class="card">
+              <span class="num">C</span>
+              <h4>失效</h4>
+              <p class="muted">跌回结构内部；异常大幅反向运动；群组同步转弱。策略：退出，不用故事抵抗价格。</p>
+            </article>
+            <article class="card">
+              <span class="num">D</span>
+              <h4>重新确认</h4>
+              <p class="muted">退出后不禁止再次入场；只有当新的关键点再次形成，才恢复风险暴露。</p>
+            </article>
+          </div>
+
+          <div class="interactive">
+            <div class="interactive-head">
+              <h3>情境诊断器</h3>
+              <span class="tag">选择一种走势</span>
+            </div>
+            <div class="interactive-body">
+              <div class="scenario-tabs" id="scenarioTabs"></div>
+              <div class="scenario-output">
+                <h4 id="scenarioTitle"></h4>
+                <p id="scenarioText"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pivot">
+        <div class="section-kicker">08 · The Pivotal Point</div>
+        <h2>关键点：把“何时行动”变成可检验条件</h2>
+        <p class="lede">
+          关键点是整套体系的中心。它不是神奇价格，而是一个市场必须表现出力量的验证区：
+          突破后应当迅速推进；如果没有推进，失败本身就是危险信号。
+        </p>
+
+        <div class="paper">
+          <h3>两类关键点</h3>
+          <div class="principle-grid">
+            <article class="card">
+              <h4>延续型关键点</h4>
+              <p class="muted">价格经过整理或自然回调后，重新突破此前重要高点，表明原趋势可能恢复。</p>
+            </article>
+            <article class="card">
+              <h4>反转型关键点</h4>
+              <p class="muted">原趋势失效，并在相反方向越过重要水平，表明最小阻力方向可能改变。</p>
+            </article>
+          </div>
+
+          <h3>为什么关键点降低决策复杂度</h3>
+          <p>
+            在关键点之前，市场有很多可能路径；在关键点附近，策略可以定义清楚的条件：
+            突破并延续则参与，突破但无法延续则退出。换言之，关键点不是提高确定性到 100%，
+            而是把一个模糊观点压缩为一个可证伪的实验。
+          </p>
+
+          <div class="interactive">
+            <div class="interactive-head">
+              <h3>交互演示：抢跑、确认与失败突破</h3>
+              <span class="tag">示意图，不对应真实证券</span>
+            </div>
+            <div class="interactive-body">
+              <div class="chart-controls" id="chartControls">
+                <button class="tab active" data-mode="early">提前入场</button>
+                <button class="tab" data-mode="confirm">确认入场</button>
+                <button class="tab" data-mode="failure">突破失败</button>
+              </div>
+              <div class="chart-shell">
+                <svg id="pivotChart" viewBox="0 0 760 330" preserveAspectRatio="none" role="img" aria-label="关键点价格示意图">
+                  <line x1="40" y1="145" x2="730" y2="145" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="8 7"/>
+                  <text x="54" y="132" fill="var(--accent-2)" font-size="13">关键点 / 阻力区</text>
+                  <polyline id="priceLine" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+                    points="42,245 90,226 137,238 181,210 230,224 276,194 321,210 365,170 411,184 458,151 505,120 550,102 598,70 649,85 709,42"/>
+                  <circle id="entryDot" cx="230" cy="224" r="8" fill="var(--accent)"/>
+                  <line id="entryGuide" x1="230" y1="224" x2="230" y2="300" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 5"/>
+                  <text id="entryLabel" x="198" y="316" fill="var(--accent)" font-size="13">提前入场</text>
+                  <circle id="exitDot" cx="0" cy="0" r="0" fill="var(--danger)"/>
+                  <text id="exitLabel" x="0" y="0" fill="var(--danger)" font-size="13"></text>
+                </svg>
+              </div>
+              <div class="chart-legend">
+                <div class="metric"><small>证据强度</small><strong id="evidenceMetric">低</strong></div>
+                <div class="metric"><small>入场价格优势</small><strong id="priceMetric">高</strong></div>
+                <div class="metric"><small>失效条件清晰度</small><strong id="invalidMetric">低</strong></div>
+              </div>
+              <p class="muted" id="chartExplanation" style="margin-top:14px;margin-bottom:0"></p>
+            </div>
+          </div>
+
+          <div class="caveat">
+            <span class="label">重要区别</span>
+            原书使用固定点数识别自然反应与关键点。现代市场跨越不同价格尺度和波动率，
+            固定点数不可直接迁移；更合理的做法是改写为百分比、ATR 或历史波动率单位。
+          </div>
+        </div>
+      </section>
+
+      <section id="money">
+        <div class="section-kicker">09 · Money in the Hand</div>
+        <h2>资金管理：让错误小，让正确有扩张空间</h2>
+        <p class="lede">
+          利弗莫尔的资金管理不是均匀分散，而是“先小规模验证，再向盈利方向增加暴露”。
+          这是一种条件式资本分配。
+        </p>
+
+        <div class="paper">
+          <h3>四条核心纪律</h3>
+          <table class="rules-table">
+            <thead><tr><th>纪律</th><th>含义</th><th>防止的问题</th></tr></thead>
+            <tbody>
+              <tr><td>不在亏损头寸上加码</td><td>第一次交易亏损说明判断尚未被市场验证</td><td>损失扩大、锚定成本价、以自尊代替证据</td></tr>
+              <tr><td>分批建立仓位</td><td>先试探，价格继续有利才增加</td><td>一次性重仓造成路径脆弱性</td></tr>
+              <tr><td>每次加仓必须更有利</td><td>多头加仓价格高于前一笔；空头反之</td><td>把“摊低成本”误认为风险下降</td></tr>
+              <tr><td>把利润转回现金</td><td>账面利润不是永久资本，危险信号出现时兑现</td><td>盈利回吐、把交易变成信仰</td></tr>
+            </tbody>
+          </table>
+
+          <h3>现代风险预算计算器</h3>
+          <p class="muted">这不是原书公式，而是把“先定义可承受损失”转换为现代仓位约束。数值仅用于教育演示。</p>
+          <div class="interactive">
+            <div class="interactive-body calculator">
+              <div class="field">
+                <label for="account">账户权益</label>
+                <input id="account" type="number" min="0" value="100000" />
+              </div>
+              <div class="field">
+                <label for="riskPct">单笔风险（%）</label>
+                <input id="riskPct" type="number" min="0.01" step="0.01" value="0.5" />
+              </div>
+              <div class="field">
+                <label for="entry">计划入场价</label>
+                <input id="entry" type="number" min="0.01" step="0.01" value="50" />
+              </div>
+              <div class="field">
+                <label for="stop">结构失效价</label>
+                <input id="stop" type="number" min="0.01" step="0.01" value="47.5" />
+              </div>
+              <div class="calc-result">
+                <div class="result-box"><span>风险预算</span><strong id="riskBudget">500</strong></div>
+                <div class="result-box"><span>每股风险</span><strong id="riskPerShare">2.50</strong></div>
+                <div class="result-box"><span>理论最大股数</span><strong id="shareCount">200</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight">
+            <span class="label">加仓的非对称性</span>
+            “盈利加仓”不是因为已经盈利所以可以放松风险，而是因为市场提供了额外证据。
+            每次加仓后仍需重新计算组合总风险，防止多个相关头寸在同一市场因子上形成隐性重仓。
+          </div>
+        </div>
+      </section>
+
+      <section id="psychology">
+        <div class="section-kicker">10 · Psychology & Discipline</div>
+        <h2>心理与纪律：真正的对手是无法执行规则的自己</h2>
+        <p class="lede">
+          这本书不是纯技术手册。大量篇幅实际上在讨论认知偏差：
+          人们为何能制定正确规则，却会在真实风险面前反复违背。
+        </p>
+
+        <div class="paper">
+          <div class="critique-grid">
+            <article class="card">
+              <h4>希望偏差</h4>
+              <p class="muted">亏损后期待回本，使持仓时间和风险不断扩大。对策：将失效条件写在入场之前。</p>
+            </article>
+            <article class="card">
+              <h4>恐惧盈利</h4>
+              <p class="muted">小幅盈利后急于兑现，导致收益分布被截断。对策：只因结构失效退出，而非因“已经赚了”。</p>
+            </article>
+            <article class="card">
+              <h4>行动成瘾</h4>
+              <p class="muted">把频繁交易当作努力，忽略等待本身是策略的一部分。对策：明确“无交易状态”的合法性。</p>
+            </article>
+            <article class="card">
+              <h4>权威依赖</h4>
+              <p class="muted">把消息、内幕或他人判断当成责任替代物。对策：任何外部观点都必须经过自己的价格条件。</p>
+            </article>
+            <article class="card">
+              <h4>过度自信</h4>
+              <p class="muted">连续成功后增加仓位、扩大市场范围、降低标准。对策：风险上限不因近期盈利自动上调。</p>
+            </article>
+            <article class="card">
+              <h4>身份防御</h4>
+              <p class="muted">把退出等同于承认自己无能。对策：把止损定义为实验结束，而非人格判断。</p>
+            </article>
+          </div>
+
+          <div class="quote-strip">
+            <div class="big">◎</div>
+            <p>优秀交易系统的目标不是消灭情绪，而是让情绪没有权限直接改写仓位。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="market-key">
+        <div class="section-kicker">11 · The Livermore Market Key</div>
+        <h2>价格记录法：一台手工构建的趋势状态机</h2>
+        <p class="lede">
+          原书后半部分用六列记录价格：上升趋势、自然回调、次级回调、下降趋势、自然反弹、次级反弹。
+          从系统工程视角看，这不是普通行情表，而是一台根据阈值切换状态的有限状态机。
+        </p>
+
+        <div class="state-machine" aria-label="六种价格状态">
+          <div class="state"><strong>Upward Trend</strong><small>持续创新高的主上升状态。</small></div>
+          <div class="state"><strong>Natural Reaction</strong><small>从上升趋势发生达到阈值的正常回调。</small></div>
+          <div class="state"><strong>Secondary Reaction</strong><small>回调不足以突破上一自然回调低点。</small></div>
+          <div class="state"><strong>Downward Trend</strong><small>持续创新低的主下降状态。</small></div>
+          <div class="state"><strong>Natural Rally</strong><small>从下降趋势发生达到阈值的正常反弹。</small></div>
+          <div class="state"><strong>Secondary Rally</strong><small>反弹不足以突破上一自然反弹高点。</small></div>
+        </div>
+
+        <div class="paper" style="margin-top:22px">
+          <h3>记录法的真正价值</h3>
+          <p>
+            它通过阈值过滤小波动，只在市场运动足够显著时切换列。被下划线标记的极值成为待观察的关键点；
+            后续价格若突破关键点并继续推进，趋势得到确认；若接近关键点后失败并反向运动，则构成危险信号。
+          </p>
+          <p>
+            这种方法的重要贡献不是预测未来的精确价格，而是将连续价格序列压缩成有限的结构状态，
+            从而减少叙事噪声，并为“何时允许行动”提供一致规则。
+          </p>
+
+          <h3>简化状态转换</h3>
+          <pre><code>state = UPWARD_TREND
+
+if state == UPWARD_TREND and drawdown >= reaction_threshold:
+    pivot_high = last_uptrend_extreme
+    state = NATURAL_REACTION
+
+elif state == NATURAL_REACTION and price > pivot_high + confirmation_buffer:
+    state = UPWARD_TREND        # 趋势恢复
+
+elif state == NATURAL_REACTION and price < prior_reaction_low - invalidation_buffer:
+    state = DOWNWARD_TREND      # 结构失效 / 方向改变
+
+# 下降趋势与自然反弹采用对称逻辑
+# 现代实现中 threshold 应使用百分比或波动率尺度，而非固定点数</code></pre>
+
+          <div class="caveat">
+            <span class="label">历史参数不可照搬</span>
+            原书对个股常以约六点反应、三点确认，对“关键价格”使用更大阈值。
+            这些参数与当时股票价格、报价制度和波动环境绑定。现代实现必须先完成尺度归一化和样本外验证。
+          </div>
+        </div>
+      </section>
+
+      <section id="modernization">
+        <div class="section-kicker">12 · Modernization</div>
+        <h2>把 1940 年的手工规则改写为现代框架</h2>
+        <p class="lede">
+          保留决策哲学，替换脆弱的固定参数，是让这套体系在现代市场中仍有研究价值的关键。
+        </p>
+
+        <div class="paper">
+          <table class="modern-table">
+            <thead><tr><th>原书概念</th><th>现代化表达</th><th>需要验证的风险</th></tr></thead>
+            <tbody>
+              <tr><td>固定三点、六点反应</td><td>百分比、ATR、实现波动率或分位数阈值</td><td>参数过拟合、不同市场制度不兼容</td></tr>
+              <tr><td>跟随龙头</td><td>行业内相对强度、成交额、市场宽度排名</td><td>拥挤交易、行业分类滞后</td></tr>
+              <tr><td>突破关键点</td><td>区间突破 + 持续性 + 量价/波动确认</td><td>假突破、隔夜跳空和滑点</td></tr>
+              <tr><td>盈利后加仓</td><td>分层 pyramiding，并限制 portfolio heat</td><td>相关性上升导致组合风险突增</td></tr>
+              <tr><td>危险信号</td><td>结构止损、波动止损、时间止损、相对强度失效</td><td>过紧导致噪声止损，过松导致尾部损失</td></tr>
+              <tr><td>手工记录本</td><td>事件日志、可复现回测、决策快照和交易审计</td><td>前视偏差、幸存者偏差、数据清洗错误</td></tr>
+            </tbody>
+          </table>
+
+          <h3>一个更严格的现代验证协议</h3>
+          <div class="flow">
+            <div class="flow-step"><b>假设定义</b><span>明确状态、阈值、入场、加仓与退出规则。</span></div>
+            <div class="flow-step"><b>数据冻结</b><span>使用当时可获得的数据，消除前视信息。</span></div>
+            <div class="flow-step"><b>成本建模</b><span>计入手续费、点差、滑点和融资成本。</span></div>
+            <div class="flow-step"><b>样本外测试</b><span>参数选择与绩效评估使用不同数据区间。</span></div>
+            <div class="flow-step"><b>市场分层</b><span>牛市、熊市、高低波动阶段分别评估。</span></div>
+            <div class="flow-step"><b>容量约束</b><span>评估成交量、冲击成本和可扩展规模。</span></div>
+            <div class="flow-step"><b>实时审计</b><span>比较实盘与回测偏差，持续监测失效。</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="critique">
+        <div class="section-kicker">13 · Critical Review</div>
+        <h2>批判性评估：哪些部分强，哪些部分不应神化</h2>
+
+        <div class="critique-grid">
+          <article class="card">
+            <span class="num">+</span>
+            <h3>可证伪性强</h3>
+            <p class="muted">关键点之后“应当推进”的条件，使错误可以较快暴露，而不是无限等待观点兑现。</p>
+          </article>
+          <article class="card">
+            <span class="num">+</span>
+            <h3>收益分布意识</h3>
+            <p class="muted">承认利润可能集中于少数趋势，鼓励截断亏损、保留右尾收益。</p>
+          </article>
+          <article class="card">
+            <span class="num">+</span>
+            <h3>行为优先</h3>
+            <p class="muted">把注意力从“为什么应该涨”转向“事实上是否在涨”，减少叙事黏附。</p>
+          </article>
+          <article class="card">
+            <span class="num">+</span>
+            <h3>反过度交易</h3>
+            <p class="muted">允许空仓、等待和低频决策，降低摩擦成本与认知负荷。</p>
+          </article>
+
+          <article class="card">
+            <span class="num">−</span>
+            <h3>证据以案例为主</h3>
+            <p class="muted">原书不是严格统计研究；成功案例可能存在选择性叙述与幸存者偏差。</p>
+          </article>
+          <article class="card">
+            <span class="num">−</span>
+            <h3>固定阈值缺乏尺度不变性</h3>
+            <p class="muted">相同点数在不同价格、波动率和市场微观结构下意义不同。</p>
+          </article>
+          <article class="card">
+            <span class="num">−</span>
+            <h3>组合层面不完整</h3>
+            <p class="muted">对跨资产相关性、尾部风险、流动性危机和组合风险预算讨论不足。</p>
+          </article>
+          <article class="card">
+            <span class="num">−</span>
+            <h3>个人传奇容易遮蔽风险</h3>
+            <p class="muted">利弗莫尔曾多次积累并失去巨额财富，说明洞察与长期风险控制并非同一能力。</p>
+          </article>
+        </div>
+
+        <div class="paper" style="margin-top:22px">
+          <h3>综合评分</h3>
+          <div class="scorecard" role="table" aria-label="体系综合评分">
+            <div class="head">维度</div><div class="head">清晰度</div><div class="head">可执行</div><div class="head">可验证</div><div class="head">组合完整性</div><div class="head">现代适配</div>
+            <div>市场确认</div><div><span class="dot good"></span>高</div><div><span class="dot good"></span>高</div><div><span class="dot good"></span>高</div><div><span class="dot mid"></span>中</div><div><span class="dot good"></span>高</div>
+            <div>关键点</div><div><span class="dot good"></span>高</div><div><span class="dot good"></span>高</div><div><span class="dot mid"></span>中</div><div><span class="dot mid"></span>中</div><div><span class="dot good"></span>高</div>
+            <div>盈利加仓</div><div><span class="dot good"></span>高</div><div><span class="dot good"></span>高</div><div><span class="dot good"></span>高</div><div><span class="dot mid"></span>中</div><div><span class="dot good"></span>高</div>
+            <div>固定点数规则</div><div><span class="dot good"></span>高</div><div><span class="dot mid"></span>中</div><div><span class="dot mid"></span>中</div><div><span class="dot bad"></span>低</div><div><span class="dot bad"></span>低</div>
+            <div>心理纪律</div><div><span class="dot good"></span>高</div><div><span class="dot mid"></span>中</div><div><span class="dot bad"></span>低</div><div><span class="dot mid"></span>中</div><div><span class="dot good"></span>高</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="agent">
+        <div class="section-kicker">14 · System Engineering</div>
+        <h2>用 Agent / 事件驱动系统实现这套框架</h2>
+        <p class="lede">
+          从软件架构角度，这套方法天然适合被实现为“状态识别 + 规则门控 + 风险策略 + 审计日志”的事件驱动系统，
+          而不是让大模型直接给出买卖结论。
+        </p>
+
+        <div class="paper">
+          <h3>推荐组件边界</h3>
+          <div class="mapping-grid">
+            <article class="card"><h4>Market State Detector</h4><p class="muted">计算趋势、波动、市场宽度与群组强度；输出结构化状态，不直接下单。</p></article>
+            <article class="card"><h4>Candidate Ranker</h4><p class="muted">生成龙头候选及证据，包括相对强度、流动性、群组一致性。</p></article>
+            <article class="card"><h4>Pivot Engine</h4><p class="muted">维护关键点、自然反应和失效区；所有参数版本化。</p></article>
+            <article class="card"><h4>Risk Governor</h4><p class="muted">独立计算单笔风险、组合热度、相关性和最大暴露；拥有最终否决权。</p></article>
+            <article class="card"><h4>Execution Adapter</h4><p class="muted">处理订单拆分、滑点、失败重试和成交回报，不允许策略绕过。</p></article>
+            <article class="card"><h4>Decision Journal</h4><p class="muted">保存当时输入、规则版本、解释、订单和结果，支持回放与审计。</p></article>
+          </div>
+
+          <h3>事件模型示例</h3>
+          <pre><code>{
+  "event_type": "pivot_confirmation",
+  "symbol": "EXAMPLE",
+  "market_state": "upward_trend",
+  "group_rank": 2,
+  "pivot": {
+    "level": 50.00,
+    "normalization": "atr",
+    "buffer": 0.35,
+    "confirmed_at": "2026-07-13T14:30:00Z"
+  },
+  "risk": {
+    "initial_risk_pct": 0.50,
+    "portfolio_heat_after_entry_pct": 2.10,
+    "invalidation_level": 47.50
+  },
+  "evidence": [
+    "price_closed_above_pivot",
+    "group_breadth_positive",
+    "relative_strength_new_high"
+  ],
+  "decision": "eligible_for_initial_probe",
+  "rule_version": "livermore-modern-v0.3"
+}</code></pre>
+
+          <h3>大模型适合做什么，不适合做什么</h3>
+          <table class="rules-table">
+            <thead><tr><th>适合</th><th>不适合</th></tr></thead>
+            <tbody>
+              <tr><td>解释状态、汇总证据、生成交易复盘、发现规则冲突</td><td>在没有确定性约束下直接决定仓位和下单</td></tr>
+              <tr><td>从新闻中提取可能影响的行业与标的，再交给价格规则验证</td><td>因为新闻叙事强烈就绕过价格确认</td></tr>
+              <tr><td>将自然语言策略编译为待审查的规则配置</td><td>运行时临时改写风险上限或失效条件</td></tr>
+              <tr><td>对异常行为生成调查问题</td><td>用更长解释掩盖已经发生的结构失效</td></tr>
+            </tbody>
+          </table>
+
+          <div class="insight">
+            <span class="label">架构原则</span>
+            LLM 应位于解释层和研究层；仓位、阈值、风险上限和下单权限应由确定性代码控制。
+            这恰好呼应利弗莫尔的核心：观点可以丰富，但资本只接受被规则确认的行动。
+          </div>
+        </div>
+      </section>
+
+      <section id="checklist">
+        <div class="section-kicker">15 · Practical Checklist</div>
+        <h2>将全书压缩为一张决策清单</h2>
+        <div class="paper">
+          <table class="rules-table">
+            <thead><tr><th>阶段</th><th>必须回答的问题</th><th>未通过时</th></tr></thead>
+            <tbody>
+              <tr><td>市场</td><td>是否存在明确、可持续的重要方向？</td><td>空仓或降低交易频率</td></tr>
+              <tr><td>群组</td><td>是否有多个相关标的共同确认力量？</td><td>拒绝孤立异动</td></tr>
+              <tr><td>标的</td><td>它是否是群组中最强、最活跃者之一？</td><td>不因便宜而降低标准</td></tr>
+              <tr><td>关键点</td><td>价格是否真正越过验证区并表现出延续？</td><td>继续等待，不抢跑</td></tr>
+              <tr><td>初始风险</td><td>失效点和最大损失是否在入场前确定？</td><td>禁止交易</td></tr>
+              <tr><td>加仓</td><td>现有仓位是否盈利，新增证据是否出现？</td><td>禁止加仓</td></tr>
+              <tr><td>持有</td><td>回调是否仍符合此前正常节奏？</td><td>停止扩张，评估退出</td></tr>
+              <tr><td>退出</td><td>是否出现异常、失败突破或结构破坏？</td><td>执行退出，不等待故事修复</td></tr>
+              <tr><td>复盘</td><td>结果来自规则质量还是偶然路径？</td><td>记录并更新假设，不按单笔结果改规则</td></tr>
+            </tbody>
+          </table>
+
+          <div class="thesis">
+            最终要学习的不是一组传奇交易，而是一种认知姿态：
+            <strong>我可以有观点，但市场不欠我兑现；我可以犯错，但资本不必为错误长期买单。</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="sources">
+        <div class="section-kicker">16 · Sources & Notes</div>
+        <h2>来源与说明</h2>
+        <div class="paper">
+          <ol class="refs">
+            <li>
+              用户提供的视频入口：Bilibili，BV1SY411n7NJ。<br>
+              <a href="https://www.bilibili.com/video/BV1SY411n7NJ/" target="_blank" rel="noreferrer">https://www.bilibili.com/video/BV1SY411n7NJ/</a>
+            </li>
+            <li>
+              Jesse L. Livermore, <em>How to Trade in Stocks: The Livermore Formula for Combining Time Element and Price</em>, 1940。
+              本报告核对了章节目录、市场确认、龙头、危险信号、关键点、分批建仓和六列记录法。<br>
+              <a href="https://www.buysidedigest.com/wp-content/uploads/2024/01/How-to-Trade-in-Stocks-Jesse-Livermore.pdf" target="_blank" rel="noreferrer">英文原书扫描 / PDF</a>
+            </li>
+            <li>
+              Jesse Livermore 生平概览与其多次积累、失去财富的背景，用于避免把方法论与个人结果简单等同。<br>
+              <a href="https://www.investopedia.com/terms/j/jesse-l-livermore.asp" target="_blank" rel="noreferrer">Investopedia：Jesse L. Livermore</a>
+            </li>
+          </ol>
+
+          <div class="disclaimer">
+            <span class="label">风险声明</span>
+            本页面是历史文本研究与交易系统设计分析，不构成证券推荐、投资建议或收益承诺。
+            交互图表与计算器使用假设数据，不考虑税费、滑点、流动性、跳空、融资、相关性和极端市场风险。
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="margin" aria-label="边栏摘要">
+      <div class="margin-card">
+        <h4>核心命题</h4>
+        <p>市场确认不是为了买在最低，而是为了让失效条件变得清楚。</p>
+      </div>
+      <div class="margin-card">
+        <h4>最大的误读</h4>
+        <p>“顺势”不等于任何上涨都追；完整条件还包括群组、关键点、风险和危险信号。</p>
+      </div>
+      <div class="margin-card">
+        <h4>工程化表达</h4>
+        <p>六列价格记录法可视为状态机；加仓与退出是被事件触发的权限变更。</p>
+      </div>
+      <div class="margin-card">
+        <h4>现代化原则</h4>
+        <p>保留证伪逻辑，替换固定点数；先回测，再谈实盘。</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <strong>Deep Research Report</strong> · 单文件交互 HTML · 内容依据原书核对并加入现代系统工程解读。
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('themeBtn');
+    const savedTheme = localStorage.getItem('livermore-theme');
+    if (savedTheme) root.dataset.theme = savedTheme;
+
+    themeBtn.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      localStorage.setItem('livermore-theme', next);
+    });
+
+    const progressBar = document.getElementById('progressBar');
+    const tocLinks = [...document.querySelectorAll('#tocNav a')];
+    const sections = tocLinks.map(a => document.querySelector(a.getAttribute('href')));
+
+    function updateScrollState() {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      progressBar.style.width = `${max > 0 ? (doc.scrollTop / max) * 100 : 0}%`;
+
+      let current = sections[0]?.id;
+      sections.forEach(section => {
+        if (section && section.getBoundingClientRect().top <= 120) current = section.id;
+      });
+      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${current}`));
+    }
+    window.addEventListener('scroll', updateScrollState, {passive:true});
+    window.addEventListener('resize', updateScrollState);
+    updateScrollState();
+
+    const stages = [
+      { icon: '①', title: '市场环境', text: '先判断是否存在值得参与的重要运动。没有清晰趋势时，“不交易”是有效状态，而不是遗漏机会。' },
+      { icon: '②', title: '强势群组', text: '寻找多个相关标的共同增强的行业或主题。群组确认可以降低把单只股票特殊事件误判为市场趋势的概率。' },
+      { icon: '③', title: '龙头标的', text: '在强势群组中选择相对强度、流动性和代表性最好的少数标的，不因低价或跌幅大而降低标准。' },
+      { icon: '④', title: '关键点', text: '把观点转化为条件：价格必须越过重要水平并表现出延续。关键点的价值在于可证伪，不在于神奇预测。' },
+      { icon: '⑤', title: '试探仓位', text: '先用有限风险测试假设，并在下单前写明失效条件。第一笔仓位是实验，不是承诺。' },
+      { icon: '⑥', title: '盈利扩张', text: '只有当市场继续提供有利证据时才加仓。亏损不获得更多资本，盈利也不能绕过组合风险上限。' },
+      { icon: '⑦', title: '危险信号', text: '异常反向运动、突破不延续、群组背离或关键结构失效时，优先缩减风险，把账面利润转为现金。' },
+    ];
+
+    const stageTabs = document.getElementById('stageTabs');
+    stages.forEach((s, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab' + (i === 0 ? ' active' : '');
+      btn.textContent = `${i + 1}. ${s.title}`;
+      btn.addEventListener('click', () => {
+        [...stageTabs.children].forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('stageIcon').textContent = s.icon;
+        document.getElementById('stageTitle').textContent = s.title;
+        document.getElementById('stageText').textContent = s.text;
+      });
+      stageTabs.appendChild(btn);
+    });
+    document.getElementById('stageText').textContent = stages[0].text;
+
+    const scenarios = [
+      { tab: '突破后迅速推进', title: '走势一致：允许持有', text: '价格离开关键区、回调受控、群组同步增强。不要因为已有小幅利润就自动退出；继续观察结构，而不是盯住盈亏数字。' },
+      { tab: '突破后停滞', title: '走势可疑：停止加仓', text: '价格越过关键点却没有体现应有力量。先冻结新增风险；若重新跌回结构内部，应把失败突破视为失效证据。' },
+      { tab: '异常大幅回撤', title: '危险信号：优先退出', text: '回撤显著超出此前正常节奏，说明市场行为发生变化。不要用“长期仍看好”替代对当前仓位的风险处理。' },
+      { tab: '退出后重新突破', title: '新的实验：可以重新参与', text: '止损不意味着永久看空。新的关键点和确认出现后，可以重新建立小仓位；每次入场都应被视为独立实验。' },
+    ];
+    const scenarioTabs = document.getElementById('scenarioTabs');
+    const scenarioTitle = document.getElementById('scenarioTitle');
+    const scenarioText = document.getElementById('scenarioText');
+    scenarios.forEach((s, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab' + (i === 0 ? ' active' : '');
+      btn.textContent = s.tab;
+      btn.addEventListener('click', () => {
+        [...scenarioTabs.children].forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        scenarioTitle.textContent = s.title;
+        scenarioText.textContent = s.text;
+      });
+      scenarioTabs.appendChild(btn);
+    });
+    scenarioTitle.textContent = scenarios[0].title;
+    scenarioText.textContent = scenarios[0].text;
+
+    const chartModes = {
+      early: {
+        points: '42,245 90,226 137,238 181,210 230,224 276,194 321,210 365,170 411,184 458,151 505,120 550,102 598,70 649,85 709,42',
+        entry: [230,224], label: '提前入场', labelX: 198,
+        exit: null,
+        evidence: '低', price: '高', invalid: '低',
+        explanation: '价格优势看似更高，但市场尚未突破关键区。持仓需要承受更长等待和更多反复，方向判断正确也可能因时机错误而退出。'
+      },
+      confirm: {
+        points: '42,245 90,226 137,238 181,210 230,224 276,194 321,210 365,170 411,184 458,151 505,120 550,102 598,70 649,85 709,42',
+        entry: [505,120], label: '确认后入场', labelX: 464,
+        exit: null,
+        evidence: '高', price: '中', invalid: '高',
+        explanation: '入场价格更高，但突破已经发生，失效位置更清楚。体系用一部分潜在利润换取更强证据和更低的叙事依赖。'
+      },
+      failure: {
+        points: '42,245 90,226 137,238 181,210 230,224 276,194 321,210 365,170 411,184 458,151 505,128 548,139 592,178 644,205 709,230',
+        entry: [505,128], label: '突破入场', labelX: 468,
+        exit: [592,178], exitLabel: '失败后退出',
+        evidence: '先高后失效', price: '中', invalid: '非常高',
+        explanation: '关键点不是成功保证。真正优势在于失败后可以迅速识别：价格没有按预期离开关键区，反而跌回原结构，实验应结束。'
+      }
+    };
+
+    function setChart(mode) {
+      const cfg = chartModes[mode];
+      document.getElementById('priceLine').setAttribute('points', cfg.points);
+      const entryDot = document.getElementById('entryDot');
+      const entryGuide = document.getElementById('entryGuide');
+      const entryLabel = document.getElementById('entryLabel');
+      entryDot.setAttribute('cx', cfg.entry[0]); entryDot.setAttribute('cy', cfg.entry[1]);
+      entryGuide.setAttribute('x1', cfg.entry[0]); entryGuide.setAttribute('y1', cfg.entry[1]);
+      entryGuide.setAttribute('x2', cfg.entry[0]); entryGuide.setAttribute('y2', 300);
+      entryLabel.setAttribute('x', cfg.labelX); entryLabel.textContent = cfg.label;
+
+      const exitDot = document.getElementById('exitDot');
+      const exitLabel = document.getElementById('exitLabel');
+      if (cfg.exit) {
+        exitDot.setAttribute('cx', cfg.exit[0]); exitDot.setAttribute('cy', cfg.exit[1]); exitDot.setAttribute('r', 8);
+        exitLabel.setAttribute('x', cfg.exit[0] - 38); exitLabel.setAttribute('y', cfg.exit[1] - 15); exitLabel.textContent = cfg.exitLabel;
+      } else {
+        exitDot.setAttribute('r', 0); exitLabel.textContent = '';
+      }
+
+      document.getElementById('evidenceMetric').textContent = cfg.evidence;
+      document.getElementById('priceMetric').textContent = cfg.price;
+      document.getElementById('invalidMetric').textContent = cfg.invalid;
+      document.getElementById('chartExplanation').textContent = cfg.explanation;
+    }
+    document.querySelectorAll('#chartControls .tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#chartControls .tab').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        setChart(btn.dataset.mode);
+      });
+    });
+    setChart('early');
+
+    function calculateRisk() {
+      const account = Math.max(0, Number(document.getElementById('account').value) || 0);
+      const riskPct = Math.max(0, Number(document.getElementById('riskPct').value) || 0);
+      const entry = Math.max(0, Number(document.getElementById('entry').value) || 0);
+      const stop = Math.max(0, Number(document.getElementById('stop').value) || 0);
+      const budget = account * riskPct / 100;
+      const perShare = Math.abs(entry - stop);
+      const shares = perShare > 0 ? Math.floor(budget / perShare) : 0;
+      document.getElementById('riskBudget').textContent = budget.toLocaleString('zh-CN', {maximumFractionDigits:2});
+      document.getElementById('riskPerShare').textContent = perShare.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2});
+      document.getElementById('shareCount').textContent = shares.toLocaleString('zh-CN');
+    }
+    ['account','riskPct','entry','stop'].forEach(id => document.getElementById(id).addEventListener('input', calculateRisk));
+    calculateRisk();
+  </script>
+</body>
+</html>

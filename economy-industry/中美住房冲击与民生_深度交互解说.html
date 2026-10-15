@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>住房冲击如何传导到民生：美国 2020–2026 vs 中国 2015–2016</title>
+<meta name="description" content="一份中文长篇交互式解说页面：比较美国疫情后住房危机与中国2015–2016地产快速上涨期对民生的冲击机制。" />
+<style>
+:root{
+  --bg:#f5f7fb; --paper:#ffffff; --ink:#18202b; --muted:#667085;
+  --line:#e6eaf0; --blue:#315efb; --red:#d9485f; --green:#11875d;
+  --orange:#d97706; --purple:#7c3aed; --shadow:0 18px 50px rgba(15,23,42,.08);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; color:var(--ink); background:linear-gradient(180deg,#eef3ff 0,#f7f9fc 520px,#f5f7fb 100%);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+  line-height:1.75;
+}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+button{font:inherit}
+.hero{max-width:1180px;margin:0 auto;padding:72px 28px 42px}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--blue);text-transform:uppercase}
+h1{font-size:clamp(34px,5vw,66px);line-height:1.08;margin:14px 0 22px;letter-spacing:-.04em}
+.subtitle{font-size:20px;color:#475467;max-width:900px}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:22px;margin-top:34px}
+.hero-card,.card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.hero-card{padding:26px}
+.kicker{font-size:14px;color:var(--muted);font-weight:700}
+.big{font-size:42px;font-weight:850;line-height:1.1;margin:8px 0}
+.big small{font-size:17px;color:var(--muted);font-weight:600}
+.note{font-size:14px;color:var(--muted)}
+.layout{max-width:1180px;margin:0 auto;padding:0 28px 90px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:30px}
+nav{position:sticky;top:18px;align-self:start;background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:18px;padding:14px;backdrop-filter:blur(14px)}
+nav a{display:block;padding:9px 11px;border-radius:10px;color:#475467;font-size:14px}
+nav a:hover,nav a.active{background:#eef3ff;color:#2448d8;text-decoration:none}
+main{min-width:0}
+section{scroll-margin-top:24px;margin-bottom:26px}
+.card{padding:28px;border:1px solid var(--line);box-shadow:0 10px 35px rgba(15,23,42,.05)}
+h2{font-size:30px;line-height:1.25;margin:0 0 16px;letter-spacing:-.02em}
+h3{font-size:21px;margin:28px 0 12px}
+.lead{font-size:18px;color:#344054}
+.callout{padding:18px 20px;border-left:4px solid var(--blue);background:#f5f8ff;border-radius:12px;margin:18px 0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.metric{border:1px solid var(--line);border-radius:16px;padding:18px;background:#fff}
+.metric .v{font-size:30px;font-weight:850;line-height:1.15;margin-top:4px}
+.metric .l{font-size:13px;color:var(--muted);font-weight:700}
+.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;background:#eef3ff;color:#2448d8}
+.pill.red{background:#fff0f2;color:#b4233a}.pill.green{background:#ecfdf3;color:#08764f}.pill.orange{background:#fff7e6;color:#a75d00}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:16px 0;font-size:14px;overflow:hidden;border:1px solid var(--line);border-radius:14px}
+th,td{padding:12px 13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#f8fafc;font-size:13px;color:#475467}
+tr:last-child td{border-bottom:0}
+.score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+.barwrap{height:12px;background:#eef1f5;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#315efb,#7c3aed)}
+.bar.red{background:linear-gradient(90deg,#d9485f,#f59e0b)}
+.compare-switch{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px}
+.compare-switch button{border:1px solid var(--line);background:#fff;color:#475467;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+.compare-switch button.active{background:#18202b;color:#fff;border-color:#18202b}
+.hidden{display:none!important}
+.chart{display:flex;align-items:flex-end;gap:12px;height:230px;padding:18px 8px 36px;border-bottom:1px solid var(--line);position:relative}
+.col{flex:1;min-width:38px;text-align:center;position:relative}
+.col .b{width:64%;margin:0 auto;border-radius:10px 10px 3px 3px;background:linear-gradient(180deg,#315efb,#6d8cff);min-height:2px}
+.col.cn .b{background:linear-gradient(180deg,#d9485f,#f78c9e)}
+.col .label{position:absolute;left:50%;transform:translateX(-50%);bottom:-30px;font-size:12px;color:#667085;white-space:nowrap}
+.col .num{font-size:12px;font-weight:800;margin-bottom:5px}
+.timeline{position:relative;padding-left:26px}
+.timeline:before{content:"";position:absolute;left:7px;top:7px;bottom:7px;width:2px;background:#dbe3f2}
+.event{position:relative;margin:0 0 20px}
+.event:before{content:"";position:absolute;left:-24px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 5px #eef3ff}
+.event.cn:before{background:var(--red);box-shadow:0 0 0 5px #fff0f2}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:750}
+.tab.active{background:#eef3ff;color:#2448d8;border-color:#cbd8ff}
+.panel{display:none}.panel.active{display:block}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end}
+label{display:block;font-size:13px;font-weight:750;color:#475467;margin-bottom:6px}
+input[type=range]{width:100%}
+.output{font-size:36px;font-weight:850}
+.source-list li{margin-bottom:10px;color:#475467}
+.footer{font-size:13px;color:#667085;padding-top:12px}
+.print-btn{border:0;background:#18202b;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:750}
+@media(max-width:900px){
+  .hero-grid,.layout,.grid2,.grid3,.calc{grid-template-columns:1fr}
+  nav{position:relative;top:auto}
+  .layout{padding:0 18px 60px}.hero{padding:48px 18px 28px}
+  h1{font-size:42px}
+}
+@media print{
+  body{background:#fff}.hero{padding-top:20px}.layout{display:block}nav,.print-btn,.compare-switch,.tabs{display:none!important}
+  .card,.hero-card{box-shadow:none;break-inside:avoid}.panel{display:block!important}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="eyebrow">住房 × 通胀 × 民生 · 深度交互说明</div>
+  <h1>当住房变贵，普通人的生活到底发生了什么？</h1>
+  <p class="subtitle">美国 2020–2026 与中国 2015–2016 的住房冲击对比。重点不是简单比较“谁的房价涨得更高”，而是识别住房价格如何穿透家庭现金流、财富分配、消费、迁移与代际机会。</p>
+  <div class="hero-grid">
+    <div class="hero-card">
+      <div class="kicker">一句话结论</div>
+      <div class="big">美国更“广”<small>：买、租、利率、保险一起挤压现金流</small></div>
+      <p>中国 2015–2016 更“尖”——热点城市无房年轻人的购房门槛跃升极快；美国疫情后则是全国性住房成本重估，连“不买房只租房”也很难完全躲开。</p>
+    </div>
+    <div class="hero-card">
+      <div class="kicker">阅读方式</div>
+      <p><b>建议先看第 2、4、7 节。</b> 第 2 节解释美国为什么特别痛；第 4 节解释中国为什么 CPI 看不出来；第 7 节给出民生冲击总评分。</p>
+      <button class="print-btn" onclick="window.print()">打印 / 保存为 PDF</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<nav id="toc">
+  <a href="#summary">1. 结论总览</a>
+  <a href="#us">2. 美国：三重挤压</a>
+  <a href="#china">3. 中国：资产门槛跃升</a>
+  <a href="#cpi">4. 为什么 CPI 会低估中国冲击</a>
+  <a href="#household">5. 家庭类型：谁最痛</a>
+  <a href="#transmission">6. 民生传导链</a>
+  <a href="#score">7. 综合评分</a>
+  <a href="#sim">8. 交互模拟</a>
+  <a href="#policy">9. 政策含义</a>
+  <a href="#sources">10. 数据与来源</a>
+</nav>
+
+<main>
+<section id="summary" class="card">
+  <span class="pill">结论总览</span>
+  <h2>不要只问“房价涨了多少”，要问“住房压力以什么方式进入家庭资产负债表”</h2>
+  <p class="lead">同样是房地产上涨，美国与中国对民生的冲击渠道明显不同。美国最突出的特征是<strong>居住现金流全面恶化</strong>；中国 2015–2016 最突出的特征是<strong>无房家庭的资产门槛突然远离工资增长</strong>。</p>
+  <div class="grid3">
+    <div class="metric"><div class="l">美国现有房价较 2020</div><div class="v">约 +54%</div><div class="note">Harvard JCHS 2026：全国现房价格较 2020 上涨约 54%。</div></div>
+    <div class="metric"><div class="l">美国典型月度购房支出</div><div class="v">$1,700 → $3,100</div><div class="note">2020 初至 2025 Q4，约 +82%。</div></div>
+    <div class="metric"><div class="l">中国热点城市 2016 定基涨幅</div><div class="v">约 +30%～50%</div><div class="note">北京、上海、南京、深圳等显著高于收入增长。</div></div>
+  </div>
+  <div class="callout"><b>核心区别：</b>中国当年最剧烈的是“买房资格和财富门槛”；美国当前更像“住房这种生活必需品整体变贵”，因此对租户、首次购房者、部分老房主都形成压力。</div>
+</section>
+
+<section id="us" class="card">
+  <span class="pill red">美国 2020–2026</span>
+  <h2>美国为什么特别痛：房价、融资成本、持续持有成本同时上升</h2>
+  <p>Harvard Joint Center for Housing Studies 在 2026 年的全国住房报告中指出：美国现有住房价格较 2020 年约上涨 54%；2025 年第四季度，中位价住房的典型月度支出约为 3,100 美元，而 2020 年初约为 1,700 美元；满足这一支出的家庭收入门槛从约 6.6 万美元提高到超过 12 万美元。</p>
+
+  <h3>① 房价：资产价格先抬高“本金”</h3>
+  <div class="barwrap"><div class="bar" style="width:54%"></div></div>
+  <p><b>全国现有房价较 2020：约 +54%</b>。这不是单一城市泡沫，而是一个相当广泛的全国性重估。</p>
+
+  <h3>② 利率：同样一套房，贷款现金流再次被放大</h3>
+  <p>当 30 年固定按揭利率从疫情时期的极低水平回升到 6% 以上时，新买家受到的是“房价上涨 × 融资成本上涨”的组合冲击。Harvard JCHS 给出的典型首次购房贷款成本从 2020 年约每月 1,200 美元升至 2025 年中超过 2,500 美元。</p>
+
+  <h3>③ 租房：不买房也不能完全避开</h3>
+  <p>2024 年美国有 <b>2,270 万户租房家庭</b>住房成本超过收入 30%，占租房家庭约 <b>49%</b>；其中约 <b>1,210 万户</b>住房成本超过收入一半。住房压力因此直接进入食品、医疗、教育、储蓄等预算。</p>
+
+  <div class="grid2">
+    <div class="metric"><div class="l">全美住房成本负担家庭</div><div class="v">4,350 万户</div><div class="note">2024 年，占全部家庭约 33%。</div></div>
+    <div class="metric"><div class="l">严重负担家庭</div><div class="v">2,160 万户</div><div class="note">住房支出超过收入 50%，约占全部家庭 16%。</div></div>
+  </div>
+
+  <h3>④ “锁定效应”：加息却未必让房价快速下跌</h3>
+  <p>美国长期固定利率按揭制造了独特的 <b>mortgage lock-in</b>：老房主持有低息贷款，不愿卖房后重新以高利率借款。FHFA 研究估计，2022Q2–2024Q2 期间，该效应阻止约 <b>172 万宗住房交易</b>，并使房价额外提高约 <b>7%</b>。</p>
+  <div class="callout"><b>宏观悖论：</b>加息压低需求，但同时锁死二手房供给；结果往往先表现为成交量下降，而不是房价同比例下跌。</div>
+</section>
+
+<section id="china" class="card">
+  <span class="pill red">中国 2015–2016</span>
+  <h2>中国当年的核心冲击：资产门槛远远快于工资</h2>
+  <p>国家统计局数据显示，以 2015 年 = 100 观察 2016 年末的新建住宅价格指数：北京约 132.1、上海 137.5、南京 145.8；深圳也处于非常高的水平。也就是说，一年左右的窗口内，部分核心城市住房资产价格上升约 30%～50%。</p>
+
+  <div class="chart" aria-label="中国热点城市2016价格涨幅示意">
+    <div class="col cn"><div class="num">32%</div><div class="b" style="height:96px"></div><div class="label">北京</div></div>
+    <div class="col cn"><div class="num">38%</div><div class="b" style="height:114px"></div><div class="label">上海</div></div>
+    <div class="col cn"><div class="num">46%</div><div class="b" style="height:138px"></div><div class="label">南京</div></div>
+    <div class="col cn"><div class="num">约50%</div><div class="b" style="height:150px"></div><div class="label">深圳/热点高位</div></div>
+  </div>
+
+  <h3>但租金并没有同步上涨</h3>
+  <p>2016 年 12 月，全国租赁房房租 CPI 同比约 <b>+2.9%</b>，全年居住类 CPI 约 <b>+1.6%</b>。这与核心城市房产资产价格动辄数十个百分点的涨幅形成强烈反差。</p>
+
+  <div class="grid2">
+    <div class="metric"><div class="l">热点城市房价</div><div class="v">+30%～50%</div><div class="note">短周期资产价格跃升。</div></div>
+    <div class="metric"><div class="l">2016 年 12 月租金 CPI</div><div class="v">+2.9%</div><div class="note">居住服务价格上涨远小于资产价格。</div></div>
+  </div>
+
+  <p>这意味着当年的中国住房冲击高度集中在“是否拥有住房”这一资产身份上：有房家庭获得巨额账面财富增值；无房家庭即使工资增长，也可能发现首付目标变得更远。</p>
+</section>
+
+<section id="cpi" class="card">
+  <span class="pill orange">统计口径陷阱</span>
+  <h2>为什么 CPI 能看到美国住房痛苦，却会严重低估中国当年的购房压力？</h2>
+  <p class="lead">CPI 衡量的是<strong>消费服务价格</strong>，而不是“购买住房资产的价格”。因此，一个国家即使房价一年上涨 50%，只要租金只涨 3%，CPI 中的住房压力可能仍然非常温和。</p>
+  <table>
+    <thead><tr><th>问题</th><th>美国疫情后</th><th>中国 2015–2016</th></tr></thead>
+    <tbody>
+      <tr><td>房价上涨</td><td>全国广泛上涨</td><td>热点城市极快上涨</td></tr>
+      <tr><td>租金上涨</td><td>显著，进入家庭月度现金流</td><td>相对温和</td></tr>
+      <tr><td>高房价是否进入 CPI</td><td>主要通过租金/OER 间接进入</td><td>资产售价本身不直接进入 CPI</td></tr>
+      <tr><td>民生压力在统计上是否显眼</td><td><b>较显眼</b></td><td><b>容易被低估</b></td></tr>
+    </tbody>
+  </table>
+  <div class="callout">因此，“中国 2016 CPI 只有约 2%，所以住房对民生影响小”是错误推论。低 CPI 只能说明日常消费篮子的价格没有同步暴涨，不能说明年轻家庭的购房门槛没有恶化。</div>
+</section>
+
+<section id="household" class="card">
+  <span class="pill">家庭类型</span>
+  <h2>同一个房地产上涨周期，对不同家庭甚至是完全相反的事件</h2>
+  <div class="tabs">
+    <button class="tab active" data-panel="renter">租房家庭</button>
+    <button class="tab" data-panel="first">首次购房者</button>
+    <button class="tab" data-panel="owner">已有房家庭</button>
+    <button class="tab" data-panel="leveraged">高杠杆家庭</button>
+  </div>
+
+  <div id="renter" class="panel active">
+    <h3>租房家庭：美国冲击明显更强</h3>
+    <p>美国租户直接面对租金和其他生活成本上升，2024 年约半数租户住房成本超过收入 30%。中国 2015–2016 核心城市房价虽暴涨，但租金 CPI 的上涨远温和得多，因此“继续租”在短期现金流上是一条更可行的缓冲路径。</p>
+  </div>
+  <div id="first" class="panel">
+    <h3>首次购房者：中国热点城市与美国当前都极端困难</h3>
+    <p>中国的困难来自首付和总价在一年内快速远离工资；美国则来自房价与利率双击。美国的特点是即使房价不再快速上涨，高利率也能让月供持续处于历史高位。</p>
+  </div>
+  <div id="owner" class="panel">
+    <h3>已有房家庭：可能是受益者，也可能被持续持有成本侵蚀</h3>
+    <p>已有低息贷款的美国房主往往获得“房价上涨 + 低固定利率”的双重优势，但保险、地产税、维护费仍会上升。中国 2015–2016 已有房家庭则在账面财富上通常显著受益。</p>
+  </div>
+  <div id="leveraged" class="panel">
+    <h3>高杠杆家庭：长期消费能力更脆弱</h3>
+    <p>IMF 对中国家庭债务的研究指出，债务短期可能促进消费，但中长期可能压低消费增长，低收入高负债家庭对收入冲击尤其敏感。住房繁荣因此可能在多年后表现为更弱的消费倾向。</p>
+  </div>
+</section>
+
+<section id="transmission" class="card">
+  <span class="pill green">传导机制</span>
+  <h2>住房冲击如何一步步变成民生问题</h2>
+
+  <div class="compare-switch">
+    <button class="active" data-mode="usa">看美国路径</button>
+    <button data-mode="chn">看中国路径</button>
+  </div>
+
+  <div id="usaPath" class="timeline">
+    <div class="event"><b>房价上涨</b><br><span class="note">提高首付与贷款本金。</span></div>
+    <div class="event"><b>利率上升</b><br><span class="note">月供进一步提高，新买家被大量挤出。</span></div>
+    <div class="event"><b>租金、保险、税费同步偏高</b><br><span class="note">不买房也难回避住房成本。</span></div>
+    <div class="event"><b>住房支出占收入提高</b><br><span class="note">食品、医疗、娱乐、储蓄被挤压。</span></div>
+    <div class="event"><b>家庭形成与迁移下降</b><br><span class="note">年轻人独立居住、换城市找工作更困难。</span></div>
+    <div class="event"><b>财富代际分化</b><br><span class="note">持有低息按揭的老房主与首次购房者处境分叉。</span></div>
+  </div>
+
+  <div id="chnPath" class="timeline hidden">
+    <div class="event cn"><b>热点城市房价急涨</b><br><span class="note">资产价格增长远快于工资。</span></div>
+    <div class="event cn"><b>首付门槛跳升</b><br><span class="note">年轻无房家庭储蓄追不上住房总价。</span></div>
+    <div class="event cn"><b>有房/无房财富轨迹分叉</b><br><span class="note">资产所有权成为财富差距放大器。</span></div>
+    <div class="event cn"><b>家庭加杠杆</b><br><span class="note">更多未来收入被锁定到房贷偿付。</span></div>
+    <div class="event cn"><b>消费被长期挤出</b><br><span class="note">经济放缓时，家庭首先压缩可选消费而不是房贷。</span></div>
+    <div class="event cn"><b>房地产资产负债表化</b><br><span class="note">房价后续下跌又可能形成负财富效应。</span></div>
+  </div>
+</section>
+
+<section id="score" class="card">
+  <span class="pill">综合评分</span>
+  <h2>民生冲击不是一个维度：美国“广”，中国“尖且后遗症深”</h2>
+  <table>
+    <thead><tr><th>维度</th><th>美国 2020–2026</th><th>中国 2015–2016</th><th>解释</th></tr></thead>
+    <tbody>
+      <tr><td>日常住房现金流</td><td class="score">★★★★★</td><td class="score">★★☆☆☆</td><td>美国租金、利率、保险、税费共同作用；中国当年租金相对温和。</td></tr>
+      <tr><td>首次购房门槛</td><td class="score">★★★★★</td><td class="score">★★★★★+</td><td>中国热点城市一年数十个百分点的资产上涨极端；美国则是房价与利率双击。</td></tr>
+      <tr><td>财富分化</td><td class="score">★★★★☆</td><td class="score">★★★★★</td><td>两国均强化有房/无房分化；中国热点城市当时资产涨幅尤其陡。</td></tr>
+      <tr><td>消费挤出</td><td class="score">★★★★☆</td><td class="score">★★★→★★★★★</td><td>美国当期现金流挤压强；中国高杠杆的中长期消费抑制更值得警惕。</td></tr>
+      <tr><td>全国覆盖面</td><td class="score">★★★★★</td><td class="score">★★★☆☆</td><td>美国更全国化；中国 2015–2016 高度集中在一线与热点二线。</td></tr>
+      <tr><td>长期资产负债表后遗症</td><td class="score">★★★☆</td><td class="score">★★★★★</td><td>中国房地产与家庭财富、债务和宏观消费绑定更深。</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><b>最终判断：</b>站在普通中低收入家庭的“今天怎么生活”角度，美国的住房压力更广、更直接；站在核心城市年轻无房者的“能否进入资产阶层”角度，中国 2015–2016 的冲击更极端；站在十年后的资产负债表后遗症角度，中国模式更深。</div>
+</section>
+
+<section id="sim" class="card">
+  <span class="pill green">交互模拟</span>
+  <h2>试着改变房价和利率：为什么美国的“月供冲击”会如此猛烈</h2>
+  <p>下面是一个简化的 30 年等额本息模型，仅用于理解数量级。可拖动滑杆。</p>
+  <div class="calc">
+    <div>
+      <label>房屋价格：<span id="priceLabel">$400,000</span></label>
+      <input id="price" type="range" min="250000" max="900000" step="10000" value="400000">
+    </div>
+    <div>
+      <label>按揭利率：<span id="rateLabel">3.0%</span></label>
+      <input id="rate" type="range" min="2" max="8" step="0.1" value="3">
+    </div>
+    <div>
+      <label>首付比例：<span id="downLabel">20%</span></label>
+      <input id="down" type="range" min="5" max="40" step="1" value="20">
+    </div>
+    <div class="metric">
+      <div class="l">估算月供（本金+利息）</div>
+      <div id="payment" class="output">$1,349</div>
+      <div class="note">未包含房产税、保险、HOA、维护费用。</div>
+    </div>
+  </div>
+  <p class="note">提示：先把利率设为 3%，再提高到 6.5%～7%；你会看到即使房价完全不变，月供也会显著提高。</p>
+</section>
+
+<section id="policy" class="card">
+  <span class="pill orange">政策含义</span>
+  <h2>两种住房危机，需要完全不同的政策工具</h2>
+  <div class="grid2">
+    <div>
+      <h3>美国：核心是供给与融资锁定</h3>
+      <ul>
+        <li>提高高需求地区住房供给与密度。</li>
+        <li>降低 zoning / permitting 等供给约束。</li>
+        <li>缓解高利率环境下首次购房者的现金流门槛，但避免重新刺激总房价。</li>
+        <li>关注保险、地产税、维护成本对老年和低收入房主的压力。</li>
+        <li>政策评估不能只看房价，还要看成交量与 lock-in。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>中国：核心是资产依赖与家庭杠杆</h3>
+      <ul>
+        <li>降低住房作为家庭核心财富储存工具的单一性。</li>
+        <li>避免“保房价”与“提高可负担性”之间的结构性冲突。</li>
+        <li>降低家庭资产负债表对房地产的过度集中。</li>
+        <li>提高租赁住房稳定性，使“租”成为真正长期替代。</li>
+        <li>在房地产下行阶段，更需要关注家庭消费和收入预期，而不只是开发商融资。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sources" class="card">
+  <span class="pill">来源与口径</span>
+  <h2>主要数据来源</h2>
+  <ol class="source-list">
+    <li><b>Harvard Joint Center for Housing Studies, 2026</b>：美国住房负担、房价、典型月供、收入门槛。<br>
+      <a href="https://www.jchs.harvard.edu/blog/ten-takeaways-2026-state-nations-housing" target="_blank" rel="noopener">Ten Takeaways from the 2026 State of the Nation’s Housing</a></li>
+    <li><b>Harvard JCHS, 2026</b>：2024 年 4,350 万户成本负担家庭、2,270 万户租户负担家庭等。<br>
+      <a href="https://www.jchs.harvard.edu/blog/housing-unaffordability-soared-new-highs-2024" target="_blank" rel="noopener">Housing Unaffordability Soared to New Highs in 2024</a></li>
+    <li><b>FHFA Working Paper 24-03</b>：按揭 lock-in 估计减少 172 万宗交易、推高房价约 7%。<br>
+      <a href="https://www.fhfa.gov/sites/default/files/2024-08/wp2403.pdf" target="_blank" rel="noopener">The Lock-In Effect of Rising Mortgage Rates</a></li>
+    <li><b>国家统计局</b>：2016 年 12 月 70 个大中城市住宅销售价格指数，北京 132.1、上海 137.5、南京 145.8（2015=100）。<br>
+      <a href="https://www.stats.gov.cn/sj/zxfb/202302/t20230203_1899393.html" target="_blank" rel="noopener">2016年12月份70个大中城市住宅销售价格变动情况</a></li>
+    <li><b>国家统计局</b>：2016 年居民 CPI +2.0%，居住 +1.6%；2016 年 12 月租赁房房租同比 +2.9%。<br>
+      <a href="https://www.stats.gov.cn/sj/zxfb/202302/t20230203_1899387.html" target="_blank" rel="noopener">2016年12月份居民消费价格</a></li>
+    <li><b>IMF Working Paper 2019/258</b>：中国家庭债务对中长期消费增长、低收入家庭脆弱性的研究。<br>
+      <a href="https://www.imf.org/en/publications/wp/issues/2019/11/27/assessing-macro-financial-risks-of-household-debt-in-china-48710" target="_blank" rel="noopener">Assessing Macro-Financial Risks of Household Debt in China</a></li>
+  </ol>
+  <p class="footer">说明：中美统计制度、住房结构和城市层级差异很大，因此本文避免把“美国全国指数”与“中国单一热点城市”直接当作完全同口径指标。所有评分均为机制性综合判断，不是官方统计指数。页面生成时间：2026 年 9 月。</p>
+</section>
+</main>
+</div>
+
+<script>
+const tabs=[...document.querySelectorAll('.tab')];
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.panel).classList.add('active');
+}));
+document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('[data-mode]').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  const usa=btn.dataset.mode==='usa';
+  document.getElementById('usaPath').classList.toggle('hidden',!usa);
+  document.getElementById('chnPath').classList.toggle('hidden',usa);
+}));
+function money(v){return '$'+Math.round(v).toLocaleString('en-US')}
+function updateCalc(){
+  const P=+document.getElementById('price').value;
+  const rate=+document.getElementById('rate').value;
+  const down=+document.getElementById('down').value;
+  const loan=P*(1-down/100), r=rate/100/12, n=360;
+  const m=loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  document.getElementById('priceLabel').textContent=money(P);
+  document.getElementById('rateLabel').textContent=rate.toFixed(1)+'%';
+  document.getElementById('downLabel').textContent=down+'%';
+  document.getElementById('payment').textContent=money(m);
+}
+['price','rate','down'].forEach(id=>document.getElementById(id).addEventListener('input',updateCalc));
+updateCalc();
+
+const sections=[...document.querySelectorAll('main section')];
+const links=[...document.querySelectorAll('#toc a')];
+const obs=new IntersectionObserver(entries=>{
+  const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+  if(!visible) return;
+  links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id));
+},{rootMargin:'-20% 0px -65% 0px',threshold:[0,.1,.5]});
+sections.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
