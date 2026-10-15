@@ -230,10 +230,12 @@ function syncHash(){
 
 function initStats(){
  var nInt=REPORTS.filter(function(r){return r.type==="interactive";}).length;
+ var nRep=REPORTS.filter(function(r){return r.type==="report";}).length;
+ var nGuide=REPORTS.filter(function(r){return r.type==="guide";}).length;
  var dates=REPORTS.map(function(r){return r.date;}).sort();
  var d=new Date(dates[dates.length-1]+"T00:00:00");
  var mon=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
- document.getElementById("stat-line").textContent=REPORTS.length+" PAGES · "+(REPORTS.length-nInt)+" REPORTS · "+nInt+" INTERACTIVE · "+CATS.length+" TOPICS · UPDATED "+mon+" "+d.getFullYear();
+ document.getElementById("stat-line").textContent=REPORTS.length+" PAGES · "+nRep+" REPORTS · "+nInt+" INTERACTIVE · "+nGuide+" GUIDES · "+CATS.length+" TOPICS · UPDATED "+mon+" "+d.getFullYear();
 }
 
 document.getElementById("type-chips").addEventListener("click",function(e){
