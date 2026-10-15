@@ -7,5 +7,6 @@
 | HIMA five brands | [Markdown](hima-five-brands/hima-five-brands-report.md) · [HTML](hima-five-brands/hima-five-brands-report.html) | Research on Huawei HIMA’s five brands: AITO, LUXEED, STELATO, MAEXTRO and SAIC (Shangjie). |
 | Enterprise knowledge base | [Markdown](enterprise-knowledge-base/enterprise-knowledge-base-report.md) · [HTML](enterprise-knowledge-base/enterprise-knowledge-base-report.html) | Strategies for implementing enterprise knowledge bases: RAG variants, GraphRAG, Agentic RAG, long context, Text-to-SQL, ontologies, MCP federation and enterprise search. |
 | Enterprise on-prem LLM | [Markdown](enterprise-onprem-llm/enterprise-onprem-llm-report.md) · [HTML](enterprise-onprem-llm/enterprise-onprem-llm-report.html) | Deploying LLMs on-premises for data security: models, hardware, inference frameworks, compliance and reference architectures. |
+| Jev in Hermes Agent | [Markdown](jev-hermes-agent/jev-hermes-agent-report.md) · [HTML](jev-hermes-agent/jev-hermes-agent-report.html) | TypeSafe AI’s Jev (“System One” decision model) and its integration into NousResearch Hermes Agent via a community plugin. |
 
 The HTML versions are interactive reports; open them locally in a browser.
