@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>g-loop 两种运行方式对比</title>
+<style>
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0f1419;color:#e6e6e6;margin:0;padding:24px}
+h1{font-size:22px;margin:0 0 6px}p.sub{color:#9aa4ad;margin:0 0 20px}
+.wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#1a2129;border:1px solid #2a333d;border-radius:12px;padding:18px}
+.card h2{font-size:17px;margin:0 0 4px}.card .tag{font-size:12px;color:#9aa4ad;margin-bottom:12px}
+svg{width:100%;height:auto;background:#141a20;border-radius:8px}
+.node rect{rx:8;stroke-width:1.5}
+.node text{fill:#e6e6e6;font-size:13px;text-anchor:middle;dominant-baseline:middle}
+.active rect{stroke:#ffd166!important;stroke-width:3!important;filter:drop-shadow(0 0 6px #ffd166)}
+.edge{stroke:#5c6773;stroke-width:1.6;fill:none;marker-end:url(#arr)}
+.edge.hot{stroke:#ffd166}
+.log{margin-top:10px;height:150px;overflow:auto;background:#0f1419;border-radius:6px;padding:8px;font:12px/1.6 ui-monospace,Menlo,monospace}
+.log .u{color:#7cc4ff}.log .b{color:#ff6b6b}.log .ok{color:#7be495}.log .s{color:#9aa4ad}
+.ctrl{margin:16px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button{background:#2b6cb0;color:#fff;border:0;border-radius:6px;padding:8px 14px;font-size:14px;cursor:pointer}
+button.alt{background:#38424d}
+.notes{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:13px;color:#c5ccd3}
+.notes ul{margin:6px 0;padding-left:18px}code{background:#26303a;padding:1px 5px;border-radius:4px}
+</style></head><body>
+<h1>g-loop 两种运行方式对比</h1>
+<p class="sub">点击「播放」，在同一时间线上模拟：用户发起一个长任务，执行到中途又发来一个新问题。</p>
+<div class="ctrl"><button id="play">▶ 播放</button><button class="alt" id="reset">重置</button><span id="clock" style="color:#9aa4ad"></span></div>
+<div class="wrap">
+ <div class="card"><h2>A. 现状：单 run 阻塞式</h2><div class="tag">一个会话只有一个 run，fence 锁保证同一时间只有一个写者（<code>store/pg.py:25-36</code>）</div>
+  <svg id="svgA" viewBox="0 0 520 330"></svg><div class="log" id="logA"></div></div>
+ <div class="card"><h2>B. 前台对话 loop 加后台 run</h2><div class="tag">前台只负责回话和派活；长任务在子会话里跑，完成后通过事件把结果推回前台</div>
+  <svg id="svgB" viewBox="0 0 520 330"></svg><div class="log" id="logB"></div></div>
+</div>
+<div class="notes">
+ <div><b>A 的问题</b><ul><li>run 执行期间用户发来的新消息只能排队，或者因为拿不到 fence 而被拒绝</li><li>想插话只能取消（<code>CancelToken</code>），已经做完的部分也跟着中断</li></ul></div>
+ <div><b>B 需要补的东西</b><ul><li>后台 run 有独立的 run_id 和子会话，可以挂起、恢复、取消</li><li>step 边界的收件箱（可选）：run 每个 step 开始前取出新消息</li><li>完成事件：<code>events/</code> 目前是空目录，需要推送机制</li><li>前台只需要短 run，不需要改 fence 的语义</li></ul></div>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e}
+function defs(svg){const d=el('defs',{},svg);const m=el('marker',{id:'arr',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto'},d);el('path',{d:'M0,0L10,5L0,10z',fill:'#5c6773'},m)}
+function node(svg,id,x,y,w,h,label,color){const g=el('g',{class:'node',id},svg);el('rect',{x,y,width:w,height:h,fill:color,stroke:'#3d4752'},g);const t=el('text',{x:x+w/2,y:y+h/2},g);t.textContent=label;return g}
+function edge(svg,id,d){return el('path',{class:'edge',id,d},svg)}
+function lbl(svg,x,y,s,c){const t=el('text',{x,y,fill:c||'#9aa4ad','font-size':12},svg);t.textContent=s}
+// A
+const A=document.getElementById('svgA');defs(A);
+node(A,'aU',20,20,110,40,'用户','#1f3b57');
+node(A,'aR',200,20,140,40,'读取历史并投影','#24303b');
+node(A,'aM',380,90,120,40,'调用模型','#24303b');
+node(A,'aT',200,160,140,40,'执行工具','#24303b');
+node(A,'aE',20,160,130,40,'终止判断','#24303b');
+node(A,'aQ',20,260,200,44,'新消息：排队或被拒','#3b2328');
+edge(A,'a1','M130,40L200,40');edge(A,'a2','M340,40Q440,40 440,90');edge(A,'a3','M440,130Q440,180 340,180');
+edge(A,'a4','M200,180L150,180');edge(A,'a5','M85,160Q85,100 200,48');edge(A,'a6','M75,60L75,260');
+lbl(A,360,250,'fence 锁：同一时间只有一个 run',"#ffd166");
+el('rect',{x:180,y:8,width:330,height:205,fill:'none',stroke:'#ffd166','stroke-dasharray':'5 4',rx:10},A);
+// B
+const B=document.getElementById('svgB');defs(B);
+node(B,'bU',20,20,100,40,'用户','#1f3b57');
+node(B,'bF',170,20,160,40,'前台对话 loop（短）','#1f4a3a');
+node(B,'bQ',380,20,120,40,'回复用户','#1f4a3a');
+node(B,'bS',170,140,160,40,'派发：子会话 run','#24303b');
+node(B,'bW',170,230,160,40,'后台 run 的 step 循环','#3a3320');
+node(B,'bI',380,230,120,40,'收件箱（可选）','#2d2a3b');
+node(B,'bD',380,140,120,40,'完成事件','#2d2a3b');
+edge(B,'b1','M120,40L170,40');edge(B,'b2','M330,40L380,40');edge(B,'b3','M250,60L250,140');
+edge(B,'b4','M250,180L250,230');edge(B,'b5','M330,250L380,250');edge(B,'b6','M330,240Q360,200 400,180');
+edge(B,'b7','M440,140Q440,100 330,52');
+lbl(B,20,300,'前台和后台各自持有 fence，互不阻塞',"#7be495");
+// timeline
+const steps=[
+ {t:'T0',A:[['aU','a1','aR'],'u','用户：帮我重构 provider 模块'],B:[['bU','b1','bF'],'u','用户：帮我重构 provider 模块']},
+ {t:'T1',A:[['aR','a2','aM'],'s','run 开始，持有 fence'],B:[['bF','b3','bS'],'s','前台派发子会话 run，并回复“开始了”'],B2:'bQ'},
+ {t:'T2',A:[['aM','a3','aT'],'s','step 1：模型调用工具'],B:[['bS','b4','bW'],'s','后台 step 1：模型调用工具']},
+ {t:'T3',A:[['aU','a6','aQ'],'b','用户：顺便问下 fence 是干嘛的？会话被占用，消息只能等待'],B:[['bU','b1','bF'],'u','用户：顺便问下 fence 是干嘛的？']},
+ {t:'T4',A:[['aT','a4','aE'],'s','step 2 继续，用户还在等'],B:[['bF','b2','bQ'],'ok','前台立刻回答，后台不受影响']},
+ {t:'T5',A:[['aE','a5','aR'],'s','step 3 继续'],B:[['bW','b5','bI'],'s','后台 step 边界：检查收件箱']},
+ {t:'T6',A:[['aE'],'ok','run 结束，释放 fence'],B:[['bW','b6','bD'],'ok','后台 run 完成，发出完成事件']},
+ {t:'T7',A:[['aQ','a6','aU'],'u','到这时才处理排队的问题'],B:[['bD','b7','bF'],'ok','前台收到事件，把结果汇报给用户']},
+];
+let i=0,timer=null;
+function clear(svg){svg.querySelectorAll('.active').forEach(e=>e.classList.remove('active'));svg.querySelectorAll('.hot').forEach(e=>e.classList.remove('hot'))}
+function hl(svg,ids){ids.forEach(id=>{const e=svg.querySelector('#'+id);if(!e)return;e.tagName==='path'?e.classList.add('hot'):e.classList.add('active')})}
+function log(id,c,s,t){const L=document.getElementById(id);const d=document.createElement('div');d.className=c;d.textContent='['+t+'] '+s;L.appendChild(d);L.scrollTop=1e9}
+function tick(){if(i>=steps.length){stop();return}const s=steps[i];clear(A);clear(B);hl(A,s.A[0]);hl(B,s.B[0]);if(s.B2)hl(B,[s.B2]);log('logA',s.A[1],s.A[2],s.t);log('logB',s.B[1],s.B[2],s.t);document.getElementById('clock').textContent='时间点 '+s.t;i++}
+function stop(){clearInterval(timer);timer=null;document.getElementById('play').textContent='▶ 播放'}
+document.getElementById('play').onclick=()=>{if(timer){stop();return}if(i>=steps.length)reset();tick();timer=setInterval(tick,1600);document.getElementById('play').textContent='⏸ 暂停'};
+function reset(){stop();i=0;clear(A);clear(B);logA.innerHTML='';logB.innerHTML='';document.getElementById('clock').textContent=''}
+document.getElementById('reset').onclick=reset;
+</script></body></html>
