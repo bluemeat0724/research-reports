@@ -1,0 +1,1931 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060607">
+<title>iPhone Duo — Two screens. One object.</title>
+<meta name="description" content="An interactive 3D concept study of iPhone Duo — a dual-screen foldable iPhone in grade-5 titanium.">
+<style>
+  :root{
+    --bg:#060607;
+    --ink:#f4f1ec;
+    --muted:#8d8b88;
+    --line:rgba(255,255,255,.13);
+    --glass:rgba(20,20,22,.58);
+    --accent:#e8e3d8;
+    --glow:rgba(144,176,208,.18);
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+    overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  button,input{font:inherit;color:inherit}
+  button{border:0;background:none;cursor:pointer}
+  button:focus-visible,input:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+  ::selection{background:var(--accent);color:#16120d}
+
+  /* ---------- atmosphere ---------- */
+  .backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .backdrop::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 54% 60% at 68% 40%,var(--glow),transparent 62%),
+      radial-gradient(ellipse 38% 46% at 38% 22%,rgba(100,117,155,.12),transparent 65%),
+      radial-gradient(ellipse 70% 45% at 58% 105%,rgba(80,53,30,.16),transparent 60%),
+      linear-gradient(180deg,#0a0a0c 0%,#060607 55%,#040405 100%);
+    transition:background .8s ease;
+  }
+  .backdrop::after{
+    content:"";position:absolute;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.045;mix-blend-mode:soft-light
+  }
+  .vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(ellipse 80% 80% at 50% 46%,transparent 42%,rgba(0,0,0,.48) 100%)}
+  .grain{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:.22;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.32'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay}
+
+  /* ---------- chrome ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;
+    justify-content:space-between;padding:24px clamp(22px,3.2vw,48px);
+    pointer-events:none;
+  }
+  .brand{display:flex;align-items:center;gap:13px;pointer-events:auto}
+  .brand-mark{width:25px;height:25px;display:block;opacity:.94}
+  .brand-copy{display:flex;align-items:baseline;gap:10px}
+  .brand-name{font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+  .brand-sub{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .top-right{display:flex;align-items:center;gap:24px;pointer-events:auto}
+  .meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:#767471;text-transform:uppercase}
+  .meta .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px;box-shadow:0 0 8px var(--accent)}
+
+  /* ---------- copy ---------- */
+  .copy{
+    position:fixed;z-index:5;left:clamp(24px,5vw,76px);top:50%;
+    width:min(33vw,430px);transform:translateY(-47%);pointer-events:none;
+  }
+  .eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.18em;text-transform:uppercase;color:#928e88;margin-bottom:25px}
+  .eyebrow::before{content:"";width:30px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+  h1{
+    margin:0;font-size:clamp(64px,7.1vw,108px);font-weight:560;line-height:.86;
+    letter-spacing:-.065em;color:#f1ede6;
+  }
+  h1 .line{display:block;background:linear-gradient(180deg,#fff 8%,#d4cec5 54%,#9b958c 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  h1 .dot{color:var(--accent);-webkit-text-fill-color:var(--accent);text-shadow:0 0 30px rgba(241,197,154,.25)}
+  .lead{
+    margin:25px 0 0;max-width:310px;font-size:14px;line-height:1.55;color:#a7a39d;
+    font-weight:400;letter-spacing:-.005em;
+  }
+  .lead strong{color:#ded8d0;font-weight:500}
+  .specs{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;width:100%;max-width:382px;
+    margin-top:38px;padding-top:17px;border-top:1px solid rgba(255,255,255,.11);
+  }
+  .spec{padding-right:12px}
+  .spec + .spec{padding-left:18px;border-left:1px solid rgba(255,255,255,.09)}
+  .spec dt{font-family:var(--mono);font-size:8.5px;letter-spacing:.15em;color:#6e6b67;
+    text-transform:uppercase;margin-bottom:7px}
+  .spec dd{margin:0;font-size:11px;letter-spacing:.01em;color:#d6d0c8;white-space:nowrap}
+
+  /* ---------- stage ---------- */
+  .stage{position:fixed;inset:0 0 0 auto;width:74vw;z-index:3;cursor:grab}
+  .stage:active{cursor:grabbing}
+  .stage canvas{display:block;width:100%;height:100%;touch-action:none}
+  .stage canvas:focus-visible{outline:1px solid var(--accent);outline-offset:-4px}
+  .stage-hint{
+    position:fixed;left:clamp(24px,5vw,76px);bottom:27px;z-index:5;pointer-events:none;
+    display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:8.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:#5f5c58;
+    transition:opacity .8s ease;
+  }
+  .stage-hint svg{width:16px;height:16px;opacity:.6}
+  .legal{
+    position:fixed;right:clamp(22px,3.2vw,48px);bottom:29px;z-index:5;pointer-events:none;
+    font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:#4b4946;text-transform:uppercase;
+  }
+  body.ui-touched .stage-hint{opacity:.38}
+
+  /* ---------- control dock ---------- */
+  .dock{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:7;
+    display:flex;align-items:center;gap:16px;max-width:calc(100vw - 32px);
+    padding:9px 10px 9px 17px;border-radius:17px;
+    border:1px solid rgba(255,255,255,.12);
+    background:linear-gradient(180deg,rgba(38,38,41,.66),rgba(16,16,18,.7));
+    box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);
+    backdrop-filter:blur(26px) saturate(1.25);-webkit-backdrop-filter:blur(26px) saturate(1.25);
+  }
+  .dock-group{display:flex;align-items:center;gap:11px}
+  .dock-sep{width:1px;height:22px;background:rgba(255,255,255,.1)}
+  .ctrl-label{font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:#74716c;text-transform:uppercase}
+  .swatches{display:flex;gap:6px}
+  .swatch{
+    position:relative;width:22px;height:22px;border-radius:50%;padding:0;
+    border:1px solid rgba(255,255,255,.18);transition:transform .25s,box-shadow .25s;
+  }
+  .swatch::after{content:"";position:absolute;inset:3px;border-radius:50%;
+    background:linear-gradient(145deg,rgba(255,255,255,.33),transparent 45%,rgba(0,0,0,.25))}
+  .swatch:hover{transform:scale(1.1)}
+  .swatch[aria-checked="true"]{box-shadow:0 0 0 1.5px #0d0d0e,0 0 0 3px rgba(244,241,236,.85)}
+  .finish-name{font-size:10px;letter-spacing:.015em;color:#bdb8b1;min-width:90px}
+  .fold-group{flex:1 1 auto;min-width:148px}
+  .fold-group input{
+    -webkit-appearance:none;appearance:none;width:118px;height:22px;background:transparent;
+    cursor:pointer;margin:0;--fill:66.7%;
+  }
+  .fold-group input::-webkit-slider-runnable-track{
+    height:2px;border-radius:2px;
+    background:linear-gradient(90deg,var(--accent) 0%,var(--accent) var(--fill),rgba(255,255,255,.15) var(--fill),rgba(255,255,255,.15) 100%);
+  }
+  .fold-group input::-moz-range-track{height:2px;border-radius:2px;background:rgba(255,255,255,.15)}
+  .fold-group input::-moz-range-progress{height:2px;background:var(--accent)}
+  .fold-group input::-webkit-slider-thumb{
+    -webkit-appearance:none;width:12px;height:12px;margin-top:-5px;border-radius:50%;
+    background:#f7f3ec;border:0;box-shadow:0 0 0 3px rgba(247,243,236,.1),0 1px 5px rgba(0,0,0,.6);
+    transition:transform .2s;
+  }
+  .fold-group input:hover::-webkit-slider-thumb{transform:scale(1.12)}
+  .fold-group input::-moz-range-thumb{width:12px;height:12px;border:0;border-radius:50%;background:#f7f3ec}
+  .angle{font-family:var(--mono);font-size:9px;letter-spacing:.03em;color:#c9c4bd;min-width:34px;text-align:right}
+  .dock-actions{display:flex;gap:4px}
+  .icon-btn{
+    width:33px;height:33px;border-radius:9px;display:grid;place-items:center;
+    color:#bab5ae;border:1px solid transparent;transition:background .25s,color .25s,border-color .25s;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+  .icon-btn[aria-pressed="true"]{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.08)}
+  .icon-btn svg{width:15px;height:15px}
+
+  /* ---------- loader ---------- */
+  #loader{
+    position:fixed;inset:0;z-index:50;background:#060607;display:grid;place-items:center;
+    transition:opacity .9s cubic-bezier(.4,0,.2,1),visibility .9s;
+  }
+  #loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .loader-inner{display:flex;flex-direction:column;align-items:center;gap:22px}
+  .loader-mark{width:34px;height:34px;opacity:.85;animation:breathe 2.4s ease-in-out infinite}
+  .loader-rule{width:150px;height:1px;background:rgba(255,255,255,.12);overflow:hidden;position:relative}
+  .loader-rule::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    transform:translateX(-100%);animation:load 1.5s ease-in-out infinite}
+  .loader-label{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:#77736d}
+  .loader-status{font-family:var(--mono);font-size:8px;letter-spacing:.08em;color:#4e4b47;min-height:10px}
+  @keyframes load{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+  @keyframes breathe{0%,100%{opacity:.55;transform:scale(.97)}50%{opacity:.95;transform:scale(1.03)}}
+  .fallback{
+    position:fixed;inset:0;z-index:60;background:#080809;display:none;place-items:center;padding:32px;
+    text-align:center;
+  }
+  .fallback.show{display:grid}
+  .fallback h2{font-size:26px;font-weight:500;letter-spacing:-.03em;margin:0 0 12px}
+  .fallback p{color:var(--muted);font-size:13px;line-height:1.6;max-width:360px;margin:0}
+
+  /* ---------- intro reveals ---------- */
+  .topbar,.copy,.dock,.stage-hint,.legal{opacity:0}
+  body.loaded .topbar{animation:rise .9s .15s cubic-bezier(.2,.7,.2,1) forwards}
+  body.loaded .copy{animation:rise .9s .28s cubic-bezier(.2,.7,.2,1) forwards}
+  body.loaded .dock{animation:dockIn .9s .42s cubic-bezier(.2,.7,.2,1) forwards}
+  body.loaded .stage-hint{animation:fadeIn 1.2s .8s ease forwards}
+  body.loaded .legal{animation:fadeIn 1.2s .9s ease forwards}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes dockIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  body.loaded .copy{transform:translateY(-47%)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1120px){
+    .stage{width:80vw}
+    .copy{width:min(34vw,380px)}
+    .finish-name{display:none}
+    .fold-group input{width:96px}
+    .legal{display:none}
+  }
+  @media (max-width:1380px){
+    .specs{display:none}
+  }
+  @media (max-width:900px){
+    .topbar{padding:18px 20px}
+    .brand-sub,.meta{display:none}
+    .copy{
+      top:84px;left:0;right:0;width:auto;transform:none;
+      padding:0 24px;text-align:center;pointer-events:none;
+    }
+    body.loaded .copy{transform:none}
+    .eyebrow{justify-content:center;margin-bottom:15px;font-size:8.5px}
+    .eyebrow::before{display:none}
+    h1{font-size:clamp(54px,13.2vw,80px);line-height:.84}
+    .lead{display:none}
+    .specs{display:none}
+    .stage{width:100%;inset:auto 0 0 0;top:258px;bottom:138px;height:auto}
+    .stage-hint,.legal{display:none}
+    .dock{
+      bottom:max(14px,env(safe-area-inset-bottom));width:calc(100vw - 24px);
+      padding:12px 14px;border-radius:21px;gap:10px 12px;flex-wrap:wrap;justify-content:space-between;
+    }
+    .dock-sep{display:none}
+    .finish-group{order:1;gap:9px}
+    .dock-actions{order:2;margin-left:auto}
+    .fold-group{order:3;flex:1 0 100%;gap:12px;padding-top:2px}
+    .fold-group .ctrl-label{min-width:24px}
+    .fold-group input{flex:1;width:auto}
+    .angle{min-width:32px}
+    .icon-btn{width:32px;height:32px}
+    .swatch{width:21px;height:21px}
+    .vignette{background:radial-gradient(ellipse 110% 65% at 50% 58%,transparent 35%,rgba(0,0,0,.55) 100%)}
+  }
+  @media (max-width:900px) and (max-height:720px){
+    .copy{top:70px}
+    h1{font-size:clamp(46px,11vw,62px)}
+    .eyebrow{margin-bottom:11px}
+    .stage{top:216px;bottom:128px}
+    .dock{padding:10px 12px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="duo-mark" viewBox="0 0 32 32">
+    <rect x="3.2" y="5.4" width="12.4" height="21.2" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="17.1" y="8.7" width="11.7" height="14.6" rx="4" fill="currentColor"/>
+  </symbol>
+</svg>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand" aria-label="iPhone Duo concept">
+      <svg class="brand-mark" aria-hidden="true"><use href="#duo-mark"/></svg>
+      <div class="brand-copy">
+        <span class="brand-name">Duo</span>
+        <span class="brand-sub">Titanium foldable</span>
+      </div>
+    </div>
+    <div class="top-right">
+      <span class="meta"><span class="dot"></span>iPhone Duo · 2026</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="copy" aria-labelledby="title">
+      <p class="eyebrow">Passport foldable — 3D study</p>
+      <h1 id="title"><span class="line">iPhone</span><span class="line">Duo<span class="dot">.</span></span></h1>
+      <p class="lead">A 7.6-inch continuous flexible canvas in a 164.6 mm-wide titanium passport body. Closed, it’s an iPhone. <strong>Open, it’s a landscape.</strong></p>
+      <dl class="specs">
+        <div class="spec"><dt>Inner</dt><dd>7.6″ flexible</dd></div>
+        <div class="spec"><dt>Outer</dt><dd>5.4″ cover</dd></div>
+        <div class="spec"><dt>Body</dt><dd>Grade-5 Ti</dd></div>
+      </dl>
+    </section>
+
+    <div class="stage" id="stage" aria-label="Interactive 3D model of iPhone Duo. Drag to orbit. Scroll to zoom."></div>
+
+    <div class="stage-hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <circle cx="12" cy="12" r="3"/>
+        <ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/>
+      </svg>
+      Drag to orbit · scroll to zoom
+    </div>
+    <p class="legal">Unofficial concept · not affiliated with Apple Inc.</p>
+  </main>
+
+  <div class="dock" role="group" aria-label="iPhone Duo controls">
+    <div class="dock-group finish-group">
+      <span class="ctrl-label">Finish</span>
+      <div class="swatches" role="radiogroup" aria-label="Finish">
+        <button class="swatch" role="radio" aria-checked="true" aria-label="Star White" data-finish="starWhite" style="background:linear-gradient(145deg,#f4f1e9,#b8b2a5)"></button>
+        <button class="swatch" role="radio" aria-checked="false" aria-label="Night Sky" data-finish="nightSky" style="background:linear-gradient(145deg,#3b4a5e,#10151e)"></button>
+      </div>
+      <span class="finish-name" id="finishName">Star White</span>
+    </div>
+    <div class="dock-sep" aria-hidden="true"></div>
+    <div class="dock-group fold-group">
+      <label class="ctrl-label" for="fold">Fold</label>
+      <input id="fold" type="range" min="0" max="100" value="91.7" step="0.5" aria-label="Hinge fold" aria-valuetext="165 degrees open">
+      <span class="angle" id="angle">165°</span>
+    </div>
+    <div class="dock-sep" aria-hidden="true"></div>
+    <div class="dock-actions">
+      <button class="icon-btn" id="spinBtn" aria-label="Auto-rotate model" aria-pressed="false" title="Auto-rotate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M20 11a8 8 0 1 0-2.3 6.7M20 4v7h-7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="resetBtn" aria-label="Reset camera view" title="Reset view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="loader">
+    <div class="loader-inner">
+      <svg class="loader-mark" aria-hidden="true"><use href="#duo-mark"/></svg>
+      <div class="loader-rule" aria-hidden="true"></div>
+      <div class="loader-label">Milling titanium</div>
+      <div class="loader-status" id="loaderStatus">Preparing the canvas</div>
+    </div>
+  </div>
+
+  <div class="fallback" id="fallback" role="alert">
+    <div>
+      <h2>WebGL is taking a nap.</h2>
+      <p>This 3D concept needs a WebGL-enabled browser. Try Chrome, Edge or Safari with hardware acceleration enabled.</p>
+    </div>
+  </div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+<script>
+  setTimeout(function(){
+    if(!document.body.classList.contains('loaded')){
+      var s=document.getElementById('loaderStatus');
+      if(s) s.textContent='Still loading — check your connection.';
+    }
+  }, 12000);
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ============================================================
+   iPhone Duo — a flexible-screen foldable concept
+   Units are ~millimetres / 10. Hinge pivots sit on the display
+   plane; the inner display runs continuously across the fold.
+   ============================================================ */
+
+const $ = (s) => document.querySelector(s);
+const stage = $('#stage');
+const loader = $('#loader');
+
+// Official iPhone Duo dimensions (Apple, 2026), in centimetres:
+// open 16.46 x 11.78 x 0.52 cm · closed 8.41 x 11.78 x 1.13 cm
+const DIM = {
+  w: 8.20,           // half width; two halves + hairline gap = 16.46 cm open
+  h: 11.78,          // height
+  d: 0.52,           // body thickness
+  gap: 0.06,         // visual seam on the body, covered by the flexible display
+  radius: 1.04,
+  screenInset: 0.36, // bezel on the outer three sides; zero at the fold
+  screenRadius: 0.80,
+};
+const HALF_X = (DIM.w + DIM.gap) / 2; // 4.13 cm
+const SCREEN_W = HALF_X + DIM.w / 2 - DIM.screenInset; // 7.87 cm one half; 15.74 cm total
+const SCREEN_H = DIM.h - DIM.screenInset * 2; // 11.06 cm
+const MASTER_W = 1536;
+const MASTER_H = 1080;
+const HALF_TEX_W = 768;
+const HALF_TEX_H = 1080;
+const COVER_W = 7.78;
+const COVER_H = 11.32;
+const COVER_TEX_W = 768;
+const COVER_TEX_H = 1118;
+const BASE_OPEN = 165;
+const MIN_OPEN = 0;
+const MAX_OPEN = 180;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const PALETTES = {
+  starWhite: {
+    name: 'Star White',
+    frame: 0xd7d4cf, frameRough: 0.17,
+    back: 0xf0ece4, backRough: 0.34,
+    hinge: 0xb9b3a8,
+    accent: '#e8e3d8', glow: 'rgba(144,176,208,.18)', rim: 0xe8f1ff,
+    wall: {
+      base: ['#07101d', '#020305'],
+      orbs: [
+        [0.16, 0.26, 0.46, 'rgba(74,148,255,.58)'],
+        [0.48, 0.34, 0.46, 'rgba(255,160,116,.38)'],
+        [0.84, 0.22, 0.40, 'rgba(117,208,255,.28)'],
+        [0.28, 0.90, 0.46, 'rgba(22,48,90,.72)'],
+        [0.78, 0.84, 0.48, 'rgba(255,102,74,.22)'],
+        [0.94, 0.56, 0.34, 'rgba(121,108,255,.18)'],
+      ],
+      ribbonA: ['#5cb2ff', '#ffe0b5'],
+      ribbonB: ['#24477f', '#ff947a'],
+      spark: '225,245,255',
+      uiAccent: '#ffd8ae',
+    },
+  },
+  nightSky: {
+    name: 'Night Sky',
+    frame: 0x4b5059, frameRough: 0.21,
+    back: 0x10151d, backRough: 0.4,
+    hinge: 0x363b43,
+    accent: '#a8c8e9', glow: 'rgba(60,94,140,.22)', rim: 0x7aaad9,
+    wall: {
+      base: ['#030813', '#010203'],
+      orbs: [
+        [0.16, 0.22, 0.48, 'rgba(29,73,215,.72)'],
+        [0.50, 0.36, 0.48, 'rgba(36,207,255,.42)'],
+        [0.84, 0.28, 0.44, 'rgba(108,70,255,.5)'],
+        [0.30, 0.90, 0.50, 'rgba(7,30,92,.8)'],
+        [0.80, 0.85, 0.46, 'rgba(37,126,255,.26)'],
+        [0.92, 0.56, 0.34, 'rgba(255,79,145,.16)'],
+      ],
+      ribbonA: ['#1d57ff', '#79edff'],
+      ribbonB: ['#1c165f', '#ff5fa2'],
+      spark: '215,240,255',
+      uiAccent: '#b7dcff',
+    },
+  },
+};
+const state = {
+  finish: 'starWhite',
+  open: THREE.MathUtils.degToRad(prefersReducedMotion ? BASE_OPEN : 82),
+  targetOpen: THREE.MathUtils.degToRad(BASE_OPEN),
+  spin: false,
+  intro: 0,
+  ready: false,
+};
+
+/* ---------- renderer / scene ---------- */
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+} catch (err) {
+  showFallback();
+  throw err;
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(stage.clientWidth, stage.clientHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x000000, 0);
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(27, stage.clientWidth / Math.max(stage.clientHeight, 1), 2.0, 200);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.055;
+controls.enablePan = false;
+controls.minDistance = 22;
+controls.maxDistance = 72;
+controls.minPolarAngle = 0.35;
+controls.maxPolarAngle = 1.72;
+controls.rotateSpeed = 0.62;
+controls.zoomSpeed = 0.7;
+controls.autoRotateSpeed = 0.55;
+controls.target.set(0, 0.2, 0.75);
+renderer.domElement.setAttribute('aria-label', 'iPhone Duo 3D model. Drag to orbit, scroll to zoom, arrow keys to rotate.');
+renderer.domElement.setAttribute('role', 'img');
+renderer.domElement.tabIndex = 0;
+
+/* ---------- studio environment ---------- */
+function makeEnvironment() {
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 512;
+  const x = c.getContext('2d');
+  const sky = x.createLinearGradient(0, 0, 0, 512);
+  sky.addColorStop(0.00, '#141824');
+  sky.addColorStop(0.38, '#0a0c13');
+  sky.addColorStop(0.52, '#1c1814');
+  sky.addColorStop(0.72, '#08080a');
+  sky.addColorStop(1.00, '#020203');
+  x.fillStyle = sky; x.fillRect(0, 0, 1024, 512);
+
+  const glow = x.createRadialGradient(300, 210, 10, 300, 210, 280);
+  glow.addColorStop(0, 'rgba(255,238,216,.5)');
+  glow.addColorStop(1, 'rgba(255,238,216,0)');
+  x.fillStyle = glow; x.fillRect(0, 0, 1024, 512);
+
+  x.save();
+  x.filter = 'blur(18px)';
+  x.fillStyle = 'rgba(255,248,236,.94)';
+  x.beginPath(); x.roundRect(194, 44, 196, 240, 60); x.fill();
+  x.fillStyle = 'rgba(179,208,255,.48)';
+  x.beginPath(); x.roundRect(714, 88, 112, 186, 46); x.fill();
+  x.fillStyle = 'rgba(255,176,113,.40)';
+  x.beginPath(); x.roundRect(508, 126, 84, 152, 36); x.fill();
+  x.fillStyle = 'rgba(255,255,255,.11)';
+  x.beginPath(); x.roundRect(14, 160, 86, 220, 40); x.fill();
+  x.restore();
+
+  x.fillStyle = 'rgba(0,0,0,.6)';
+  x.fillRect(0, 400, 1024, 112);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  pmrem.compileEquirectangularShader();
+  const env = pmrem.fromEquirectangular(tex).texture;
+  tex.dispose();
+  pmrem.dispose();
+  return env;
+}
+scene.environment = makeEnvironment();
+scene.environmentIntensity = 0.9;
+
+/* ---------- lights ---------- */
+const hemi = new THREE.HemisphereLight(0xdfe7ff, 0x1b120b, 0.55);
+scene.add(hemi);
+
+const key = new THREE.DirectionalLight(0xfff2df, 3.6);
+key.position.set(-8, 15, 16);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = -13;
+key.shadow.camera.right = 13;
+key.shadow.camera.top = 14;
+key.shadow.camera.bottom = -14;
+key.shadow.camera.near = 1;
+key.shadow.camera.far = 55;
+key.shadow.bias = -0.00015;
+key.shadow.normalBias = 0.02;
+key.shadow.radius = 5;
+key.target.position.set(0, 0, 0.5);
+scene.add(key, key.target);
+
+const fill = new THREE.DirectionalLight(0x93b5ff, 1.5);
+fill.position.set(13, 5, 11);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xffb178, 2.8);
+rim.position.set(4, 9, -15);
+scene.add(rim);
+
+const softTop = new THREE.DirectionalLight(0xffffff, 0.9);
+softTop.position.set(0, 18, 2);
+scene.add(softTop);
+
+const leftEdge = new THREE.DirectionalLight(0xcfe5ff, 1.5);
+leftEdge.position.set(-16, 2, 6);
+scene.add(leftEdge);
+
+const backFill = new THREE.DirectionalLight(0xa9c7e7, 1.4);
+backFill.position.set(13, 7, -14);
+scene.add(backFill);
+
+const screenSpill = new THREE.PointLight(0xffa36c, 12, 15, 2);
+screenSpill.position.set(0, 0.5, 3.2);
+scene.add(screenSpill);
+
+/* ---------- materials ---------- */
+const frameMat = new THREE.MeshPhysicalMaterial({
+  color: PALETTES.starWhite.frame, metalness: 1, roughness: PALETTES.starWhite.frameRough,
+  envMapIntensity: 1.55, clearcoat: 0.25, clearcoatRoughness: 0.24,
+});
+const backMat = new THREE.MeshPhysicalMaterial({
+  color: PALETTES.starWhite.back, metalness: 0.18, roughness: PALETTES.starWhite.backRough,
+  envMapIntensity: 1.25, clearcoat: 0.9, clearcoatRoughness: 0.2,
+  sheen: 0.3, sheenRoughness: 0.8, sheenColor: new THREE.Color(0xfff3e6),
+});
+const blackMat = new THREE.MeshPhysicalMaterial({
+  color: 0x030304, metalness: 0.1, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.08,
+  envMapIntensity: 0.85,
+});
+const hingeMat = new THREE.MeshPhysicalMaterial({
+  color: PALETTES.starWhite.hinge, metalness: 1, roughness: 0.28, envMapIntensity: 1.4,
+});
+const insetMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0a0a0b, metalness: 0.35, roughness: 0.32, envMapIntensity: 0.75,
+});
+const lensGlassMat = new THREE.MeshPhysicalMaterial({
+  color: 0x060a13, metalness: 0.72, roughness: 0.055, clearcoat: 1,
+  clearcoatRoughness: 0.04, envMapIntensity: 1.8,
+});
+const flashMat = new THREE.MeshPhysicalMaterial({
+  color: 0xfff0ce, emissive: 0xffe0aa, emissiveIntensity: 0.22, roughness: 0.32,
+  metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.12,
+});
+
+/* ---------- back glass surface ---------- */
+const backPanelTexture = (() => {
+  const [c, x] = canvas2d(512, 1024);
+  const g = x.createRadialGradient(220, 330, 40, 260, 470, 800);
+  g.addColorStop(0, '#fbf9f5');
+  g.addColorStop(.45, '#dcd7d0');
+  g.addColorStop(.78, '#a7a19a');
+  g.addColorStop(1, '#67625d');
+  x.fillStyle = g; x.fillRect(0, 0, 512, 1024);
+
+  x.save();
+  x.translate(256, 512); x.rotate(-.32);
+  const sheen = x.createLinearGradient(-190, 0, 190, 0);
+  sheen.addColorStop(0, 'rgba(255,255,255,0)');
+  sheen.addColorStop(.48, 'rgba(255,255,255,.22)');
+  sheen.addColorStop(.56, 'rgba(255,255,255,.02)');
+  sheen.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = sheen; x.fillRect(-320, -700, 640, 1400);
+  x.restore();
+
+  for (let i = 0; i < 4200; i++) {
+    x.fillStyle = `rgba(255,255,255,${Math.random() * 0.05})`;
+    x.fillRect(Math.random() * 512, Math.random() * 1024, 1, 1);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+})();
+
+const backPanelMat = new THREE.MeshPhysicalMaterial({
+  color: PALETTES.starWhite.back, metalness: 0.18, roughness: PALETTES.starWhite.backRough,
+  envMapIntensity: 1.25, clearcoat: 0.9, clearcoatRoughness: 0.2,
+  sheen: 0.3, sheenRoughness: 0.8, sheenColor: new THREE.Color(0xfff3e6),
+  map: backPanelTexture,
+});
+
+/* ---------- geometry helpers ---------- */
+function roundedRectShape(w, h, r) {
+  const x = -w / 2, y = -h / 2;
+  const s = new THREE.Shape();
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h);
+  s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+
+// a rectangular panel with independent corner radii at each X end.
+// The fold side can therefore stay dead straight while the outer corners round off.
+function panelShape(x0, x1, y0, y1, r0, r1) {
+  const s = new THREE.Shape();
+  s.moveTo(x0 + r0, y0);
+  s.lineTo(x1 - r1, y0);
+  if (r1 > 0) {
+    s.quadraticCurveTo(x1, y0, x1, y0 + r1);
+    s.lineTo(x1, y1 - r1);
+    s.quadraticCurveTo(x1, y1, x1 - r1, y1);
+  } else {
+    s.lineTo(x1, y1);
+  }
+  s.lineTo(x0 + r0, y1);
+  if (r0 > 0) {
+    s.quadraticCurveTo(x0, y1, x0, y1 - r0);
+    s.lineTo(x0, y0 + r0);
+    s.quadraticCurveTo(x0, y0, x0 + r0, y0);
+  } else {
+    s.lineTo(x0, y0);
+  }
+  s.closePath();
+  return s;
+}
+
+function shapeGeo(shape, segments = 24) {
+  const geo = new THREE.ShapeGeometry(shape, segments);
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox;
+  const spanX = bb.max.x - bb.min.x || 1;
+  const spanY = bb.max.y - bb.min.y || 1;
+  const pos = geo.attributes.position;
+  const uv = geo.attributes.uv;
+  for (let i = 0; i < uv.count; i++) {
+    uv.setXY(i, (pos.getX(i) - bb.min.x) / spanX, (pos.getY(i) - bb.min.y) / spanY);
+  }
+  uv.needsUpdate = true;
+  return geo;
+}
+
+function roundedGeo(w, h, r, segments = 24) {
+  return shapeGeo(roundedRectShape(w, h, r), segments);
+}
+
+function bodyGeoFor(side) {
+  const outer = DIM.radius, inner = 0.08;
+  const r0 = side === 'left' ? outer : inner;
+  const r1 = side === 'left' ? inner : outer;
+  const g = new THREE.ExtrudeGeometry(
+    panelShape(-DIM.w / 2, DIM.w / 2, -DIM.h / 2, DIM.h / 2, r0, r1),
+    {
+      depth: DIM.d - 0.32, bevelEnabled: true, bevelThickness: 0.16, bevelSize: 0.13,
+      bevelSegments: 8, steps: 1, curveSegments: 36,
+    }
+  );
+  g.center();
+  return g;
+}
+
+function frontGlassGeoFor(side) {
+  const outerInset = 0.18;
+  const innerInset = 0.16;
+  const x0 = -DIM.w / 2 + (side === 'left' ? outerInset : innerInset);
+  const x1 = DIM.w / 2 - (side === 'left' ? innerInset : outerInset);
+  const y0 = -DIM.h / 2 + outerInset;
+  const y1 = DIM.h / 2 - outerInset;
+  const cornerR = DIM.radius - 0.16;
+  const r0 = side === 'left' ? cornerR : 0.04;
+  const r1 = side === 'left' ? 0.04 : cornerR;
+  return shapeGeo(panelShape(x0, x1, y0, y1, r0, r1));
+}
+
+function screenGeoFor(side) {
+  const e = DIM.screenInset;
+  const x0 = side === 'left' ? -DIM.w / 2 + e : -HALF_X;
+  const x1 = side === 'left' ? HALF_X : DIM.w / 2 - e;
+  const y0 = -DIM.h / 2 + e;
+  const y1 = DIM.h / 2 - e;
+  const r0 = side === 'left' ? DIM.screenRadius : 0;
+  const r1 = side === 'left' ? 0 : DIM.screenRadius;
+  return shapeGeo(panelShape(x0, x1, y0, y1, r0, r1));
+}
+
+const bodyGeos = { left: bodyGeoFor('left'), right: bodyGeoFor('right') };
+const frontGlassGeos = { left: frontGlassGeoFor('left'), right: frontGlassGeoFor('right') };
+const screenGeos = { left: screenGeoFor('left'), right: screenGeoFor('right') };
+const backGlassGeo = roundedGeo(DIM.w - 0.36, DIM.h - 0.36, DIM.radius - 0.16);
+const coverGeo = roundedGeo(COVER_W, COVER_H, DIM.screenRadius);
+const coverBezelGeo = roundedGeo(DIM.w - 0.36, DIM.h - 0.36, DIM.radius - 0.16);
+
+/* ---------- canvas painting ---------- */
+const FONT = '"Helvetica Neue","SF Pro Display",-apple-system,BlinkMacSystemFont,Arial,sans-serif';
+const MONO = '"SF Mono","Helvetica Neue",Menlo,monospace';
+
+function canvas2d(w, h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return [c, c.getContext('2d')];
+}
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawText(ctx, str, x, y, size, weight = 500, color = 'rgba(255,255,255,.94)', align = 'left', tracking = 0) {
+  ctx.save();
+  ctx.font = `${weight} ${size}px ${FONT}`;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'alphabetic';
+  if (tracking) ctx.letterSpacing = `${tracking}px`;
+  ctx.fillText(str, x, y);
+  ctx.restore();
+}
+
+const wallpaperCache = new Map();
+function getWallpaper(p, key) {
+  if (wallpaperCache.has(key)) return wallpaperCache.get(key);
+  const [c, x] = canvas2d(MASTER_W, MASTER_H);
+  const g = x.createLinearGradient(0, 0, MASTER_W, MASTER_H);
+  g.addColorStop(0, p.wall.base[0]);
+  g.addColorStop(1, p.wall.base[1]);
+  x.fillStyle = g; x.fillRect(0, 0, MASTER_W, MASTER_H);
+
+  x.globalCompositeOperation = 'lighter';
+  for (const [ox, oy, orad, col] of p.wall.orbs) {
+    const cx = ox * MASTER_W, cy = oy * MASTER_H, rad = orad * MASTER_W;
+    const rg = x.createRadialGradient(cx, cy, 0, cx, cy, rad);
+    rg.addColorStop(0, col);
+    rg.addColorStop(0.55, col.replace(/[\d.]+\)$/, '0.18)'));
+    rg.addColorStop(1, col.replace(/[\d.]+\)$/, '0)'));
+    x.fillStyle = rg;
+    x.fillRect(cx - rad, cy - rad, rad * 2, rad * 2);
+  }
+
+  // broad aurora ribbons wrapping around the fold
+  x.save();
+  x.globalCompositeOperation = 'screen';
+  x.filter = 'blur(34px)';
+  const rgA = x.createLinearGradient(0, 900, MASTER_W, 280);
+  rgA.addColorStop(0, p.wall.ribbonA[0]); rgA.addColorStop(1, p.wall.ribbonA[1]);
+  x.strokeStyle = rgA;
+  x.lineCap = 'round';
+  x.lineWidth = 230;
+  x.globalAlpha = 0.56;
+  x.beginPath();
+  x.moveTo(-180, 1050);
+  x.bezierCurveTo(280, 410, 1080, 1160, 1720, 270);
+  x.stroke();
+
+  const rgB = x.createLinearGradient(100, 1260, 1330, 200);
+  rgB.addColorStop(0, p.wall.ribbonB[0]); rgB.addColorStop(1, p.wall.ribbonB[1]);
+  x.strokeStyle = rgB;
+  x.lineWidth = 88;
+  x.globalAlpha = 0.48;
+  x.beginPath();
+  x.moveTo(-100, 580);
+  x.bezierCurveTo(430, 1120, 940, 190, 1660, 800);
+  x.stroke();
+  x.restore();
+
+  // crisp filaments
+  x.save();
+  x.globalCompositeOperation = 'screen';
+  x.lineCap = 'round';
+  const fil = x.createLinearGradient(0, 1000, MASTER_W, 330);
+  fil.addColorStop(0, 'rgba(255,255,255,0)');
+  fil.addColorStop(0.36, `rgba(${p.wall.spark},.36)`);
+  fil.addColorStop(0.68, `rgba(${p.wall.spark},.12)`);
+  fil.addColorStop(1, 'rgba(255,255,255,0)');
+  x.strokeStyle = fil;
+  x.lineWidth = 2.2;
+  x.beginPath();
+  x.moveTo(-100, 1000);
+  x.bezierCurveTo(320, 440, 1000, 1120, 1660, 320);
+  x.stroke();
+  x.lineWidth = 1;
+  x.globalAlpha = 0.6;
+  x.beginPath();
+  x.moveTo(-100, 1080);
+  x.bezierCurveTo(350, 520, 1040, 1190, 1660, 400);
+  x.stroke();
+  x.restore();
+
+  // vignette + legibility gradients
+  const vg = x.createRadialGradient(768, 660, 280, 768, 720, 930);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(0.72, 'rgba(0,0,0,.15)');
+  vg.addColorStop(1, 'rgba(0,0,0,.65)');
+  x.fillStyle = vg; x.fillRect(0, 0, MASTER_W, MASTER_H);
+
+  // fine grain
+  x.globalCompositeOperation = 'soft-light';
+  for (let i = 0; i < 9000; i++) {
+    const a = Math.random() * 0.09;
+    x.fillStyle = `rgba(255,255,255,${a})`;
+    x.fillRect(Math.random() * MASTER_W, Math.random() * MASTER_H, 1.2, 1.2);
+  }
+  x.globalCompositeOperation = 'source-over';
+
+  wallpaperCache.set(key, c);
+  return c;
+}
+
+function drawStatus(ctx, p, width, y = 84, time = '9:41') {
+  ctx.save();
+  ctx.globalAlpha = 0.92;
+  drawText(ctx, time, 42, y, 27, 600, 'rgba(255,255,255,.92)');
+
+  const right = width - 42;
+  // signal
+  ctx.fillStyle = 'rgba(255,255,255,.9)';
+  for (let i = 0; i < 4; i++) {
+    const h = 5 + i * 3;
+    ctx.beginPath(); ctx.roundRect(right - 98 + i * 5, y - h, 3, h, 1); ctx.fill();
+  }
+  // wifi
+  ctx.strokeStyle = 'rgba(255,255,255,.9)';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.arc(right - 53, y - 1, 5 + i * 4.5, -2.35, -0.8);
+    ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(right - 53, y - 1, 1.5, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill();
+  // battery
+  const bx = right - 28, by = y - 12;
+  ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.roundRect(bx, by, 24, 12, 3.6); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.92)';
+  ctx.beginPath(); ctx.roundRect(bx + 2.4, by + 2.3, 16.5, 7.4, 1.8); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.beginPath(); ctx.roundRect(bx + 26, by + 4, 2.3, 4, 1); ctx.fill();
+  ctx.restore();
+}
+
+function drawLockGlyph(ctx, x, y, s = 1) {
+  ctx.save();
+  ctx.translate(x, y); ctx.scale(s, s);
+  ctx.strokeStyle = 'rgba(255,255,255,.72)'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(0, -8, 7, Math.PI, 0); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(-12, -3, 24, 19, 5); ctx.stroke();
+  ctx.restore();
+}
+
+function drawQuickButtons(ctx, p, width, y, cover = false) {
+  const r = 39;
+  const positions = [width / 2 - (cover ? 116 : 190), width / 2 + (cover ? 116 : 190)];
+  for (let i = 0; i < 2; i++) {
+    const cx = positions[i];
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,.13)';
+    ctx.strokeStyle = 'rgba(255,255,255,.14)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.translate(cx, y);
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+    if (i === 0) {
+      // flashlight
+      ctx.beginPath(); ctx.roundRect(-8, -12, 16, 10, 3); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-5, -2); ctx.lineTo(-8, 14); ctx.lineTo(8, 14); ctx.lineTo(5, -2);
+      ctx.stroke();
+    } else {
+      // camera
+      ctx.beginPath(); ctx.roundRect(-16, -11, 32, 23, 6); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(10, -5, 1.8, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawHomeBar(ctx, width, y = 1488) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,.62)';
+  ctx.beginPath(); ctx.roundRect(width / 2 - 96, y, 192, 6, 3); ctx.fill();
+  ctx.restore();
+}
+
+function glassCard(ctx, x, y, w, h, r = 30) {
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.clip();
+  const g = ctx.createLinearGradient(x, y, x, y + h);
+  g.addColorStop(0, 'rgba(255,255,255,.16)');
+  g.addColorStop(0.45, 'rgba(255,255,255,.075)');
+  g.addColorStop(1, 'rgba(255,255,255,.05)');
+  ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+  ctx.restore();
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.roundRect(x + 0.5, y + 0.5, w - 1, h - 1, r); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.1)';
+  ctx.beginPath(); ctx.moveTo(x + r + 8, y + 1); ctx.lineTo(x + w - r - 8, y + 1); ctx.stroke();
+  ctx.restore();
+}
+
+function drawSun(ctx, cx, cy, r) {
+  const halo = ctx.createRadialGradient(cx, cy, r * .5, cx, cy, r * 1.95);
+  halo.addColorStop(0, 'rgba(255,190,104,.34)');
+  halo.addColorStop(1, 'rgba(255,170,84,0)');
+  ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(cx, cy, r * 2, 0, Math.PI * 2); ctx.fill();
+  const disc = ctx.createRadialGradient(cx - r * .22, cy - r * .25, r * .1, cx, cy, r);
+  disc.addColorStop(0, '#fff8e7');
+  disc.addColorStop(.65, '#ffd58b');
+  disc.addColorStop(1, '#ffb85c');
+  ctx.fillStyle = disc; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,231,183,.85)'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+  for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * (r + 10), cy + Math.sin(a) * (r + 10));
+    ctx.lineTo(cx + Math.cos(a) * (r + 18), cy + Math.sin(a) * (r + 18));
+    ctx.stroke();
+  }
+}
+
+function drawDockIcon(ctx, p, cx, cy, size, i) {
+  const x0 = cx - size / 2, y0 = cy - size / 2;
+  const tones = [
+    [p.wall.ribbonB[0], '#15243a'],
+    [p.wall.ribbonA[0], '#3a1c2d'],
+    [p.wall.ribbonB[1], '#4a1b3f'],
+    ['#79d8b1', '#14372b'],
+    ['#9aa3ad', '#15171b'],
+    [p.wall.ribbonA[1], '#2b1f45'],
+  ];
+  const [a, b] = tones[i % tones.length];
+  const g = ctx.createLinearGradient(x0, y0, x0 + size, y0 + size);
+  g.addColorStop(0, a); g.addColorStop(1, b);
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(x0, y0, size, size, size * .24);
+  ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.translate(cx, cy);
+  ctx.strokeStyle = 'rgba(255,255,255,.88)';
+  ctx.fillStyle = 'rgba(255,255,255,.88)';
+  ctx.lineWidth = size * .035;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const r = size * .23;
+
+  if (i === 0) {
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-r * .48, r * .48); ctx.lineTo(r * .56, -r * .56); ctx.lineTo(0, 0); ctx.closePath();
+    ctx.stroke();
+  } else if (i === 1) {
+    ctx.beginPath(); ctx.roundRect(-r, -r * .8, r * 2, r * 1.6, 4); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-r * .45, -r * .28, r * .2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-r * .8, r * .62); ctx.lineTo(-r * .08, -r * .13); ctx.lineTo(r * .76, r * .62); ctx.stroke();
+  } else if (i === 2) {
+    ctx.beginPath();
+    ctx.moveTo(r * .58, -r * .78); ctx.lineTo(r * .58, r * .5);
+    ctx.moveTo(r * .58, -r * .78); ctx.lineTo(r * .1, -r * .6);
+    ctx.stroke();
+    ctx.beginPath(); ctx.arc(r * .18, r * .5, r * .32, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-r * .18, -r * .3); ctx.lineTo(-r * .18, r * .68);
+    ctx.stroke();
+    ctx.beginPath(); ctx.arc(-r * .48, r * .68, r * .3, 0, Math.PI * 2); ctx.fill();
+  } else if (i === 3) {
+    ctx.beginPath(); ctx.roundRect(-r * .92, -r * .65, r * 1.84, r * 1.2, r * .4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-r * .28, r * .55); ctx.lineTo(-r * .56, r * .94); ctx.lineTo(-r * .04, r * .55); ctx.fill();
+    for (let k = -1; k <= 1; k++) { ctx.beginPath(); ctx.arc(k * r * .4, -r * .05, r * .075, 0, Math.PI * 2); ctx.fill(); }
+  } else if (i === 4) {
+    ctx.beginPath(); ctx.roundRect(-r, -r * .7, r * 2, r * 1.4, r * .24); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, r * .42, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(r * .6, -r * .35, r * .08, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.arc(0, 0, r * .46, 0, Math.PI * 2); ctx.stroke();
+    for (let k = 0; k < 8; k++) {
+      const ang = k * Math.PI / 4;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(ang) * r * .66, Math.sin(ang) * r * .66);
+      ctx.lineTo(Math.cos(ang) * r * .98, Math.sin(ang) * r * .98);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawDock(ctx, p, cx, y, width = 736, height = 132) {
+  const x0 = cx - width / 2;
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(x0, y, width, height, height * .34); ctx.clip();
+  const g = ctx.createLinearGradient(0, y, 0, y + height);
+  g.addColorStop(0, 'rgba(255,255,255,.17)');
+  g.addColorStop(.55, 'rgba(255,255,255,.085)');
+  g.addColorStop(1, 'rgba(255,255,255,.06)');
+  ctx.fillStyle = g; ctx.fillRect(x0, y, width, height);
+  ctx.restore();
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.roundRect(x0 + .5, y + .5, width - 1, height - 1, height * .34); ctx.stroke();
+  ctx.restore();
+
+  const n = 6, icon = 64, pad = 34;
+  const inner = width - pad * 2;
+  for (let i = 0; i < n; i++) {
+    const icx = x0 + pad + inner * ((i + .5) / n);
+    drawDockIcon(ctx, p, icx, y + height / 2, icon, i);
+  }
+}
+
+function drawInnerCanvas(p, textureKey) {
+  const master = getWallpaper(p, textureKey);
+  const [c, x] = canvas2d(MASTER_W, MASTER_H);
+  x.drawImage(master, 0, 0);
+
+  let g = x.createLinearGradient(0, 0, 0, 170);
+  g.addColorStop(0, 'rgba(0,0,0,.36)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = g; x.fillRect(0, 0, MASTER_W, 180);
+  g = x.createLinearGradient(0, 760, 0, MASTER_H);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.52)');
+  x.fillStyle = g; x.fillRect(0, 760, MASTER_W, 320);
+
+  drawStatus(x, p, MASTER_W, 64);
+
+  // clock cluster on the left page
+  drawLockGlyph(x, 384, 166, 0.9);
+  drawText(x, 'TUESDAY, JUNE 9', 384, 238, 24, 600, 'rgba(255,255,255,.66)', 'center', 3);
+  x.save();
+  x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 30; x.shadowOffsetY = 10;
+  x.font = `560 170px ${FONT}`;
+  x.fillStyle = 'rgba(255,255,255,.95)';
+  x.textAlign = 'center';
+  x.fillText('9:41', 384, 430);
+  x.restore();
+  drawText(x, '24°  ·  Clear in Shanghai', 384, 500, 24, 500, 'rgba(255,255,255,.72)', 'center', 0.4);
+
+  // memories photo card, left lower
+  glassCard(x, 44, 540, 680, 270, 36);
+  drawText(x, 'MEMORIES', 76, 580, 18, 600, 'rgba(255,255,255,.48)', 'left', 2.8);
+  drawText(x, 'JUNE 2025', 692, 580, 16, 600, 'rgba(255,255,255,.34)', 'right', 2.2);
+  const px = 68, py = 602, pw = 632, ph = 124;
+  x.save();
+  rr(x, px, py, pw, ph, 20); x.clip();
+  const sky = x.createLinearGradient(px, py, px, py + ph);
+  sky.addColorStop(0, '#ffd39a');
+  sky.addColorStop(.42, '#e68673');
+  sky.addColorStop(.72, '#6b3b65');
+  sky.addColorStop(1, '#24182f');
+  x.fillStyle = sky; x.fillRect(px, py, pw, ph);
+  const sunGlow = x.createRadialGradient(px + pw * .72, py + ph * .3, 2, px + pw * .72, py + ph * .3, 70);
+  sunGlow.addColorStop(0, 'rgba(255,246,209,.95)');
+  sunGlow.addColorStop(.32, 'rgba(255,204,130,.42)');
+  sunGlow.addColorStop(1, 'rgba(255,180,110,0)');
+  x.fillStyle = sunGlow; x.fillRect(px, py, pw, ph);
+  x.fillStyle = 'rgba(255,247,220,.9)';
+  x.beginPath(); x.arc(px + pw * .72, py + ph * .3, 11, 0, Math.PI * 2); x.fill();
+  x.fillStyle = 'rgba(48,27,53,.62)';
+  x.beginPath();
+  x.moveTo(px, py + ph * .82);
+  x.bezierCurveTo(px + pw * .18, py + ph * .57, px + pw * .34, py + ph * .9, px + pw * .53, py + ph * .67);
+  x.bezierCurveTo(px + pw * .7, py + ph * .48, px + pw * .84, py + ph * .8, px + pw, py + ph * .6);
+  x.lineTo(px + pw, py + ph); x.lineTo(px, py + ph); x.closePath(); x.fill();
+  x.fillStyle = 'rgba(24,13,29,.84)';
+  x.beginPath();
+  x.moveTo(px, py + ph * .95);
+  x.bezierCurveTo(px + pw * .22, py + ph * .8, px + pw * .4, py + ph, px + pw * .6, py + ph * .9);
+  x.bezierCurveTo(px + pw * .78, py + ph * .82, px + pw * .88, py + ph * .94, px + pw, py + ph * .88);
+  x.lineTo(px + pw, py + ph); x.lineTo(px, py + ph); x.closePath(); x.fill();
+  x.restore();
+  drawText(x, 'Golden hour', 76, 766, 26, 500, 'rgba(255,255,255,.9)');
+  drawText(x, 'Camera  ·  48 MP ProRAW', 76, 794, 18, 500, 'rgba(255,255,255,.48)');
+
+  // weather — right upper
+  glassCard(x, 840, 100, 652, 240, 36);
+  drawText(x, 'SHANGHAI', 876, 140, 18, 600, 'rgba(255,255,255,.5)', 'left', 2.8);
+  x.fillStyle = 'rgba(255,255,255,.94)';
+  x.font = `500 108px ${FONT}`; x.fillText('24°', 868, 260);
+  drawText(x, 'Clear skies', 874, 298, 24, 500, 'rgba(255,255,255,.68)');
+  drawSun(x, 1330, 196, 38);
+  drawText(x, 'H 28°   L 19°', 1456, 298, 18, 500, 'rgba(255,255,255,.52)', 'right');
+
+  // calendar
+  glassCard(x, 840, 360, 306, 270, 32);
+  drawText(x, 'TUESDAY', 866, 400, 16, 600, 'rgba(255,255,255,.5)', 'left', 2.2);
+  x.fillStyle = 'rgba(255,255,255,.94)';
+  x.font = `500 96px ${FONT}`; x.fillText('9', 862, 500);
+  drawText(x, 'JUNE', 864, 532, 16, 600, 'rgba(255,255,255,.55)', 'left', 2.3);
+  x.fillStyle = p.wall.uiAccent; x.globalAlpha = .9;
+  x.beginPath(); x.arc(1118, 394, 5, 0, Math.PI * 2); x.fill(); x.globalAlpha = 1;
+  drawText(x, 'Design review', 864, 590, 20, 500, 'rgba(255,255,255,.72)');
+
+  // now playing
+  glassCard(x, 1166, 360, 326, 270, 32);
+  drawText(x, 'NOW PLAYING', 1192, 400, 16, 600, 'rgba(255,255,255,.5)', 'left', 2.2);
+  const art = x.createLinearGradient(1192, 428, 1292, 528);
+  art.addColorStop(0, p.wall.ribbonA[0]); art.addColorStop(1, p.wall.ribbonB[0]);
+  x.save();
+  rr(x, 1192, 428, 100, 100, 21); x.clip();
+  x.fillStyle = art; x.fillRect(1192, 428, 100, 100);
+  x.globalAlpha = .55;
+  x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 3.5;
+  x.beginPath(); x.arc(1242, 478, 20, 0, Math.PI * 2); x.stroke();
+  x.beginPath(); x.arc(1242, 478, 8, 0, Math.PI * 2); x.fill();
+  x.restore();
+  drawText(x, 'Duotone', 1310, 486, 23, 500, 'rgba(255,255,255,.86)');
+  drawText(x, 'Pony Sounds', 1310, 516, 17, 500, 'rgba(255,255,255,.5)');
+  x.strokeStyle = 'rgba(255,255,255,.16)'; x.lineWidth = 3; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(1192, 596); x.lineTo(1466, 596); x.stroke();
+  x.strokeStyle = 'rgba(255,255,255,.75)';
+  x.beginPath(); x.moveTo(1192, 596); x.lineTo(1270, 596); x.stroke();
+
+  // notification
+  glassCard(x, 840, 660, 652, 140, 32);
+  const av = x.createRadialGradient(884, 732, 3, 884, 732, 30);
+  av.addColorStop(0, '#ffd7a8'); av.addColorStop(1, '#9e4d2b');
+  x.fillStyle = av; x.beginPath(); x.arc(884, 732, 28, 0, Math.PI * 2); x.fill();
+  x.fillStyle = 'rgba(30,15,8,.8)';
+  x.font = `600 22px ${FONT}`; x.textAlign = 'center'; x.fillText('D', 884, 740);
+  x.textAlign = 'left';
+  drawText(x, 'MESSAGES', 932, 700, 16, 600, 'rgba(255,255,255,.48)', 'left', 2.1);
+  drawText(x, 'Hardware team', 932, 738, 24, 500, 'rgba(255,255,255,.9)');
+  drawText(x, 'The flexible display sample just arrived.', 932, 768, 19, 400, 'rgba(255,255,255,.6)');
+  drawText(x, 'now', 1456, 700, 17, 500, 'rgba(255,255,255,.4)', 'right');
+
+  // one dock spanning the fold
+  drawDock(x, p, 768, 850, 736, 132);
+  drawHomeBar(x, MASTER_W, 1012);
+  return c;
+}
+
+function drawCoverCanvas(p, textureKey) {
+  const master = getWallpaper(p, textureKey);
+  const [c, x] = canvas2d(COVER_TEX_W, COVER_TEX_H);
+  const scale = COVER_TEX_H / MASTER_H;
+  const sw = COVER_TEX_W / scale;
+  const sx = (MASTER_W - sw) / 2;
+  x.drawImage(master, sx, 0, sw, MASTER_H, 0, 0, COVER_TEX_W, COVER_TEX_H);
+
+  let g = x.createLinearGradient(0, 0, 0, 220);
+  g.addColorStop(0, 'rgba(0,0,0,.44)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = g; x.fillRect(0, 0, COVER_TEX_W, 230);
+  g = x.createLinearGradient(0, 720, 0, COVER_TEX_H);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.55)');
+  x.fillStyle = g; x.fillRect(0, 720, COVER_TEX_W, COVER_TEX_H - 720);
+
+  drawStatus(x, p, COVER_TEX_W, 64);
+
+  // Dynamic Island on the outer display
+  x.save();
+  x.fillStyle = 'rgba(0,0,0,.92)';
+  x.beginPath(); x.roundRect(384 - 66, 30, 132, 32, 16); x.fill();
+  x.fillStyle = 'rgba(24,35,50,.95)';
+  x.beginPath(); x.arc(384 + 42, 46, 6, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = 'rgba(86,128,166,.4)'; x.lineWidth = 1;
+  x.beginPath(); x.arc(384 + 42, 46, 7, 0, Math.PI * 2); x.stroke();
+  x.restore();
+
+  drawLockGlyph(x, 384, 180, 0.95);
+  drawText(x, 'TUESDAY, JUNE 9', 384, 255, 22, 600, 'rgba(255,255,255,.66)', 'center', 2.9);
+  x.save();
+  x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 30; x.shadowOffsetY = 10;
+  x.font = `560 168px ${FONT}`;
+  x.fillStyle = 'rgba(255,255,255,.95)';
+  x.textAlign = 'center';
+  x.fillText('9:41', 384, 442);
+  x.restore();
+  drawText(x, '24°  ·  Clear in Shanghai', 384, 512, 24, 500, 'rgba(255,255,255,.72)', 'center', 0.4);
+
+  glassCard(x, 40, 570, 688, 190, 32);
+  drawText(x, 'NOW PLAYING', 64, 610, 15, 600, 'rgba(255,255,255,.5)', 'left', 2.1);
+  const art = x.createLinearGradient(64, 630, 164, 730);
+  art.addColorStop(0, p.wall.ribbonA[0]); art.addColorStop(1, p.wall.ribbonB[0]);
+  x.save();
+  rr(x, 64, 630, 100, 100, 21); x.clip();
+  x.fillStyle = art; x.fillRect(64, 630, 100, 100);
+  x.globalAlpha = .55; x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 3.5;
+  x.beginPath(); x.arc(114, 680, 20, 0, Math.PI * 2); x.stroke();
+  x.beginPath(); x.arc(114, 680, 8, 0, Math.PI * 2); x.fill();
+  x.restore();
+  drawText(x, 'Duotone', 188, 678, 23, 500, 'rgba(255,255,255,.88)');
+  drawText(x, 'Pony Sounds', 188, 708, 17, 500, 'rgba(255,255,255,.5)');
+  x.strokeStyle = 'rgba(255,255,255,.16)'; x.lineWidth = 3; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(64, 746); x.lineTo(380, 746); x.stroke();
+  x.strokeStyle = 'rgba(255,255,255,.7)';
+  x.beginPath(); x.moveTo(64, 746); x.lineTo(176, 746); x.stroke();
+  drawSun(x, 660, 650, 30);
+
+  glassCard(x, 40, 790, 688, 130, 30);
+  drawText(x, 'MESSAGES', 64, 826, 15, 600, 'rgba(255,255,255,.48)', 'left', 2.1);
+  drawText(x, 'Hardware team', 64, 862, 23, 500, 'rgba(255,255,255,.9)');
+  drawText(x, 'The flexible display sample just arrived.', 64, 892, 18, 400, 'rgba(255,255,255,.6)');
+  drawText(x, 'now', 700, 826, 16, 500, 'rgba(255,255,255,.4)', 'right');
+
+  drawQuickButtons(x, p, COVER_TEX_W, 1010, true);
+  drawHomeBar(x, COVER_TEX_W, 1058);
+  return c;
+}
+
+const textureCache = new Map();
+function buildTextures(key) {
+  if (textureCache.has(key)) return textureCache.get(key);
+  const p = PALETTES[key];
+  const inner = drawInnerCanvas(p, key);
+
+  const make = (cnv) => {
+    const t = new THREE.CanvasTexture(cnv);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    t.minFilter = THREE.LinearMipmapLinearFilter;
+    t.magFilter = THREE.LinearFilter;
+    t.needsUpdate = true;
+    return t;
+  };
+  const half = (sx) => {
+    const [cnv, cx] = canvas2d(HALF_TEX_W, HALF_TEX_H);
+    cx.drawImage(inner, sx, 0, HALF_TEX_W, HALF_TEX_H, 0, 0, HALF_TEX_W, HALF_TEX_H);
+    return cnv;
+  };
+  const set = {
+    left: make(half(0)),
+    right: make(half(768)),
+    cover: make(drawCoverCanvas(p, key)),
+  };
+  textureCache.set(key, set);
+  return set;
+}
+
+
+// a single glare layer per side of the flexible display
+function makeGlareCanvas(w, h) {
+  const [c, x] = canvas2d(w, h);
+  x.clearRect(0, 0, w, h);
+  x.save();
+  x.translate(w / 2, h / 2);
+  x.rotate(-0.34);
+  const band = 1800;
+  const g = x.createLinearGradient(-band, 0, band, 0);
+  g.addColorStop(0, 'rgba(255,255,255,0)');
+  g.addColorStop(.44, 'rgba(255,255,255,0)');
+  g.addColorStop(.485, 'rgba(255,255,255,.14)');
+  g.addColorStop(.525, 'rgba(255,255,255,.045)');
+  g.addColorStop(.58, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(-band, -h, band * 2, h * 2);
+  const r = x.createRadialGradient(-w * .26, -h * .3, 0, -w * .26, -h * .3, w * .55);
+  r.addColorStop(0, 'rgba(255,255,255,.12)');
+  r.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = r; x.fillRect(-w, -h, w * 2, h * 2);
+  x.restore();
+  return c;
+}
+
+const glareMaster = makeGlareCanvas(MASTER_W, MASTER_H);
+const glareCanvasLeft = (() => {
+  const [c, x] = canvas2d(HALF_TEX_W, HALF_TEX_H);
+  x.drawImage(glareMaster, 0, 0, HALF_TEX_W, HALF_TEX_H, 0, 0, HALF_TEX_W, HALF_TEX_H);
+  return c;
+})();
+const glareCanvasRight = (() => {
+  const [c, x] = canvas2d(HALF_TEX_W, HALF_TEX_H);
+  x.drawImage(glareMaster, HALF_TEX_W, 0, HALF_TEX_W, HALF_TEX_H, 0, 0, HALF_TEX_W, HALF_TEX_H);
+  return c;
+})();
+const glareCanvasCover = makeGlareCanvas(COVER_TEX_W, COVER_TEX_H);
+
+function glareMaterial(canvas) {
+  const t = new THREE.CanvasTexture(canvas);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return new THREE.MeshBasicMaterial({
+    map: t, transparent: true, opacity: 0.72, depthWrite: false,
+    blending: THREE.AdditiveBlending, toneMapped: false, side: THREE.DoubleSide,
+  });
+}
+const glareMats = {
+  left: glareMaterial(glareCanvasLeft),
+  right: glareMaterial(glareCanvasRight),
+  cover: glareMaterial(glareCanvasCover),
+};
+
+/* ---------- lens art ---------- */
+const lensTexture = (() => {
+  const [c, x] = canvas2d(256, 256);
+  const bg = x.createRadialGradient(128, 128, 8, 128, 128, 127);
+  bg.addColorStop(0, '#050a10');
+  bg.addColorStop(.55, '#0b1827');
+  bg.addColorStop(.84, '#060a12');
+  bg.addColorStop(1, '#1b2d3c');
+  x.fillStyle = bg; x.beginPath(); x.arc(128, 128, 127, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = 'rgba(97,123,153,.28)'; x.lineWidth = 2.5;
+  x.beginPath(); x.arc(128, 128, 118, 0, Math.PI * 2); x.stroke();
+  x.strokeStyle = 'rgba(39,58,85,.68)'; x.lineWidth = 7;
+  x.beginPath(); x.arc(128, 128, 101, 0, Math.PI * 2); x.stroke();
+  const gl = x.createRadialGradient(96, 84, 0, 96, 84, 50);
+  gl.addColorStop(0, 'rgba(183,218,248,.34)');
+  gl.addColorStop(.35, 'rgba(80,130,192,.1)');
+  gl.addColorStop(1, 'rgba(80,130,192,0)');
+  x.fillStyle = gl; x.beginPath(); x.arc(128, 128, 110, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = 'rgba(206,232,250,.42)'; x.lineWidth = 2.2; x.lineCap = 'round';
+  x.beginPath(); x.arc(128, 128, 86, -2.5, -1.45); x.stroke();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+const lensArtMat = new THREE.MeshBasicMaterial({
+  map: lensTexture, transparent: true, depthWrite: false, toneMapped: false,
+  side: THREE.DoubleSide,
+});
+
+/* ---------- back wordmark ---------- */
+function makeMarkTexture() {
+  const [c, x] = canvas2d(640, 640);
+  x.clearRect(0, 0, 640, 640);
+  const apple = new Path2D('M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z');
+  x.save();
+  x.translate(132, 76);
+  x.scale(0.98, 0.98);
+  x.filter = 'blur(9px)';
+  x.fillStyle = 'rgba(0,0,0,.28)';
+  x.translate(0, 9);
+  x.fill(apple);
+  x.restore();
+
+  x.save();
+  x.translate(132, 68);
+  x.scale(0.98, 0.98);
+  const g = x.createLinearGradient(0, 0, 0, 512);
+  g.addColorStop(0, 'rgba(255,255,255,.95)');
+  g.addColorStop(.5, 'rgba(236,232,224,.9)');
+  g.addColorStop(1, 'rgba(166,160,151,.78)');
+  x.fillStyle = g;
+  x.fill(apple);
+  x.restore();
+  return c;
+}
+
+const markTexture = (() => {
+  const t = new THREE.CanvasTexture(makeMarkTexture());
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+})();
+const markMat = new THREE.MeshBasicMaterial({
+  map: markTexture, transparent: true, depthWrite: false, toneMapped: true,
+  opacity: 0.58,
+});
+
+
+/* ---------- device construction ---------- */
+const screenMats = {
+  left: new THREE.MeshBasicMaterial({ map: null, toneMapped: false }),
+  right: new THREE.MeshBasicMaterial({ map: null, toneMapped: false }),
+  cover: new THREE.MeshBasicMaterial({ map: null, toneMapped: false }),
+};
+
+function addSideButton(parent, side, y, length = 0.8, isCameraControl = false) {
+  const x = side === 'left' ? -DIM.w / 2 : DIM.w / 2;
+  const g = new THREE.CapsuleGeometry(0.062, length, 5, 10);
+  const m = new THREE.Mesh(g, isCameraControl ? insetMat : frameMat);
+  m.scale.z = 0.64;
+  m.position.set(x + (side === 'left' ? -0.006 : 0.006), y, 0.01);
+  m.castShadow = true;
+  parent.add(m);
+  if (isCameraControl) {
+    const inset = new THREE.Mesh(new THREE.BoxGeometry(0.012, length * .8, 0.025), blackMat);
+    inset.position.set(x + (side === 'left' ? -0.05 : 0.05), y, -0.075);
+    parent.add(inset);
+  }
+}
+
+function addBottomDetails(parent, side) {
+  if (side !== 'right') return;
+  const y = -DIM.h / 2 + 0.035;
+  const port = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.05, 0.2), blackMat);
+  port.position.set(0, y, 0);
+  parent.add(port);
+  for (let i = 0; i < 5; i++) {
+    for (const s of [-1, 1]) {
+      const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.04, 8), insetMat);
+      hole.position.set(s * (0.82 + i * 0.18), y - 0.01, 0.02);
+      parent.add(hole);
+    }
+  }
+}
+
+function addCamera(parent) {
+  const group = new THREE.Group();
+  group.position.set(1.25, 4.28, -DIM.d / 2);
+  parent.add(group);
+
+  // soft ambient occlusion halo under the raised horizontal camera island
+  const [sc, sx] = canvas2d(256, 256);
+  sx.filter = 'blur(16px)';
+  sx.fillStyle = 'rgba(0,0,0,.8)';
+  rr(sx, 22, 88, 212, 80, 40); sx.fill();
+  sx.filter = 'none';
+  const shadowTex = new THREE.CanvasTexture(sc);
+  shadowTex.colorSpace = THREE.SRGBColorSpace;
+  const shadowPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.75, 2.95),
+    new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: .55, depthWrite: false, side: THREE.DoubleSide })
+  );
+  shadowPlane.rotation.y = Math.PI;
+  shadowPlane.position.z = -0.014;
+  group.add(shadowPlane);
+
+  const plateauGeo = new THREE.ExtrudeGeometry(roundedRectShape(5.2, 2.4, 1.18), {
+    depth: 0.14, bevelEnabled: true, bevelThickness: 0.065, bevelSize: 0.075,
+    bevelSegments: 5, curveSegments: 30,
+  });
+  plateauGeo.center();
+  const plateau = new THREE.Mesh(plateauGeo, backMat);
+  plateau.name = 'DualCameraIsland';
+  plateau.position.z = -0.12;
+  plateau.castShadow = true;
+  group.add(plateau);
+
+  const ringGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.1, 40);
+  const barrelGeo = new THREE.CylinderGeometry(0.61, 0.61, 0.16, 36);
+  const glassGeo = new THREE.CylinderGeometry(0.535, 0.535, 0.04, 36);
+  const lensArtGeo = new THREE.CircleGeometry(0.53, 40);
+  const lensPositions = [[1.25, 0.08], [-0.22, 0.08]];
+
+  lensPositions.forEach(([lx, ly], i) => {
+    const ring = new THREE.Mesh(ringGeo, frameMat);
+    ring.name = `CameraLens${i + 1}Ring`;
+    ring.rotation.x = Math.PI / 2;
+    ring.position.set(lx, ly, -0.19);
+    ring.castShadow = true;
+    group.add(ring);
+
+    const barrel = new THREE.Mesh(barrelGeo, blackMat);
+    barrel.rotation.x = Math.PI / 2;
+    barrel.position.set(lx, ly, -0.245);
+    group.add(barrel);
+
+    const glass = new THREE.Mesh(glassGeo, lensGlassMat);
+    glass.rotation.x = Math.PI / 2;
+    glass.position.set(lx, ly, -0.31);
+    group.add(glass);
+
+    const art = new THREE.Mesh(lensArtGeo, lensArtMat);
+    art.rotation.y = Math.PI;
+    art.position.set(lx, ly, -0.334);
+    group.add(art);
+  });
+
+  // True Tone flash and microphone at the right end of the island
+  const flash = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.05, 28), flashMat);
+  flash.rotation.x = Math.PI / 2;
+  flash.position.set(-1.7, -0.35, -0.265);
+  group.add(flash);
+  const flashRing = new THREE.Mesh(new THREE.TorusGeometry(0.205, 0.018, 8, 32), frameMat);
+  flashRing.position.set(-1.7, -0.35, -0.29);
+  group.add(flashRing);
+
+  const mic = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.04, 16), insetMat);
+  mic.rotation.x = Math.PI / 2;
+  mic.position.set(-1.7, 0.42, -0.245);
+  group.add(mic);
+
+  return group;
+}
+
+function makeHalf(side) {
+  const g = new THREE.Group();
+  const isLeft = side === 'left';
+  g.name = isLeft ? 'LeftHalf' : 'RightHalf';
+
+  const body = new THREE.Mesh(bodyGeos[side], frameMat);
+  body.name = isLeft ? 'LeftTitaniumBody' : 'RightTitaniumBody';
+  body.castShadow = true;
+  body.receiveShadow = false;
+  g.add(body);
+
+  const front = new THREE.Mesh(frontGlassGeos[side], blackMat);
+  front.name = isLeft ? 'LeftFrontGlass' : 'RightFrontGlass';
+  front.position.z = DIM.d / 2 + 0.012;
+  front.castShadow = false;
+  g.add(front);
+
+  const back = new THREE.Mesh(backGlassGeo, backPanelMat);
+  back.name = isLeft ? 'LeftBackGlass' : 'RightBackGlass';
+  back.rotation.y = Math.PI;
+  back.position.z = -DIM.d / 2 - 0.008;
+  back.receiveShadow = false;
+  g.add(back);
+
+  // the display itself
+  const display = new THREE.Mesh(screenGeos[side], screenMats[side]);
+  display.name = isLeft ? 'InnerDisplayLeft' : 'InnerDisplayRight';
+  display.position.z = DIM.d / 2 + 0.028;
+  g.add(display);
+
+  const glare = new THREE.Mesh(screenGeos[side], glareMats[side]);
+  glare.name = isLeft ? 'LeftDisplayGlare' : 'RightDisplayGlare';
+  glare.position.z = DIM.d / 2 + 0.043;
+  g.add(glare);
+
+  if (isLeft) {
+    addSideButton(g, 'left', 2.85, 0.95);
+    addSideButton(g, 'left', 1.7, 0.95);
+  } else {
+    addSideButton(g, 'right', 2.85, 1.15);
+    addSideButton(g, 'right', 1.15, 0.9, true);
+  }
+  addBottomDetails(g, side);
+
+  if (isLeft) {
+    // outer display on this half of the folded body
+    const coverBezel = new THREE.Mesh(coverBezelGeo, blackMat);
+    coverBezel.name = 'CoverDisplayBezel';
+    coverBezel.rotation.y = Math.PI;
+    coverBezel.position.z = -DIM.d / 2 - 0.022;
+    g.add(coverBezel);
+
+    const cover = new THREE.Mesh(coverGeo, screenMats.cover);
+    cover.name = 'CoverDisplay';
+    cover.rotation.y = Math.PI;
+    cover.position.z = -DIM.d / 2 - 0.038;
+    g.add(cover);
+
+    const coverGlare = new THREE.Mesh(coverGeo, glareMats.cover);
+    coverGlare.name = 'CoverDisplayGlare';
+    coverGlare.rotation.y = Math.PI;
+    coverGlare.position.z = -DIM.d / 2 - 0.053;
+    g.add(coverGlare);
+  } else {
+    // dual-camera island and Apple mark on the opposite half
+    addCamera(g).name = 'RearCameraModule';
+    const mark = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5), markMat);
+    mark.name = 'AppleLogo';
+    mark.rotation.y = Math.PI;
+    mark.position.set(0, -1.35, -DIM.d / 2 - 0.020);
+    g.add(mark);
+  }
+
+  g.position.set(isLeft ? -HALF_X : HALF_X, 0, -DIM.d / 2);
+  return g;
+}
+
+const deviceRig = new THREE.Group();
+deviceRig.name = 'iPhoneDuo';
+const modelWrap = new THREE.Group();
+modelWrap.add(deviceRig);
+scene.add(modelWrap);
+
+const leftPivot = new THREE.Group();
+const rightPivot = new THREE.Group();
+leftPivot.name = 'LeftHingePivot';
+rightPivot.name = 'RightHingePivot';
+deviceRig.add(leftPivot, rightPivot);
+const leftHalf = makeHalf('left');
+const rightHalf = makeHalf('right');
+leftPivot.add(leftHalf);
+rightPivot.add(rightHalf);
+
+/* hinge */
+const hinge = new THREE.Group();
+hinge.name = 'HingeSpine';
+// the barrel sits just inside the fold, becoming a clean spine when closed
+// kept behind the display plane; the flexible panel is the visible surface
+hinge.position.z = -0.16;
+deviceRig.add(hinge);
+
+const hingeBarrel = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.078, 0.078, DIM.h - 0.85, 40, 1, false),
+  hingeMat
+);
+hingeBarrel.name = 'HingeBarrel';
+hingeBarrel.castShadow = true;
+hinge.add(hingeBarrel);
+
+/* static shadow stage */
+const floorY = -DIM.h / 2 - 1.05;
+const shadowCatcher = new THREE.Mesh(
+  new THREE.PlaneGeometry(60, 60),
+  new THREE.ShadowMaterial({ color: 0x000000, opacity: 0.42, transparent: true, depthWrite: false })
+);
+shadowCatcher.rotation.x = -Math.PI / 2;
+shadowCatcher.position.y = floorY;
+shadowCatcher.receiveShadow = true;
+scene.add(shadowCatcher);
+
+const contactShadow = (() => {
+  const [c, x] = canvas2d(512, 256);
+  const g = x.createRadialGradient(256, 128, 12, 256, 128, 250);
+  g.addColorStop(0, 'rgba(0,0,0,.72)');
+  g.addColorStop(.42, 'rgba(0,0,0,.35)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(16, 8),
+    new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, opacity: .8 })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.set(0, floorY + 0.012, 0.8);
+  return m;
+})();
+scene.add(contactShadow);
+
+const underGlow = (() => {
+  const [c, x] = canvas2d(512, 256);
+  const g = x.createRadialGradient(256, 128, 4, 256, 128, 250);
+  g.addColorStop(0, 'rgba(255,186,124,.34)');
+  g.addColorStop(1, 'rgba(255,186,124,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(15, 7),
+    new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .18 })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.set(0, floorY + 0.02, 1.1);
+  return m;
+})();
+scene.add(underGlow);
+
+/* ---------- finish / fold ---------- */
+const targetColors = {
+  frame: new THREE.Color(PALETTES.starWhite.frame),
+  back: new THREE.Color(PALETTES.starWhite.back),
+  hinge: new THREE.Color(PALETTES.starWhite.hinge),
+};
+
+function applyTextures(key) {
+  const tex = buildTextures(key);
+  screenMats.left.map = tex.left;
+  screenMats.right.map = tex.right;
+  screenMats.cover.map = tex.cover;
+  for (const m of Object.values(screenMats)) m.needsUpdate = true;
+}
+
+function setFinish(key, instant = false) {
+  const p = PALETTES[key];
+  state.finish = key;
+  targetColors.frame.setHex(p.frame);
+  targetColors.back.setHex(p.back);
+  targetColors.hinge.setHex(p.hinge);
+  frameMat.roughness = p.frameRough;
+  backMat.roughness = p.backRough;
+  rim.color.setHex(p.rim);
+  screenSpill.color.set(p.accent);
+  if (instant) {
+    frameMat.color.copy(targetColors.frame);
+    backMat.color.copy(targetColors.back);
+    backPanelMat.color.copy(targetColors.back);
+    hingeMat.color.copy(targetColors.hinge);
+  }
+  applyTextures(key);
+
+  document.documentElement.style.setProperty('--accent', p.accent);
+  document.documentElement.style.setProperty('--glow', p.glow);
+  underGlow.material.color.set(p.rim);
+  $('#finishName').textContent = p.name;
+  document.querySelectorAll('.swatch').forEach((el) => {
+    el.setAttribute('aria-checked', String(el.dataset.finish === key));
+  });
+}
+
+function updateFoldState() {
+  const a = (Math.PI - state.open) / 2;
+  leftPivot.rotation.y = a;
+  rightPivot.rotation.y = -a;
+  deviceRig.rotation.y = -a;
+  deviceRig.position.x = HALF_X * Math.sin(a) ** 2 - (DIM.d / 4) * Math.sin(2 * a);
+  const deg = THREE.MathUtils.radToDeg(state.open);
+  const label = `${Math.round(deg)}°`;
+  const el = $('#angle');
+  if (el.textContent !== label) {
+    el.textContent = label;
+    $('#fold').setAttribute('aria-valuetext', `${Math.round(deg)} degrees open`);
+  }
+  const pct = ((state.open - THREE.MathUtils.degToRad(MIN_OPEN)) / THREE.MathUtils.degToRad(MAX_OPEN - MIN_OPEN)) * 100;
+  $('#fold').style.setProperty('--fill', `${Math.max(0, Math.min(100, pct))}%`);
+}
+updateFoldState();
+
+/* ---------- camera framing ---------- */
+const targetPoint = new THREE.Vector3(0, -0.05, 0.5);
+let homeCamPos = new THREE.Vector3();
+let viewTween = null;
+
+function computeHomePosition() {
+  const w = Math.max(stage.clientWidth, 1);
+  const h = Math.max(stage.clientHeight, 1);
+  const aspect = w / h;
+  const narrow = window.innerWidth <= 900;
+  const fov = narrow ? 30 : 27;
+  camera.fov = fov;
+  const vTan = Math.tan(THREE.MathUtils.degToRad(fov / 2));
+  const needH = narrow ? 15.0 : 17.8;
+  const needW = narrow ? 17.2 : 18.0;
+  const dist = Math.max(needH / (2 * vTan), (needW / aspect) / (2 * vTan));
+  const dir = new THREE.Vector3(-0.145, 0.095, 0.985).normalize();
+  homeCamPos.copy(targetPoint).addScaledVector(dir, dist);
+}
+
+function placeCamera() {
+  camera.position.copy(homeCamPos);
+  controls.target.copy(targetPoint);
+  camera.lookAt(targetPoint);
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
+function onResize() {
+  const w = Math.max(stage.clientWidth, 1);
+  const h = Math.max(stage.clientHeight, 1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  computeHomePosition();
+}
+
+window.addEventListener('resize', onResize);
+
+/* ---------- interaction ---------- */
+const foldInput = $('#fold');
+foldInput.addEventListener('input', () => {
+  const t = parseFloat(foldInput.value) / 100;
+  state.targetOpen = THREE.MathUtils.degToRad(MIN_OPEN + t * (MAX_OPEN - MIN_OPEN));
+  touchUI();
+});
+
+document.querySelectorAll('.swatch').forEach((el) => {
+  el.addEventListener('click', () => {
+    if (state.finish !== el.dataset.finish) setFinish(el.dataset.finish);
+    touchUI();
+  });
+});
+
+const spinBtn = $('#spinBtn');
+spinBtn.addEventListener('click', () => {
+  state.spin = !state.spin;
+  spinBtn.setAttribute('aria-pressed', String(state.spin));
+  controls.autoRotate = state.spin;
+  touchUI();
+});
+
+const resetBtn = $('#resetBtn');
+resetBtn.addEventListener('click', () => {
+  computeHomePosition();
+  viewTween = {
+    fromPos: camera.position.clone(),
+    toPos: homeCamPos.clone(),
+    fromTarget: controls.target.clone(),
+    toTarget: targetPoint.clone(),
+    t: 0,
+  };
+  state.spin = false;
+  spinBtn.setAttribute('aria-pressed', 'false');
+  controls.autoRotate = false;
+  touchUI();
+});
+
+let touchedOnce = false;
+function touchUI() {
+  if (touchedOnce) return;
+  touchedOnce = true;
+  document.body.classList.add('ui-touched');
+}
+
+renderer.domElement.addEventListener('pointerdown', () => {
+  if (viewTween) viewTween = null;
+  touchUI();
+});
+renderer.domElement.addEventListener('wheel', touchUI, { passive: true });
+renderer.domElement.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const s = e.key === 'ArrowLeft' ? -1 : 1;
+    azimuthTarget(s * 0.15);
+  }
+});
+// keyboard orbit support
+function azimuthTarget(delta) {
+  const offset = camera.position.clone().sub(controls.target);
+  const angle = Math.atan2(offset.x, offset.z) + delta;
+  const radius = Math.hypot(offset.x, offset.z);
+  camera.position.x = controls.target.x + Math.sin(angle) * radius;
+  camera.position.z = controls.target.z + Math.cos(angle) * radius;
+  controls.update();
+}
+
+/* ---------- start ---------- */
+setFinish('starWhite', true);
+computeHomePosition();
+placeCamera();
+onResize();
+
+const clock = new THREE.Clock();
+let elapsed = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  elapsed += dt;
+
+  // intro (skipped when the visitor prefers reduced motion)
+  if (!prefersReducedMotion && state.intro < 1) {
+    state.intro = Math.min(1, state.intro + dt / 1.7);
+    const e = 1 - Math.pow(1 - state.intro, 3);
+    modelWrap.position.y = (1 - e) * -0.9;
+    modelWrap.scale.setScalar(0.94 + e * 0.06);
+  } else if (!prefersReducedMotion) {
+    modelWrap.position.y = Math.sin(elapsed * 0.65) * 0.035;
+  }
+
+  state.open += (state.targetOpen - state.open) * Math.min(1, dt * 6.5);
+  if (Math.abs(state.targetOpen - state.open) < 0.0004) state.open = state.targetOpen;
+  updateFoldState();
+
+  if (viewTween) {
+    viewTween.t = Math.min(1, viewTween.t + dt / 0.9);
+    const e = 1 - Math.pow(1 - viewTween.t, 3);
+    camera.position.lerpVectors(viewTween.fromPos, viewTween.toPos, e);
+    controls.target.lerpVectors(viewTween.fromTarget, viewTween.toTarget, e);
+    if (viewTween.t >= 1) viewTween = null;
+  }
+
+  frameMat.color.lerp(targetColors.frame, Math.min(1, dt * 5));
+  backMat.color.lerp(targetColors.back, Math.min(1, dt * 5));
+  backPanelMat.color.lerp(targetColors.back, Math.min(1, dt * 5));
+  hingeMat.color.lerp(targetColors.hinge, Math.min(1, dt * 5));
+  markMat.opacity = 0.56 + Math.sin(elapsed * .6) * .03;
+
+  controls.update();
+  renderer.render(scene, camera);
+
+  if (!state.ready) {
+    state.ready = true;
+    requestAnimationFrame(() => {
+      document.body.classList.add('loaded');
+      loader.classList.add('is-hidden');
+    });
+  }
+}
+
+try {
+  animate();
+} catch (err) {
+  console.error(err);
+  showFallback();
+}
+
+function showFallback() {
+  loader.classList.add('is-hidden');
+  const fb = $('#fallback');
+  if (fb) fb.classList.add('show');
+}
+</script>
+</body>
+</html>

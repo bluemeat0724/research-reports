@@ -384,9 +384,9 @@ const DIM = {
   h: 11.78,          // height
   d: 0.52,           // body thickness
   gap: 0.06,         // visual seam on the body, covered by the flexible display
-  radius: 0.98,
+  radius: 1.04,
   screenInset: 0.36, // bezel on the outer three sides; zero at the fold
-  screenRadius: 0.68,
+  screenRadius: 0.80,
 };
 const HALF_X = (DIM.w + DIM.gap) / 2; // 4.13 cm
 const SCREEN_W = HALF_X + DIM.w / 2 - DIM.screenInset; // 7.87 cm one half; 15.74 cm total
@@ -478,7 +478,7 @@ renderer.setClearColor(0x000000, 0);
 stage.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(27, stage.clientWidth / Math.max(stage.clientHeight, 1), 0.1, 200);
+const camera = new THREE.PerspectiveCamera(27, stage.clientWidth / Math.max(stage.clientHeight, 1), 2.0, 200);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.055;
@@ -712,14 +712,14 @@ function roundedGeo(w, h, r, segments = 24) {
 }
 
 function bodyGeoFor(side) {
-  const outer = DIM.radius, inner = 0.025;
+  const outer = DIM.radius, inner = 0.08;
   const r0 = side === 'left' ? outer : inner;
   const r1 = side === 'left' ? inner : outer;
   const g = new THREE.ExtrudeGeometry(
     panelShape(-DIM.w / 2, DIM.w / 2, -DIM.h / 2, DIM.h / 2, r0, r1),
     {
-      depth: DIM.d - 0.1, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05,
-      bevelSegments: 3, steps: 1, curveSegments: 30,
+      depth: DIM.d - 0.32, bevelEnabled: true, bevelThickness: 0.16, bevelSize: 0.13,
+      bevelSegments: 8, steps: 1, curveSegments: 36,
     }
   );
   g.center();
@@ -727,13 +727,15 @@ function bodyGeoFor(side) {
 }
 
 function frontGlassGeoFor(side) {
-  const inset = 0.13;
-  const x0 = -DIM.w / 2 + (side === 'left' ? inset : 0.02);
-  const x1 = DIM.w / 2 - (side === 'left' ? 0.02 : inset);
-  const y0 = -DIM.h / 2 + inset;
-  const y1 = DIM.h / 2 - inset;
-  const r0 = side === 'left' ? DIM.radius - 0.07 : 0.025;
-  const r1 = side === 'left' ? 0.025 : DIM.radius - 0.07;
+  const outerInset = 0.18;
+  const innerInset = 0.16;
+  const x0 = -DIM.w / 2 + (side === 'left' ? outerInset : innerInset);
+  const x1 = DIM.w / 2 - (side === 'left' ? innerInset : outerInset);
+  const y0 = -DIM.h / 2 + outerInset;
+  const y1 = DIM.h / 2 - outerInset;
+  const cornerR = DIM.radius - 0.16;
+  const r0 = side === 'left' ? cornerR : 0.04;
+  const r1 = side === 'left' ? 0.04 : cornerR;
   return shapeGeo(panelShape(x0, x1, y0, y1, r0, r1));
 }
 
@@ -751,9 +753,9 @@ function screenGeoFor(side) {
 const bodyGeos = { left: bodyGeoFor('left'), right: bodyGeoFor('right') };
 const frontGlassGeos = { left: frontGlassGeoFor('left'), right: frontGlassGeoFor('right') };
 const screenGeos = { left: screenGeoFor('left'), right: screenGeoFor('right') };
-const backGlassGeo = roundedGeo(DIM.w - 0.15, DIM.h - 0.15, DIM.radius - 0.06);
+const backGlassGeo = roundedGeo(DIM.w - 0.36, DIM.h - 0.36, DIM.radius - 0.16);
 const coverGeo = roundedGeo(COVER_W, COVER_H, DIM.screenRadius);
-const coverBezelGeo = roundedGeo(DIM.w - 0.2, DIM.h - 0.2, DIM.radius - 0.07);
+const coverBezelGeo = roundedGeo(DIM.w - 0.36, DIM.h - 0.36, DIM.radius - 0.16);
 
 /* ---------- canvas painting ---------- */
 const FONT = '"Helvetica Neue","SF Pro Display",-apple-system,BlinkMacSystemFont,Arial,sans-serif';
@@ -1472,12 +1474,12 @@ function addCamera(parent) {
     new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: .55, depthWrite: false, side: THREE.DoubleSide })
   );
   shadowPlane.rotation.y = Math.PI;
-  shadowPlane.position.z = -0.002;
+  shadowPlane.position.z = -0.014;
   group.add(shadowPlane);
 
   const plateauGeo = new THREE.ExtrudeGeometry(roundedRectShape(5.2, 2.4, 1.18), {
-    depth: 0.16, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.04,
-    bevelSegments: 3, curveSegments: 28,
+    depth: 0.14, bevelEnabled: true, bevelThickness: 0.065, bevelSize: 0.075,
+    bevelSegments: 5, curveSegments: 30,
   });
   plateauGeo.center();
   const plateau = new THREE.Mesh(plateauGeo, backMat);
@@ -1541,31 +1543,31 @@ function makeHalf(side) {
   const body = new THREE.Mesh(bodyGeos[side], frameMat);
   body.name = isLeft ? 'LeftTitaniumBody' : 'RightTitaniumBody';
   body.castShadow = true;
-  body.receiveShadow = true;
+  body.receiveShadow = false;
   g.add(body);
 
   const front = new THREE.Mesh(frontGlassGeos[side], blackMat);
   front.name = isLeft ? 'LeftFrontGlass' : 'RightFrontGlass';
-  front.position.z = DIM.d / 2 + 0.004;
+  front.position.z = DIM.d / 2 + 0.012;
   front.castShadow = false;
   g.add(front);
 
   const back = new THREE.Mesh(backGlassGeo, backPanelMat);
   back.name = isLeft ? 'LeftBackGlass' : 'RightBackGlass';
   back.rotation.y = Math.PI;
-  back.position.z = -DIM.d / 2 - 0.004;
-  back.receiveShadow = true;
+  back.position.z = -DIM.d / 2 - 0.008;
+  back.receiveShadow = false;
   g.add(back);
 
   // the display itself
   const display = new THREE.Mesh(screenGeos[side], screenMats[side]);
   display.name = isLeft ? 'InnerDisplayLeft' : 'InnerDisplayRight';
-  display.position.z = DIM.d / 2 + 0.013;
+  display.position.z = DIM.d / 2 + 0.028;
   g.add(display);
 
   const glare = new THREE.Mesh(screenGeos[side], glareMats[side]);
   glare.name = isLeft ? 'LeftDisplayGlare' : 'RightDisplayGlare';
-  glare.position.z = DIM.d / 2 + 0.021;
+  glare.position.z = DIM.d / 2 + 0.043;
   g.add(glare);
 
   if (isLeft) {
@@ -1582,19 +1584,19 @@ function makeHalf(side) {
     const coverBezel = new THREE.Mesh(coverBezelGeo, blackMat);
     coverBezel.name = 'CoverDisplayBezel';
     coverBezel.rotation.y = Math.PI;
-    coverBezel.position.z = -DIM.d / 2 - 0.006;
+    coverBezel.position.z = -DIM.d / 2 - 0.022;
     g.add(coverBezel);
 
     const cover = new THREE.Mesh(coverGeo, screenMats.cover);
     cover.name = 'CoverDisplay';
     cover.rotation.y = Math.PI;
-    cover.position.z = -DIM.d / 2 - 0.012;
+    cover.position.z = -DIM.d / 2 - 0.038;
     g.add(cover);
 
     const coverGlare = new THREE.Mesh(coverGeo, glareMats.cover);
     coverGlare.name = 'CoverDisplayGlare';
     coverGlare.rotation.y = Math.PI;
-    coverGlare.position.z = -DIM.d / 2 - 0.019;
+    coverGlare.position.z = -DIM.d / 2 - 0.053;
     g.add(coverGlare);
   } else {
     // dual-camera island and Apple mark on the opposite half
@@ -1602,7 +1604,7 @@ function makeHalf(side) {
     const mark = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5), markMat);
     mark.name = 'AppleLogo';
     mark.rotation.y = Math.PI;
-    mark.position.set(0, -1.35, -DIM.d / 2 - 0.008);
+    mark.position.set(0, -1.35, -DIM.d / 2 - 0.020);
     g.add(mark);
   }
 

@@ -10,5 +10,7 @@
 | Jev in Hermes Agent | [Markdown](jev-hermes-agent/jev-hermes-agent-report.md) · [HTML](jev-hermes-agent/jev-hermes-agent-report.html) | TypeSafe AI’s Jev (“System One” decision model) and its integration into NousResearch Hermes Agent via a community plugin. |
 | BYD brands & God’s Eye ADAS | [Markdown](byd-brands-adas/byd-brands-adas-report.md) · [HTML](byd-brands-adas/byd-brands-adas-report.html) | BYD’s multi-brand lineup and its God’s Eye driver assistance, compared with Huawei ADS, Xiaomi, Tesla FSD (China) and XPeng. |
 | pstack Skill deep dive | [Markdown](pstack-skill-deep-dive/pstack-skill-deep-dive.md) · [HTML](pstack-skill-deep-dive/pstack-skill-deep-dive.html) | Deep dive into the pstack skill (backnotprop/pstack / cursor plugins): structure, modes, budget, and how to use it. |
+| iPhone Duo | [HTML](web-visualization/iphone-duo/index.html) | Interactive 3D concept study of iPhone Duo, a dual-screen foldable iPhone in grade-5 titanium. |
+| Rainy night mart | [HTML](web-visualization/rainy-night-mart/index.html) | Hand-built, cel-shaded diorama of a Japanese convenience store on a rainy night. |
 
 The HTML versions are interactive reports; open them locally in a browser.
