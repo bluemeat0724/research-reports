@@ -80,6 +80,11 @@
     .hud{animation:none}
     .controls button{transition:none}
   }
+
+  .model-credit{margin:14px 0 0;font-family:var(--mono);font-size:12px;line-height:1.45;letter-spacing:.02em;color:var(--amber);pointer-events:none}
+  @media (max-width:680px){
+    .model-credit{max-width:56vw;font-size:13px}
+  }
 </style>
 </head>
 <body>
@@ -93,6 +98,7 @@
   <p class="classification">Barred spiral, type SB(s)b — two principal arms of young blue suns
     unwinding from an older, amber core. The light on this plate left home
     29.3&nbsp;million years ago, and is only now arriving.</p>
+  <p class="model-credit">创建模型：qwen4-max</p>
 </header>
 
 <svg class="hud compass" viewBox="0 0 78 78" aria-hidden="true">

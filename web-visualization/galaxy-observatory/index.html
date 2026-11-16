@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="dark">
+<title>NGC 7741 Meridian — Observatory Instrument</title>
+<style>
+  :root{
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --amber:#FFD9A0;
+    --ink:#6D7787;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#000;overflow:hidden}
+  body{font-family:var(--serif);color:#D8DCE3;-webkit-font-smoothing:antialiased}
+
+  #sky{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+  #sky:active{cursor:grabbing}
+  .vignette{position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:radial-gradient(ellipse 78% 82% at 50% 50%,transparent 30%,rgba(0,0,0,.28) 66%,rgba(0,0,0,.86) 100%)}
+
+  .hud,.stats,.compass,.controls{position:fixed;z-index:2;pointer-events:none;opacity:0;
+    animation:arrive 2.4s ease forwards}
+  @keyframes arrive{to{opacity:1}}
+
+  .hud{top:clamp(28px,5.5vh,68px);left:clamp(24px,5vw,88px);max-width:min(560px,52vw)}
+  .designation{font:10px/1 var(--mono);text-transform:uppercase;letter-spacing:.32em;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .designation b{color:#9AA4B4;font-weight:400}
+  .title{margin:22px 0 0;font-weight:400;font-size:clamp(38px,5.6vw,86px);line-height:1.02;
+    letter-spacing:-.015em;color:#E9E7E2}
+  .title em{font-style:italic;color:var(--amber);text-shadow:0 0 26px rgba(255,181,96,.34),0 0 64px rgba(255,150,60,.16)}
+  .classification{margin:20px 0 0;max-width:430px;font-style:italic;font-size:clamp(13px,1.15vw,17px);
+    line-height:1.72;color:#8B94A3}
+
+  .stats{bottom:clamp(26px,5vh,64px);left:clamp(24px,5vw,88px);display:flex;align-items:flex-start;
+    gap:clamp(14px,2.1vw,30px);font-family:var(--mono)}
+  .stat{min-width:66px}
+  .stat + .stat{border-left:1px solid rgba(170,185,205,.14);padding-left:clamp(14px,2.1vw,30px)}
+  .stat .k{display:block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#5C6675;
+    margin-bottom:9px;white-space:nowrap}
+  .stat .v{display:block;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.04em;
+    color:#C9CFD8;white-space:nowrap}
+
+  .compass{top:clamp(26px,5vh,60px);right:clamp(24px,4vw,64px);width:82px;height:82px;opacity:0}
+  .compass text{font:8px var(--mono);letter-spacing:.1em;fill:#6D7787}
+
+  .controls{top:50%;right:clamp(22px,3.4vw,54px);transform:translateY(-50%);display:flex;
+    flex-direction:column;gap:14px;pointer-events:auto}
+  .ctrl{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+    color:#A9B2C0;background:rgba(255,255,255,.035);border:1px solid rgba(190,205,225,.14);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,color .22s ease,background .22s ease;
+    padding:0}
+  .ctrl:hover,.ctrl:focus-visible{transform:scale(1.12);color:var(--amber);
+    border-color:rgba(255,206,140,.72);background:rgba(255,190,110,.08);
+    box-shadow:0 0 20px rgba(255,183,98,.24),inset 0 0 12px rgba(255,183,98,.09);outline:none}
+  .ctrl svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round}
+  .ctrl .ico-play{display:none}
+  .ctrl.is-paused .ico-pause{display:none}
+  .ctrl.is-paused .ico-play{display:block}
+
+  @media (max-width:640px){
+    .hud{max-width:80vw}
+    .classification{max-width:70vw}
+    .stats{gap:12px;flex-wrap:wrap;right:20px}
+    .stat + .stat{padding-left:12px}
+    .stat .v{font-size:13px}
+    .compass{width:62px;height:62px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .hud,.stats,.compass,.controls{animation-duration:.6s}
+    .ctrl{transition-duration:.08s}
+  }
+
+  .model-credit{margin:16px 0 0;max-width:430px;font:12px/1.45 var(--mono);letter-spacing:.02em;color:var(--amber);pointer-events:none}
+  @media (max-width:640px){
+    .model-credit{max-width:70vw;font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-label="Animated view of the spiral galaxy NGC 7741 Meridian"></canvas>
+<div class="vignette"></div>
+
+<div class="hud">
+  <div class="designation">Observatory archive <b>/</b> object 07741 <b>/</b> deep field vii</div>
+  <h1 class="title">NGC 7741 <em>Meridian</em></h1>
+  <p class="classification">An SAB(rs)cd spiral observed well off the plane of its disk. Two logarithmic arms unwind from a compact warm bulge, dissolving at the rim into cobalt dust and sparse knots of young blue stars. The inner disk turns several times faster than the outer arms — a slow, patient winding, measured here in silence.</p>
+  <p class="model-credit">创建模型：hy4-flash</p>
+</div>
+
+<div class="stats" aria-live="off">
+  <div class="stat"><span class="k">Particles</span><span class="v" id="s-particles">0</span></div>
+  <div class="stat"><span class="k">Distance</span><span class="v"><span id="s-distance">0.0</span> <small>Mly</small></span></div>
+  <div class="stat"><span class="k">Diameter</span><span class="v"><span id="s-diameter">0.0</span> <small>kly</small></span></div>
+  <div class="stat"><span class="k">Tilt</span><span class="v" id="s-tilt">—</span></div>
+  <div class="stat"><span class="k">Zoom</span><span class="v" id="s-zoom">1.00×</span></div>
+</div>
+
+<svg class="compass" viewBox="0 0 80 80" role="img" aria-label="Yaw compass">
+  <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(150,165,185,.20)"/>
+  <circle cx="40" cy="40" r="26" fill="none" stroke="rgba(150,165,185,.09)"/>
+  <g stroke="rgba(160,175,195,.38)">
+    <path d="M40 6v6M40 68v6M6 40h6M68 40h6"/>
+    <path d="M20.5 12.5l3 4M59.5 12.5l-3 4M20.5 67.5l3-4M59.5 67.5l-3-4" stroke="rgba(160,175,195,.18)"/>
+  </g>
+  <text x="40" y="19" text-anchor="middle">N</text>
+  <text x="40" y="68" text-anchor="middle">S</text>
+  <text x="68" y="43" text-anchor="middle">E</text>
+  <text x="12" y="43" text-anchor="middle">W</text>
+  <g id="needle">
+    <path d="M40 15 L44.2 42 L40 37.5 L35.8 42 Z" fill="#FFD9A0" stroke="none" opacity=".92"/>
+    <path d="M40 65 L35.8 38 L40 42.5 L44.2 38 Z" fill="#6D7787" stroke="none" opacity=".65"/>
+  </g>
+  <circle cx="40" cy="40" r="2.4" fill="#FFD9A0" stroke="none"/>
+</svg>
+
+<div class="controls" role="group" aria-label="Instrument controls">
+  <button class="ctrl" id="btn-in" title="Zoom in" aria-label="Zoom in">
+    <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.7v5.6M7.7 10.5h5.6"/></svg>
+  </button>
+  <button class="ctrl" id="btn-out" title="Zoom out" aria-label="Zoom out">
+    <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.7 10.5h5.6"/></svg>
+  </button>
+  <button class="ctrl" id="btn-pause" title="Pause rotation (Space)" aria-label="Pause rotation">
+    <svg viewBox="0 0 24 24">
+      <g class="ico-pause"><path d="M9 5v14M15 5v14" stroke-width="2"/></g>
+      <path class="ico-play" d="M8 5.5 18 12 8 18.5 Z" fill="currentColor" stroke="none"/>
+    </svg>
+  </button>
+  <button class="ctrl" id="btn-reset" title="Reset view" aria-label="Reset view">
+    <svg viewBox="0 0 24 24"><path d="M4.2 10a8 8 0 1 1 1.6 7.4"/><path d="M4 4.5V10h5.5"/></svg>
+  </button>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('sky');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const N = reduced ? 14000 : 42000;
+  const N_BULGE = Math.round(N * 0.18);
+  const A_ARM = 0.045, B_ARM = 0.28, FOCAL = 4;
+  const YAW0 = 0.35, TILT0 = 1.02;
+  const TAU = Math.PI * 2;
+
+  let W = 0, H = 0, cx = 0, cy = 0, baseScale = 1, dpr = 1, bg = null;
+  let yaw = YAW0, tilt = TILT0, zoom = 1, zoomTarget = 1;
+  let simTime = 0, paused = false;
+
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  function gauss() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v);
+  }
+  const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const mix = (a, b, t) => [
+    Math.round(a[0] + (b[0] - a[0]) * t),
+    Math.round(a[1] + (b[1] - a[1]) * t),
+    Math.round(a[2] + (b[2] - a[2]) * t)
+  ];
+
+  // ---- Cached point sprites, one per quantized color -----------------------
+  const palette = [];
+  const warmA = hex('#FFEBBE'), warmB = hex('#FFCD82');
+  const armA = hex('#CDD7FF'), armB = hex('#91C3FF');
+  const dustA = hex('#AA7882'), dustB = hex('#D25058');
+  for (let i = 0; i < 16; i++) palette.push(mix(warmA, warmB, i / 15));
+  for (let i = 0; i < 16; i++) palette.push(mix(armA, armB, i / 15));
+  for (let i = 0; i < 16; i++) palette.push(mix(dustA, dustB, i / 15));
+  const HOT = 48;
+  palette.push([183, 214, 255]);
+
+  function makeSprite(rgb) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+    const [r, gr, b] = rgb;
+    g.addColorStop(0, `rgba(${r},${gr},${b},1)`);
+    g.addColorStop(0.28, `rgba(${r},${gr},${b},0.62)`);
+    g.addColorStop(0.62, `rgba(${r},${gr},${b},0.14)`);
+    g.addColorStop(1, `rgba(${r},${gr},${b},0)`);
+    x.fillStyle = g;
+    x.fillRect(0, 0, 32, 32);
+    return c;
+  }
+  const sprites = palette.map(makeSprite);
+  const spritePixels = sprites.map(c => c.getContext('2d').getImageData(0, 0, 32, 32).data);
+
+  // Reduce each 32px sprite to a small additive stamp, cached by (color, size).
+  const stampCache = new Map();
+  function getStamp(ci, w) {
+    const key = ci * 32 + w;
+    let st = stampCache.get(key);
+    if (st) return st;
+    const src = spritePixels[ci];
+    const data = new Uint8Array(w * w * 3);
+    for (let y = 0; y < w; y++) {
+      const v = Math.min(31, ((y + 0.5) / w * 32) | 0);
+      for (let x = 0; x < w; x++) {
+        const u = Math.min(31, ((x + 0.5) / w * 32) | 0);
+        const si = (v * 32 + u) * 4;
+        const a = src[si + 3] / 255;
+        const o = (y * w + x) * 3;
+        data[o] = src[si] * a;
+        data[o + 1] = src[si + 1] * a;
+        data[o + 2] = src[si + 2] * a;
+      }
+    }
+    st = { w, data };
+    stampCache.set(key, st);
+    return st;
+  }
+
+  const pCanvas = document.createElement('canvas');
+  const pctx = pCanvas.getContext('2d');
+  let pImg = null, pBuf = null, p32 = null;
+
+  function colorIndex(r, hot) {
+    if (hot) return HOT;
+    if (r < 0.18) return clamp(Math.floor(r / 0.18 * 16), 0, 15);
+    if (r < 0.72) return 16 + clamp(Math.floor((r - 0.18) / 0.54 * 16), 0, 15);
+    return 32 + clamp(Math.floor((r - 0.72) / 0.28 * 16), 0, 15);
+  }
+
+  // ---- Particles -----------------------------------------------------------
+  const P = {
+    r: new Float32Array(N), a: new Float32Array(N), z: new Float32Array(N),
+    size: new Float32Array(N), br: new Float32Array(N),
+    ci: new Uint8Array(N), om: new Float32Array(N)
+  };
+
+  for (let i = 0; i < N; i++) {
+    let r, ang, z, size, br, hot = false;
+    if (i < N_BULGE) {
+      const s = Math.random() < 0.62 ? 0.06 : 0.12;
+      const bx = gauss() * s, by = gauss() * s;
+      r = Math.min(Math.hypot(bx, by), 0.5);
+      ang = Math.atan2(by, bx);
+      z = gauss() * s;
+      size = 1.6 + Math.random() * 3.2;
+      br = 0.18 + Math.random() * 0.42;
+    } else {
+      do { r = -0.32 * Math.log(Math.random() || 1e-9); } while (r > 1 || r < 0.018);
+      const arm = Math.random() < 0.5 ? 0 : Math.PI;
+      ang = Math.log(r / A_ARM) / B_ARM + arm + gauss() * (0.035 + 0.4 * r);
+      z = gauss() * 0.06 * (0.25 + r);
+      hot = Math.random() < 0.06;
+      size = hot ? 6 + Math.random() * 8 : 1.6 + Math.random() * 2.2;
+      br = hot ? 1 : (0.18 + Math.random() * 0.42) * (0.55 + 1.1 * r);
+    }
+    P.r[i] = r; P.a[i] = ang; P.z[i] = z;
+    P.size[i] = size; P.br[i] = br;
+    P.ci[i] = colorIndex(r, hot);
+    P.om[i] = 0.35 / (0.25 + r);
+  }
+  // Group by sprite so the GPU sees long runs of the same source image.
+  const order = Array.from({ length: N }, (_, i) => i).sort((i, j) => P.ci[i] - P.ci[j]);
+
+  // ---- Nebula dust and core glow -------------------------------------------
+  function makeSoft(rgb) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    const [r, gr, b] = rgb;
+    g.addColorStop(0, `rgba(${r},${gr},${b},0.85)`);
+    g.addColorStop(0.35, `rgba(${r},${gr},${b},0.32)`);
+    g.addColorStop(0.7, `rgba(${r},${gr},${b},0.07)`);
+    g.addColorStop(1, `rgba(${r},${gr},${b},0)`);
+    x.fillStyle = g;
+    x.fillRect(0, 0, 128, 128);
+    return c;
+  }
+  const dustSprites = [makeSoft([240, 158, 104]), makeSoft([72, 106, 224]), makeSoft([158, 52, 72])];
+  const coreSprite = makeSoft([255, 186, 120]);
+
+  const dust = [];
+  for (let i = 0; i < 90; i++) {
+    let r;
+    do { r = -0.36 * Math.log(Math.random() || 1e-9); } while (r > 1 || r < 0.05);
+    const arm = Math.random() < 0.5 ? 0 : Math.PI;
+    dust.push({
+      r,
+      a: Math.log(r / A_ARM) / B_ARM + arm + gauss() * (0.12 + 0.6 * r),
+      z: gauss() * 0.05,
+      size: 0.16 + Math.random() * 0.26,
+      asp: 0.30 + Math.random() * 0.5,
+      rot: Math.random() * Math.PI,
+      ci: r < 0.30 ? 0 : r < 0.65 ? 1 : 2,
+      al: 0.06 + Math.random() * 0.03
+    });
+  }
+
+  // ---- Static sky: faint stars + distant blurred galaxies ------------------
+  function buildBackground() {
+    bg = document.createElement('canvas');
+    bg.width = canvas.width;
+    bg.height = canvas.height;
+    const x = bg.getContext('2d');
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.fillStyle = '#000';
+    x.fillRect(0, 0, W, H);
+
+    const stars = Math.round(W * H / 2600);
+    for (let i = 0; i < stars; i++) {
+      const s = Math.random() < 0.94 ? 0.6 : 1.4;
+      const a = 0.05 + Math.random() * 0.28;
+      x.fillStyle = `rgba(${(190 + Math.random() * 40) | 0},${(200 + Math.random() * 35) | 0},255,${a})`;
+      x.fillRect(Math.random() * W, Math.random() * H, s, s);
+    }
+
+    x.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 12; i++) {
+      const rr = 24 + Math.random() * 60;
+      const col = Math.random() < 0.35 ? '222,168,132' : '150,178,236';
+      x.save();
+      x.translate(Math.random() * W, Math.random() * H);
+      x.rotate(Math.random() * Math.PI);
+      x.scale(1, 0.22 + Math.random() * 0.5);
+      const g = x.createRadialGradient(0, 0, 0, 0, 0, rr);
+      g.addColorStop(0, `rgba(${col},0.16)`);
+      g.addColorStop(0.35, `rgba(${col},0.07)`);
+      g.addColorStop(1, `rgba(${col},0)`);
+      x.fillStyle = g;
+      x.beginPath();
+      x.arc(0, 0, rr, 0, TAU);
+      x.fill();
+      x.restore();
+    }
+    x.globalCompositeOperation = 'source-over';
+  }
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W * 0.5;
+    cy = H * 0.5;
+    baseScale = Math.min(W, H) * 0.42;
+    pCanvas.width = W;
+    pCanvas.height = H;
+    pImg = pctx.createImageData(W, H);
+    pBuf = pImg.data;
+    p32 = new Uint32Array(pBuf.buffer);
+    buildBackground();
+  }
+  addEventListener('resize', resize);
+  resize();
+
+  // ---- Projection ----------------------------------------------------------
+  function drawParticles() {
+    const scale = baseScale * zoom;
+    const ct = Math.cos(tilt), st = Math.sin(tilt);
+    const sizeZoom = Math.pow(zoom, 0.6);
+    // Splat cached sprite stamps into one additive buffer: 42k drawImage calls
+  // stall software renderers, a single putImageData layer does not.
+  // 0xFF000000 clears RGB to zero and keeps alpha opaque (little-endian).
+    p32.fill(0xFF000000);
+    for (let k = 0; k < N; k++) {
+      const i = order[k];
+      const ang = P.a[i] + P.om[i] * simTime + yaw;
+      const x = P.r[i] * Math.cos(ang), yp = P.r[i] * Math.sin(ang);
+      const z = P.z[i];
+      const y2 = yp * ct - z * st;
+      const z2 = yp * st + z * ct;
+      const depth = FOCAL / (FOCAL - z2);
+      const sx = cx + x * scale * depth;
+      const sy = cy + y2 * scale * depth;
+      const w = clamp(Math.round(P.size[i] * sizeZoom * depth), 2, 24);
+      const ox = (sx - w * 0.5) | 0, oy = (sy - w * 0.5) | 0;
+      if (ox + w < 0 || ox > W || oy + w < 0 || oy > H) continue;
+      const stamp = getStamp(P.ci[i], w);
+      const data = stamp.data, br = P.br[i];
+      const x0 = Math.max(0, ox), x1 = Math.min(W, ox + w);
+      const y0 = Math.max(0, oy), y1 = Math.min(H, oy + w);
+      for (let py = y0; py < y1; py++) {
+        let di = (py * W + x0) * 4;
+        let si = (py - oy) * w * 3 + (x0 - ox) * 3;
+        for (let px = x0; px < x1; px++) {
+          pBuf[di] += data[si] * br;
+          pBuf[di + 1] += data[si + 1] * br;
+          pBuf[di + 2] += data[si + 2] * br;
+          di += 4;
+          si += 3;
+        }
+      }
+    }
+    pctx.putImageData(pImg, 0, 0);
+    ctx.drawImage(pCanvas, 0, 0, W, H);
+  }
+
+  function drawDust() {
+    const scale = baseScale * zoom;
+    const ct = Math.cos(tilt), st = Math.sin(tilt);
+    for (const d of dust) {
+      const ang = d.a + 0.35 / (0.25 + d.r) * simTime + yaw;
+      const x0 = d.r * Math.cos(ang), yp = d.r * Math.sin(ang);
+      const y2 = yp * ct - d.z * st;
+      const z2 = yp * st + d.z * ct;
+      const depth = FOCAL / (FOCAL - z2);
+      const sx = cx + x0 * scale * depth, sy = cy + y2 * scale * depth;
+      const sz = d.size * scale * depth;
+      if (sx < -sz || sx > W + sz || sy < -sz || sy > H + sz) continue;
+      ctx.globalAlpha = d.al;
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(d.rot + yaw * 0.5);
+      ctx.scale(1, d.asp);
+      ctx.drawImage(dustSprites[d.ci], -sz / 2, -sz / 2, sz, sz);
+      ctx.restore();
+    }
+    const halo = baseScale * zoom;
+    ctx.globalAlpha = 0.10;
+    ctx.drawImage(coreSprite, cx - halo * 0.95, cy - halo * 0.95, halo * 1.9, halo * 1.9);
+    ctx.globalAlpha = 0.16;
+    ctx.drawImage(coreSprite, cx - halo * 0.42, cy - halo * 0.42, halo * 0.84, halo * 0.84);
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- HUD -----------------------------------------------------------------
+  const elParticles = document.getElementById('s-particles');
+  const elDistance = document.getElementById('s-distance');
+  const elDiameter = document.getElementById('s-diameter');
+  const elTilt = document.getElementById('s-tilt');
+  const elZoom = document.getElementById('s-zoom');
+  const needle = document.getElementById('needle');
+  const t0 = performance.now();
+
+  function updateHud(now) {
+    const t = clamp((now - t0) / 3200, 0, 1);
+    const e = 1 - Math.pow(1 - t, 4);
+    elParticles.textContent = Math.round(N * e).toLocaleString('en-US');
+    elDistance.textContent = (39.6 * e).toFixed(1);
+    elDiameter.textContent = (74.2 * e).toFixed(1);
+    elTilt.textContent = (tilt * 180 / Math.PI).toFixed(1) + '°';
+    elZoom.textContent = zoom.toFixed(2) + '×';
+    needle.setAttribute('transform', `rotate(${(yaw * 180 / Math.PI).toFixed(1)} 40 40)`);
+  }
+
+  // ---- Interaction ---------------------------------------------------------
+  let drag = null, pinchDist = 0;
+  const touchDist = e => Math.hypot(
+    e.touches[0].clientX - e.touches[1].clientX,
+    e.touches[0].clientY - e.touches[1].clientY
+  );
+
+  canvas.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch' && pinchDist) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!drag || drag.id !== e.pointerId) return;
+    yaw += (e.clientX - drag.x) * 0.005;
+    tilt = clamp(tilt + (e.clientY - drag.y) * 0.004, 0.08, 1.50);
+    drag.x = e.clientX;
+    drag.y = e.clientY;
+  });
+  const endDrag = e => { if (drag && drag.id === e.pointerId) drag = null; };
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoomTarget = clamp(zoomTarget * Math.exp(-e.deltaY * 0.0015), 0.35, 6);
+  }, { passive: false });
+
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) { drag = null; pinchDist = touchDist(e); }
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 2 && pinchDist) {
+      e.preventDefault();
+      const d = touchDist(e);
+      zoomTarget = clamp(zoomTarget * d / pinchDist, 0.35, 6);
+      pinchDist = d;
+    }
+  }, { passive: false });
+  canvas.addEventListener('touchend', e => { if (e.touches.length < 2) pinchDist = 0; });
+
+  const pauseBtn = document.getElementById('btn-pause');
+  function togglePause() {
+    paused = !paused;
+    pauseBtn.classList.toggle('is-paused', paused);
+    pauseBtn.setAttribute('aria-label', paused ? 'Resume rotation' : 'Pause rotation');
+    pauseBtn.title = paused ? 'Resume rotation (Space)' : 'Pause rotation (Space)';
+  }
+  addEventListener('keydown', e => {
+    if (e.code !== 'Space' || e.target instanceof HTMLButtonElement) return;
+    e.preventDefault();
+    togglePause();
+  });
+
+  document.getElementById('btn-in').addEventListener('click', () => {
+    zoomTarget = clamp(zoomTarget * 1.35, 0.35, 6);
+  });
+  document.getElementById('btn-out').addEventListener('click', () => {
+    zoomTarget = clamp(zoomTarget / 1.35, 0.35, 6);
+  });
+  pauseBtn.addEventListener('click', togglePause);
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    yaw = YAW0; tilt = TILT0; zoomTarget = 1; simTime = 0;
+    if (paused) togglePause();
+  });
+
+  // ---- Loop ----------------------------------------------------------------
+  let last = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    zoom += (zoomTarget - zoom) * 0.12;
+    if (!paused) simTime += dt;
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.drawImage(bg, 0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';
+    drawParticles();
+    drawDust();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+
+    updateHud(now);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
