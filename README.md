@@ -12,5 +12,8 @@
 | pstack Skill deep dive | [Markdown](pstack-skill-deep-dive/pstack-skill-deep-dive.md) · [HTML](pstack-skill-deep-dive/pstack-skill-deep-dive.html) | Deep dive into the pstack skill (backnotprop/pstack / cursor plugins): structure, modes, budget, and how to use it. |
 | iPhone Duo | [HTML](web-visualization/iphone-duo/index.html) | Interactive 3D concept study of iPhone Duo, a dual-screen foldable iPhone in grade-5 titanium. |
 | Rainy night mart | [HTML](web-visualization/rainy-night-mart/index.html) | Hand-built, cel-shaded diorama of a Japanese convenience store on a rainy night. |
+| NGC 7741 Meridian | [HTML](web-visualization/ngc-7741-meridian/index.html) | Self-contained Canvas particle view of a barred spiral. Drag to orbit, scroll to zoom, Space to pause. Notes: [web-visualization/ngc-7741-meridian/README.md](web-visualization/ngc-7741-meridian/README.md). |
 
 The HTML versions are interactive reports; open them locally in a browser.
+
+Visualization pages are listed in [web-visualization/README.md](web-visualization/README.md).
